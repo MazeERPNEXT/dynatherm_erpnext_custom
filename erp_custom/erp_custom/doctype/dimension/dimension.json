@@ -1,0 +1,60 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2025-09-22 11:53:40.587185",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "length",
+  "width",
+  "thickness",
+  "kilogramskgs"
+ ],
+ "fields": [
+  {
+   "fieldname": "length",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Length",
+   "options": "Item",
+   "reqd": 1
+  },
+  {
+   "fieldname": "width",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Width",
+   "options": "Item",
+   "reqd": 1
+  },
+  {
+   "fieldname": "thickness",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Thickness",
+   "options": "Item",
+   "reqd": 1
+  },
+  {
+   "fieldname": "kilogramskgs",
+   "fieldtype": "Link",
+   "label": "Kilograms(Kgs)",
+   "options": "Item"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2025-09-22 12:23:26.854304",
+ "modified_by": "Administrator",
+ "module": "ERP Custom",
+ "name": "Dimension",
+ "owner": "Administrator",
+ "permissions": [],
+ "row_format": "Dynamic",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

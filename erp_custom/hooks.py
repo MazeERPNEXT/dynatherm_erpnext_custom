@@ -242,3 +242,26 @@ app_license = "mit"
 # 	"Logging DocType Name": 30  # days to retain logs
 # }
 
+# doc_events = {
+#     "Item": {
+#         "before_save": "erp_custom.item_hooks.calculate_kilograms"
+#     }
+# }
+
+# doc_events = {
+#     "Item": {
+#         "validate": "erp_custom.item_hooks.calculate_kilograms"
+#     },
+# }
+
+
+
+# doctype_js = {
+#     "Item": "public/js/item.js"
+# }
+
+
+doctype_js = {
+    "Item": "public/js/item.js",
+    "Material Request": "public/js/material_request.js"
+}
