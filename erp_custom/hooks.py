@@ -263,5 +263,4 @@ app_license = "mit"
 
 doctype_js = {
     "Item": "public/js/item.js",
-    "Material Request": "public/js/material_request.js"
 }
