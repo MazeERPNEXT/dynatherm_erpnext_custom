@@ -1,0 +1,41 @@
+{
+ "add_total_row": 0,
+ "add_translate_data": 0,
+ "columns": [],
+ "creation": "2025-09-26 11:00:23.445830",
+ "disabled": 0,
+ "docstatus": 0,
+ "doctype": "Report",
+ "filters": [],
+ "idx": 0,
+ "is_standard": "Yes",
+ "json": "{}",
+ "letterhead": null,
+ "modified": "2025-09-26 16:13:56.079150",
+ "modified_by": "Administrator",
+ "module": "ERP Custom",
+ "name": "TDS - Tax Report",
+ "owner": "Administrator",
+ "prepared_report": 0,
+ "query": "SELECT supplier, name, tax_withholding_category, taxes_and_charges_deducted FROM `tabPurchase Invoice`;",
+ "ref_doctype": "Purchase Invoice",
+ "reference_report": "Purchase Invoice",
+ "report_name": "TDS - Tax Report",
+ "report_script": "<!-- Header / Basic info -->\n<h3>Purchase Invoice: {{ doc.name }}</h3>\n<p><strong>Supplier:</strong> {{ doc.supplier }}</p>\n<p><strong>Tax Withholding Category:</strong> {{ doc.get('tax_withholding_category') or doc.get('tax_withholding_category') }}</p>\n\n<!-- Table: Only show tax rows with Charge Type = 'Actual' -->\n<table border=\"1\" cellpadding=\"6\" cellspacing=\"0\" style=\"border-collapse:collapse;\">\n  <thead>\n    <tr>\n      <th>Charge Type</th>\n      <th>Tax Description</th>\n      <th style=\"text-align:right\">Amount</th>\n    </tr>\n  </thead>\n  <tbody>\n    {%- for t in doc.get('taxes') or [] %}\n      {%- if (t.get('charge_type') or '').lower() == 'actual' %}\n        <tr>\n          <td>{{ t.get('charge_type') }}</td>\n          <td>{{ t.get('description') or t.get('account_head') }}</td>\n          <td style=\"text-align:right\">{{ \"{:,.2f}\".format(t.get('tax_amount') or t.get('rate') or 0) }}</td>\n        </tr>\n      {%- endif %}\n    {%- endfor %}\n  </tbody>\n</table>\n",
+ "report_type": "Report Builder",
+ "roles": [
+  {
+   "role": "Accounts User"
+  },
+  {
+   "role": "Purchase User"
+  },
+  {
+   "role": "Accounts Manager"
+  },
+  {
+   "role": "Auditor"
+  }
+ ],
+ "timeout": 0
+}
