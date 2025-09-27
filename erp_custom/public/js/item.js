@@ -1,8 +1,8 @@
 frappe.ui.form.on('Item', {
     validate: function(frm) {
-        if (frm.doc.custom_length && frm.doc.custom_width && frm.doc.custom_thickness) {
-            const density = 7.85;
-            let weight = (frm.doc.custom_length * frm.doc.custom_width * frm.doc.custom_thickness * density) / 1000000;
+        if (frm.doc.custom_length && frm.doc.custom_width && frm.doc.custom_thickness && frm.doc.custom_density) {
+            // const density = 7.85;
+            let weight = (frm.doc.custom_length * frm.doc.custom_width * frm.doc.custom_thickness * frm.doc.custom_density) / 1000000;
             let final_weight = weight.toFixed(2);
 
             frm.set_value("custom_kilogramskgs", final_weight);
