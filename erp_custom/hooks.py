@@ -260,19 +260,23 @@ app_license = "mit"
 #     "Item": "public/js/item.js"
 # }
 
+# fixtures = [
+#     {
+#         "doctype": "Item Group",
+#         "filters": {
+#             "name": ["in", [
+#                 "Consumables", "Drillbits", "Dye Penetrant", "Gas", "Paint", "Safety Items", "Weld", "Weld Accessory", "Woodboxes",
+#                 "Machinery", "Computer Accesory", "Diesel Generators", "Drilling", "Fans", "Hydraulic Tighteners", "Instruments", "Mother Oven", "Power Tools", "Printers", "Products", "Weld",
+#                 "Raw Material", "Demister", "Fasteners", "flanges", "Forgings", "Gaskets", "Import", "Name Plate", "Pipes", "Plates", "Polymer Sheet", "Trays", "Tubes", "Weld",
+#                 "Services", "Bio Pit", "Chemical Spray", "Cladding", "Construction", "Cranes", "Design", "Dish End", "Dish Forming", "Drilling", "Fabrication", "Government", "Heat Treatment",
+#                 "Machine Repair", "Machinery", "Pickling Passivation", "PV Elite", "Rental", "Rolling", "RT", "Sandblasting Painting", "Testing", "TPI", "Transport", "Water Jet Cutting", "Weighing",
+#             ]]
+#         }
+#     }
+# ]
+
 fixtures = [
-    {
-        "doctype": "Item Group",
-        "filters": {
-            "name": ["in", [
-                "Consumables", "Drillbits", "Dye Penetrant", "Gas", "Paint", "Safety Items", "Weld", "Weld Accessory", "Woodboxes",
-                "Machinery", "Computer Accesory", "Diesel Generators", "Drilling", "Fans", "Hydraulic Tighteners", "Instruments", "Mother Oven", "Power Tools", "Printers", "Products", "Weld",
-                "Raw Material", "Demister", "Fasteners", "flanges", "Forgings", "Gaskets", "Import", "Name Plate", "Pipes", "Plates", "Polymer Sheet", "Trays", "Tubes", "Weld",
-                "Services", "Bio Pit", "Chemical Spray", "Cladding", "Construction", "Cranes", "Design", "Dish End", "Dish Forming", "Drilling", "Fabrication", "Government", "Heat Treatment",
-                "Machine Repair", "Machinery", "Pickling Passivation", "PV Elite", "Rental", "Rolling", "RT", "Sandblasting Painting", "Testing", "TPI", "Transport", "Water Jet Cutting", "Weighing",
-            ]]
-        }
-    }
+    "Item Group"
 ]
 
 doctype_js = {
