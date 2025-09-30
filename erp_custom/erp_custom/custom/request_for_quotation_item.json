@@ -45,7 +45,7 @@
    "name": "Request for Quotation Item-custom_bom_no",
    "no_copy": 0,
    "non_negative": 0,
-   "options": "Material Request Item",
+   "options": "BOM",
    "owner": "Administrator",
    "permlevel": 0,
    "placeholder": null,
