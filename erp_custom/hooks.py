@@ -275,6 +275,21 @@ app_license = "mit"
 #     }
 # ]
 
+
+# fixtures = [
+#     {
+#         "doctype": "Item Group",
+#         "filters": {
+#             "name": ["in", [
+#                 "Consumables",
+#                 "Machinery",
+#                 "Raw Material",
+#                 "Services"
+#             ]]
+#         }
+#     }
+# ]
+
 fixtures = [
     "Item Group"
 ]
