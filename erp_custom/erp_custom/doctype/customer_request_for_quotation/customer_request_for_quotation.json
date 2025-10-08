@@ -1,0 +1,243 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "PUR-CRFQ-.2025.-.#####",
+ "creation": "2025-10-07 15:01:29.762522",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "section_break_fksx",
+  "crfq_id__tender_id",
+  "purpose",
+  "type",
+  "item_name",
+  "item_group",
+  "tag",
+  "column_break_oqbn",
+  "closing_date",
+  "time",
+  "parent_moc",
+  "moc_config",
+  "cdd_days",
+  "ra_yn",
+  "status",
+  "unit_basic",
+  "section_break_sltg",
+  "customer_name",
+  "location",
+  "column_break_jstj",
+  "quantity",
+  "section_break_drhd",
+  "pre_bid_meeting",
+  "pqc_technical",
+  "pqc_commercial",
+  "pqc_financial",
+  "column_break_kcin",
+  "dapl_pqc",
+  "pqc_shop_floor",
+  "section_break_dsuh",
+  "total_basic",
+  "column_break_vgep",
+  "total_gst",
+  "amended_from"
+ ],
+ "fields": [
+  {
+   "fieldname": "section_break_fksx",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "crfq_id__tender_id",
+   "fieldtype": "Data",
+   "label": "CRFQ ID / Tender ID"
+  },
+  {
+   "fieldname": "purpose",
+   "fieldtype": "Data",
+   "label": "Purpose"
+  },
+  {
+   "fieldname": "type",
+   "fieldtype": "Data",
+   "label": "Type"
+  },
+  {
+   "fieldname": "item_name",
+   "fieldtype": "Data",
+   "label": " Item Name"
+  },
+  {
+   "fieldname": "item_group",
+   "fieldtype": "Data",
+   "label": " Item Group"
+  },
+  {
+   "fieldname": "tag",
+   "fieldtype": "Data",
+   "label": "Tag"
+  },
+  {
+   "fieldname": "column_break_oqbn",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "closing_date",
+   "fieldtype": "Date",
+   "label": " Closing Date"
+  },
+  {
+   "fieldname": "time",
+   "fieldtype": "Time",
+   "label": "Time"
+  },
+  {
+   "fieldname": "parent_moc",
+   "fieldtype": "Data",
+   "label": " Parent MoC"
+  },
+  {
+   "fieldname": "moc_config",
+   "fieldtype": "Data",
+   "label": " MoC Config"
+  },
+  {
+   "fieldname": "cdd_days",
+   "fieldtype": "Data",
+   "label": " CDD (days)"
+  },
+  {
+   "fieldname": "ra_yn",
+   "fieldtype": "Data",
+   "label": " RA (Y/N)"
+  },
+  {
+   "fieldname": "status",
+   "fieldtype": "Data",
+   "label": "Status"
+  },
+  {
+   "fieldname": "unit_basic",
+   "fieldtype": "Data",
+   "label": "Unit Basic"
+  },
+  {
+   "fieldname": "section_break_sltg",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "customer_name",
+   "fieldtype": "Data",
+   "label": "Customer Name"
+  },
+  {
+   "fieldname": "location",
+   "fieldtype": "Data",
+   "label": "Location"
+  },
+  {
+   "fieldname": "column_break_jstj",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "quantity",
+   "fieldtype": "Data",
+   "label": "Quantity"
+  },
+  {
+   "fieldname": "section_break_drhd",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "pre_bid_meeting",
+   "fieldtype": "Date",
+   "label": " Pre Bid Meeting"
+  },
+  {
+   "fieldname": "pqc_technical",
+   "fieldtype": "Data",
+   "label": " PQC Technical"
+  },
+  {
+   "fieldname": "pqc_commercial",
+   "fieldtype": "Data",
+   "label": "PQC Commercial"
+  },
+  {
+   "fieldname": "pqc_financial",
+   "fieldtype": "Data",
+   "label": "PQC Financial"
+  },
+  {
+   "fieldname": "column_break_kcin",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "dapl_pqc",
+   "fieldtype": "Data",
+   "label": " DAPL PQC"
+  },
+  {
+   "fieldname": "pqc_shop_floor",
+   "fieldtype": "Data",
+   "label": " PQC Shop Floor"
+  },
+  {
+   "fieldname": "section_break_dsuh",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "total_basic",
+   "fieldtype": "Data",
+   "label": " Total Basic"
+  },
+  {
+   "fieldname": "column_break_vgep",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "total_gst",
+   "fieldtype": "Data",
+   "label": " Total GST"
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "Customer Request For Quotation",
+   "print_hide": 1,
+   "read_only": 1,
+   "search_index": 1
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "is_submittable": 1,
+ "links": [],
+ "modified": "2025-10-07 19:32:56.098261",
+ "modified_by": "Administrator",
+ "module": "ERP Custom",
+ "name": "Customer Request For Quotation",
+ "naming_rule": "Expression (old style)",
+ "owner": "msk312508@gmail.com",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "submit": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "rows_threshold_for_grid_search": 20,
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}
