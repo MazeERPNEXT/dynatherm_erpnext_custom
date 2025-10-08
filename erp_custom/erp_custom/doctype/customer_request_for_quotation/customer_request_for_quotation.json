@@ -31,10 +31,9 @@
   "pqc_shop_floor",
   "section_break_dsuh",
   "unit_basic",
-  "total_basic",
   "column_break_vgep",
-  "total_gst",
-  "amended_from"
+  "total_basic",
+  "total_gst"
  ],
  "fields": [
   {
@@ -158,6 +157,7 @@
   {
    "fieldname": "table_lnid",
    "fieldtype": "Table",
+   "label": "Items",
    "options": "Customer Request For Quotation Item"
   },
   {
@@ -167,24 +167,15 @@
   {
    "fieldname": "table_kjma",
    "fieldtype": "Table",
+   "label": "Customers",
    "options": "Customer Request For Quotation Customer"
-  },
-  {
-   "fieldname": "amended_from",
-   "fieldtype": "Link",
-   "label": "Amended From",
-   "no_copy": 1,
-   "options": "Customer Request For Quotation",
-   "print_hide": 1,
-   "read_only": 1,
-   "search_index": 1
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-10-08 12:28:35.515582",
+ "modified": "2025-10-08 18:49:21.409372",
  "modified_by": "Administrator",
  "module": "ERP Custom",
  "name": "Customer Request For Quotation",
