@@ -9,27 +9,25 @@
   "section_break_9jgv",
   "tender_id",
   "tag",
-  "item_name",
-  "parent_moc",
   "supplier_type",
   "supplier_cat",
   "cust_part",
   "cust_part_name",
-  "qty",
-  "width",
+  "parent_moc",
   "column_break_rbls",
+  "id",
   "mat_moc",
-  "length",
   "od",
   "mkt_rate_per_piece",
-  "id",
   "mkt_rate_per_mm",
-  "total_weight",
   "mkt_rate_per_kg",
-  "thickness",
   "markup",
+  "section_break_dkbu",
+  "table_qbvb",
+  "section_break_dplw",
   "total_cost",
-  "amended_from"
+  "column_break_egbt",
+  "total_weight"
  ],
  "fields": [
   {
@@ -45,11 +43,6 @@
    "fieldname": "tag",
    "fieldtype": "Data",
    "label": "Tag"
-  },
-  {
-   "fieldname": "item_name",
-   "fieldtype": "Data",
-   "label": "Item Name"
   },
   {
    "fieldname": "parent_moc",
@@ -77,16 +70,6 @@
    "label": "Customer Part Name"
   },
   {
-   "fieldname": "qty",
-   "fieldtype": "Data",
-   "label": " Quantity"
-  },
-  {
-   "fieldname": "width",
-   "fieldtype": "Data",
-   "label": " Width"
-  },
-  {
    "fieldname": "column_break_rbls",
    "fieldtype": "Column Break"
   },
@@ -94,11 +77,6 @@
    "fieldname": "mat_moc",
    "fieldtype": "Data",
    "label": " Mat. MoC"
-  },
-  {
-   "fieldname": "length",
-   "fieldtype": "Data",
-   "label": " Length"
   },
   {
    "fieldname": "od",
@@ -131,11 +109,6 @@
    "label": " Mkt rate per kg"
   },
   {
-   "fieldname": "thickness",
-   "fieldtype": "Data",
-   "label": "Thickness"
-  },
-  {
    "fieldname": "markup",
    "fieldtype": "Data",
    "label": " MarkUp"
@@ -146,21 +119,28 @@
    "label": " Total Cost"
   },
   {
-   "fieldname": "amended_from",
-   "fieldtype": "Link",
-   "label": "Amended From",
-   "no_copy": 1,
-   "options": "Estimate",
-   "print_hide": 1,
-   "read_only": 1,
-   "search_index": 1
+   "fieldname": "section_break_dkbu",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "table_qbvb",
+   "fieldtype": "Table",
+   "options": "Estimate Item"
+  },
+  {
+   "fieldname": "section_break_dplw",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "column_break_egbt",
+   "fieldtype": "Column Break"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-10-07 19:35:50.882084",
+ "modified": "2025-10-08 12:19:05.622916",
  "modified_by": "Administrator",
  "module": "ERP Custom",
  "name": "Estimate",

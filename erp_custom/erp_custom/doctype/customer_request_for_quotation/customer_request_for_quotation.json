@@ -1,7 +1,7 @@
 {
  "actions": [],
  "allow_rename": 1,
- "autoname": "PUR-CRFQ-.2025.-.#####",
+ "autoname": "format:{PUR}-{CRFQ}-{YYYY}-{#####}",
  "creation": "2025-10-07 15:01:29.762522",
  "doctype": "DocType",
  "engine": "InnoDB",
@@ -10,23 +10,17 @@
   "crfq_id__tender_id",
   "purpose",
   "type",
-  "item_name",
-  "item_group",
   "tag",
   "column_break_oqbn",
-  "closing_date",
-  "time",
   "parent_moc",
   "moc_config",
   "cdd_days",
   "ra_yn",
   "status",
-  "unit_basic",
-  "section_break_sltg",
-  "customer_name",
-  "location",
-  "column_break_jstj",
-  "quantity",
+  "section_break_hnhz",
+  "table_lnid",
+  "section_break_prdk",
+  "table_kjma",
   "section_break_drhd",
   "pre_bid_meeting",
   "pqc_technical",
@@ -36,6 +30,7 @@
   "dapl_pqc",
   "pqc_shop_floor",
   "section_break_dsuh",
+  "unit_basic",
   "total_basic",
   "column_break_vgep",
   "total_gst",
@@ -62,16 +57,6 @@
    "label": "Type"
   },
   {
-   "fieldname": "item_name",
-   "fieldtype": "Data",
-   "label": " Item Name"
-  },
-  {
-   "fieldname": "item_group",
-   "fieldtype": "Data",
-   "label": " Item Group"
-  },
-  {
    "fieldname": "tag",
    "fieldtype": "Data",
    "label": "Tag"
@@ -79,16 +64,6 @@
   {
    "fieldname": "column_break_oqbn",
    "fieldtype": "Column Break"
-  },
-  {
-   "fieldname": "closing_date",
-   "fieldtype": "Date",
-   "label": " Closing Date"
-  },
-  {
-   "fieldname": "time",
-   "fieldtype": "Time",
-   "label": "Time"
   },
   {
    "fieldname": "parent_moc",
@@ -119,29 +94,6 @@
    "fieldname": "unit_basic",
    "fieldtype": "Data",
    "label": "Unit Basic"
-  },
-  {
-   "fieldname": "section_break_sltg",
-   "fieldtype": "Section Break"
-  },
-  {
-   "fieldname": "customer_name",
-   "fieldtype": "Data",
-   "label": "Customer Name"
-  },
-  {
-   "fieldname": "location",
-   "fieldtype": "Data",
-   "label": "Location"
-  },
-  {
-   "fieldname": "column_break_jstj",
-   "fieldtype": "Column Break"
-  },
-  {
-   "fieldname": "quantity",
-   "fieldtype": "Data",
-   "label": "Quantity"
   },
   {
    "fieldname": "section_break_drhd",
@@ -200,6 +152,24 @@
    "label": " Total GST"
   },
   {
+   "fieldname": "section_break_hnhz",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "table_lnid",
+   "fieldtype": "Table",
+   "options": "Customer Request For Quotation Item"
+  },
+  {
+   "fieldname": "section_break_prdk",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "table_kjma",
+   "fieldtype": "Table",
+   "options": "Customer Request For Quotation Customer"
+  },
+  {
    "fieldname": "amended_from",
    "fieldtype": "Link",
    "label": "Amended From",
@@ -214,11 +184,11 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-10-07 19:32:56.098261",
+ "modified": "2025-10-08 12:28:35.515582",
  "modified_by": "Administrator",
  "module": "ERP Custom",
  "name": "Customer Request For Quotation",
- "naming_rule": "Expression (old style)",
+ "naming_rule": "Expression",
  "owner": "msk312508@gmail.com",
  "permissions": [
   {
