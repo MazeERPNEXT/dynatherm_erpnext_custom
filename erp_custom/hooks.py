@@ -299,3 +299,11 @@ doctype_js = {
     "BOM": "public/js/bom.js",
 }
 
+# doctype_js = {
+#     "Customer Request For Quotation": "public/js/customer_request_for_quotation.js"
+# }
+
+
+doctype_js = {
+    "Customer Request For Quotation": "erp_custom.erp_custom.erp_custom.doctype.customer_request_for_quotation.js"
+}
