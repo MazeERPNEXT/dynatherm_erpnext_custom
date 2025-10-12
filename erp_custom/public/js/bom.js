@@ -25,7 +25,7 @@ frappe.ui.form.on('BOM', {
         if (frm.doc.items && frm.doc.items.length > 0) {
             frm.doc.items.forEach(row => {
                 row.qty = frm.doc.custom_kilogramskgs || 0;
-                row.uom = "Kgs";
+                row.uom = "Kg";
             });
             frm.refresh_field("items");
         }
@@ -36,7 +36,7 @@ frappe.ui.form.on('BOM', {
         if (frm.doc.items && frm.doc.items.length > 0) {
             frm.doc.items.forEach(row => {
                 row.qty = frm.doc.custom_kilogramskgs || 0;
-                row.uom = "Kgs"; 
+                row.uom = "Kg"; 
             });
             frm.refresh_field("items");
         }
@@ -48,7 +48,7 @@ frappe.ui.form.on('BOM Item', {
     items_add: function(frm, cdt, cdn) {
         const row = locals[cdt][cdn];
         row.qty = frm.doc.custom_kilogramskgs || 0;
-        row.uom = "Kgs"; 
+        row.uom = "Kg"; 
         frm.refresh_field("items");
     }
 });
