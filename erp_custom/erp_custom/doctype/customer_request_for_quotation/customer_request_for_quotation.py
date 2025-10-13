@@ -7,21 +7,76 @@
 
 
 
+# import frappe
+# from frappe.model.document import Document
+# from frappe.model.mapper import get_mapped_doc
+
+
+# class CustomerRequestForQuotation(Document):
+# 	pass
+
+# @frappe.whitelist()
+# def make_estimate(source_name, target_doc=None):
+#     def set_missing_values(source, target):
+#         target.customer_rfq = source.name
+#         target.tender_id = source.crfq_id__tender_id
+#         target.tag = source.tag
+#         target.parent_moc = source.parent_moc
+
+#     doc = get_mapped_doc(
+#         "Customer Request For Quotation",
+#         source_name,
+#         {
+#             "Customer Request For Quotation": {
+#                 "doctype": "Estimate",
+#                 "field_map": {
+#                     "name": "customer_rfq",
+#                     "crfq_id__tender_id": "tender_id",
+#                     "tag": "tag",
+#                     "parent_moc": "parent_moc"
+#                 }
+#             },
+#             "Customer Request For Quotation Item": {
+#                 "doctype": "Estimate Item",
+#                 "field_map": {
+#                     "item_name": "item_name",
+#                     "quantity": "quantity"
+#                 }
+#             }
+#         },
+#         target_doc,
+#         set_missing_values
+#     )
+
+#     return doc
+
+
+
+
+
 import frappe
 from frappe.model.document import Document
 from frappe.model.mapper import get_mapped_doc
 
 
 class CustomerRequestForQuotation(Document):
-	pass
+    pass
+
 
 @frappe.whitelist()
 def make_estimate(source_name, target_doc=None):
     def set_missing_values(source, target):
+        # Link CRFQ record for reference
         target.customer_rfq = source.name
-        target.tender_id = source.crfq_id__tender_id
-        target.tag = source.tag
-        target.parent_moc = source.parent_moc
+
+        # These fields exist only in CRFQ, so access safely
+        target.tender_id = getattr(source, "crfq_id__tender_id", None)
+        target.tag = getattr(source, "tag", None)
+        target.parent_moc = getattr(source, "parent_moc", None)
+
+        # Add a unique link field to prevent duplicates
+        if not target.get("crfq_reference"):
+            target.crfq_reference = source.name
 
     doc = get_mapped_doc(
         "Customer Request For Quotation",
@@ -31,21 +86,23 @@ def make_estimate(source_name, target_doc=None):
                 "doctype": "Estimate",
                 "field_map": {
                     "name": "customer_rfq",
-                    "crfq_id__tender_id": "tender_id",
-                    "tag": "tag",
-                    "parent_moc": "parent_moc"
-                }
+                    # Remove fields that exist only in Estimate
+                    # "supplier_type": "supplier_type",
+                    # "supplier_cat": "supplier_cat",
+                    # "tag": "tag",
+                    # "parent_moc": "parent_moc"
+                },
             },
             "Customer Request For Quotation Item": {
                 "doctype": "Estimate Item",
                 "field_map": {
                     "item_name": "item_name",
-                    "quantity": "quantity"
-                }
-            }
+                    "quantity": "quantity",
+                },
+            },
         },
         target_doc,
-        set_missing_values
+        set_missing_values,
     )
 
     return doc
