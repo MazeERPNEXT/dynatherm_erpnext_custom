@@ -1,0 +1,128 @@
+[
+ {
+  "docstatus": 0,
+  "doctype": "Raw Material Type",
+  "modified": "2025-10-13 12:52:36.629959",
+  "name": "Demister",
+  "raw_material": "Demister"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Raw Material Type",
+  "modified": "2025-10-13 12:53:08.662933",
+  "name": "Fasteners",
+  "raw_material": "Fasteners"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Raw Material Type",
+  "modified": "2025-10-13 12:53:28.834761",
+  "name": "Flanges",
+  "raw_material": "Flanges"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Raw Material Type",
+  "modified": "2025-10-13 12:54:12.981803",
+  "name": "Forgings",
+  "raw_material": "Forgings"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Raw Material Type",
+  "modified": "2025-10-13 12:54:30.754072",
+  "name": "Gaskets",
+  "raw_material": "Gaskets"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Raw Material Type",
+  "modified": "2025-10-13 12:54:58.810598",
+  "name": "Import",
+  "raw_material": "Import"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Raw Material Type",
+  "modified": "2025-10-13 12:55:16.356987",
+  "name": "Name Plate",
+  "raw_material": "Name Plate"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Raw Material Type",
+  "modified": "2025-10-13 12:55:33.593130",
+  "name": "Pipes",
+  "raw_material": "Pipes"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Raw Material Type",
+  "modified": "2025-10-13 12:55:46.187741",
+  "name": "Plates",
+  "raw_material": "Plates"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Raw Material Type",
+  "modified": "2025-10-13 12:56:00.245682",
+  "name": "Polymer Sheet",
+  "raw_material": "Polymer Sheet"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Raw Material Type",
+  "modified": "2025-10-13 12:56:17.262060",
+  "name": "Trays",
+  "raw_material": "Trays"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Raw Material Type",
+  "modified": "2025-10-13 12:56:38.346279",
+  "name": "Tubes (Smls)",
+  "raw_material": "Tubes (Smls)"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Raw Material Type",
+  "modified": "2025-10-13 12:57:13.505263",
+  "name": "Tubes (Welded)",
+  "raw_material": "Tubes (Welded)"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Raw Material Type",
+  "modified": "2025-10-13 12:57:27.305360",
+  "name": "Pipe (Smls)",
+  "raw_material": "Pipe (Smls)"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Raw Material Type",
+  "modified": "2025-10-13 12:57:43.816298",
+  "name": "Pipe (Welded)",
+  "raw_material": "Pipe (Welded)"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Raw Material Type",
+  "modified": "2025-10-13 12:57:58.793807",
+  "name": "Pipe Fittings",
+  "raw_material": "Pipe Fittings"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Raw Material Type",
+  "modified": "2025-10-13 12:58:14.898413",
+  "name": "Rod",
+  "raw_material": "Rod"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Raw Material Type",
+  "modified": "2025-10-13 12:58:28.318367",
+  "name": "Rivet",
+  "raw_material": "Rivet"
+ }
+]

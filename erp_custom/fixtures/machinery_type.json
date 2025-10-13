@@ -1,0 +1,93 @@
+[
+ {
+  "docstatus": 0,
+  "doctype": "Machinery Type",
+  "machinery": "Computer Accessories",
+  "modified": "2025-10-13 11:54:54.381764",
+  "name": "Computer Accessories"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Machinery Type",
+  "machinery": "Diesel Generators",
+  "modified": "2025-10-13 12:02:28.657185",
+  "name": "Diesel Generators"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Machinery Type",
+  "machinery": "Drill Machines",
+  "modified": "2025-10-13 12:21:27.274163",
+  "name": "Drill Machines"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Machinery Type",
+  "machinery": "Rolling Machines",
+  "modified": "2025-10-13 12:24:05.100023",
+  "name": "Rolling Machines"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Machinery Type",
+  "machinery": "Welding Machines",
+  "modified": "2025-10-13 12:24:35.045629",
+  "name": "Welding Machines"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Machinery Type",
+  "machinery": "Rotators",
+  "modified": "2025-10-13 12:24:59.262546",
+  "name": "Rotators"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Machinery Type",
+  "machinery": "Fans",
+  "modified": "2025-10-13 12:25:09.796798",
+  "name": "Fans"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Machinery Type",
+  "machinery": "Hydraulic Tighteners",
+  "modified": "2025-10-13 12:25:47.992754",
+  "name": "Hydraulic Tighteners"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Machinery Type",
+  "machinery": "Instruments",
+  "modified": "2025-10-13 12:25:59.132762",
+  "name": "Instruments"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Machinery Type",
+  "machinery": "Mother Oven",
+  "modified": "2025-10-13 12:26:17.959478",
+  "name": "Mother Oven"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Machinery Type",
+  "machinery": "Power Tools",
+  "modified": "2025-10-13 12:26:28.770094",
+  "name": "Power Tools"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Machinery Type",
+  "machinery": "Printers",
+  "modified": "2025-10-13 12:26:37.805751",
+  "name": "Printers"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Machinery Type",
+  "machinery": "Spare Machinery",
+  "modified": "2025-10-13 12:27:34.946215",
+  "name": "Spare Machinery"
+ }
+]

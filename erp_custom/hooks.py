@@ -294,6 +294,25 @@ fixtures = [
     "Item Group"
 ]
 
+fixtures = [
+    {
+        "doctype": "Certification Type",
+        "filters": {
+            "name": ["is", "set"]
+        }
+    }
+]
+
+fixtures = [
+    "Supplier Type",
+    "Raw Material Type",
+    "Services Type",
+    "Consumable Type",
+    "Machinery Type",
+    "Certification Type"
+]
+
+
 doctype_js = {
     "Item": "public/js/item.js",
     "BOM": "public/js/bom.js",

@@ -1,0 +1,16 @@
+[
+ {
+  "docstatus": 0,
+  "doctype": "Supplier Type",
+  "modified": "2025-10-13 12:49:04.386938",
+  "name": "Manufacturer / Mill",
+  "type": "Manufacturer / Mill"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Supplier Type",
+  "modified": "2025-10-13 12:49:30.208862",
+  "name": "Trader / Distributors",
+  "type": "Trader / Distributors"
+ }
+]

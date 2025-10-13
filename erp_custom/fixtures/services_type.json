@@ -1,0 +1,184 @@
+[
+ {
+  "docstatus": 0,
+  "doctype": "Services Type",
+  "modified": "2025-10-13 13:00:51.936332",
+  "name": "Bio Pit",
+  "services": "Bio Pit"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Services Type",
+  "modified": "2025-10-13 13:01:29.451445",
+  "name": "Chemical Spray",
+  "services": "Chemical Spray"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Services Type",
+  "modified": "2025-10-13 13:02:40.954123",
+  "name": "Cladding",
+  "services": "Cladding"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Services Type",
+  "modified": "2025-10-13 13:03:02.953007",
+  "name": "Construction / Civil",
+  "services": "Construction / Civil"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Services Type",
+  "modified": "2025-10-13 13:03:24.499517",
+  "name": "Cranes",
+  "services": "Cranes"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Services Type",
+  "modified": "2025-10-13 13:03:40.387450",
+  "name": "Design",
+  "services": "Design"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Services Type",
+  "modified": "2025-10-13 13:03:57.027653",
+  "name": "Dish End",
+  "services": "Dish End"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Services Type",
+  "modified": "2025-10-13 13:04:10.314917",
+  "name": "Dish Forming",
+  "services": "Dish Forming"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Services Type",
+  "modified": "2025-10-13 13:04:29.374400",
+  "name": "Drilling",
+  "services": "Drilling"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Services Type",
+  "modified": "2025-10-13 13:04:48.878366",
+  "name": "Fabrication",
+  "services": "Fabrication"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Services Type",
+  "modified": "2025-10-13 13:05:02.417832",
+  "name": "Government",
+  "services": "Government"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Services Type",
+  "modified": "2025-10-13 13:05:14.194648",
+  "name": "Heat Treatment",
+  "services": "Heat Treatment"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Services Type",
+  "modified": "2025-10-13 13:05:23.502108",
+  "name": "Machine Repair",
+  "services": "Machine Repair"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Services Type",
+  "modified": "2025-10-13 13:05:38.407011",
+  "name": "Machinery",
+  "services": "Machinery"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Services Type",
+  "modified": "2025-10-13 13:05:50.957863",
+  "name": "Pickling Passivation",
+  "services": "Pickling Passivation"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Services Type",
+  "modified": "2025-10-13 13:06:04.480566",
+  "name": "PV Elite",
+  "services": "PV Elite"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Services Type",
+  "modified": "2025-10-13 13:06:16.852182",
+  "name": "Rental",
+  "services": "Rental"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Services Type",
+  "modified": "2025-10-13 13:06:28.287191",
+  "name": "Rolling",
+  "services": "Rolling"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Services Type",
+  "modified": "2025-10-13 13:06:43.459004",
+  "name": "RT",
+  "services": "RT"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Services Type",
+  "modified": "2025-10-13 13:06:53.792084",
+  "name": "Sandblasting Painting",
+  "services": "Sandblasting Painting"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Services Type",
+  "modified": "2025-10-13 13:07:03.176309",
+  "name": "Testing",
+  "services": "Testing"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Services Type",
+  "modified": "2025-10-13 13:07:13.785030",
+  "name": "TPI",
+  "services": "TPI"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Services Type",
+  "modified": "2025-10-13 13:07:25.522646",
+  "name": "Transport",
+  "services": "Transport"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Services Type",
+  "modified": "2025-10-13 13:07:40.068874",
+  "name": "Water Jet Cutting",
+  "services": "Water Jet Cutting"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Services Type",
+  "modified": "2025-10-13 13:07:54.289435",
+  "name": "Weighing",
+  "services": "Weighing"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Services Type",
+  "modified": "2025-10-13 13:08:07.062793",
+  "name": "UT",
+  "services": "UT"
+ }
+]

@@ -1,0 +1,58 @@
+[
+ {
+  "certifications": "MSME",
+  "docstatus": 0,
+  "doctype": "Certification Type",
+  "modified": "2025-10-13 12:39:54.243956",
+  "name": "MSME"
+ },
+ {
+  "certifications": "ISO 9001",
+  "docstatus": 0,
+  "doctype": "Certification Type",
+  "modified": "2025-10-13 12:40:03.622986",
+  "name": "ISO 9001"
+ },
+ {
+  "certifications": "ISO 14001",
+  "docstatus": 0,
+  "doctype": "Certification Type",
+  "modified": "2025-10-13 12:40:12.651117",
+  "name": "ISO 14001"
+ },
+ {
+  "certifications": "ISO 45001",
+  "docstatus": 0,
+  "doctype": "Certification Type",
+  "modified": "2025-10-13 12:40:22.886276",
+  "name": "ISO 45001"
+ },
+ {
+  "certifications": "IBR",
+  "docstatus": 0,
+  "doctype": "Certification Type",
+  "modified": "2025-10-13 12:40:32.932692",
+  "name": "IBR"
+ },
+ {
+  "certifications": "EIL",
+  "docstatus": 0,
+  "doctype": "Certification Type",
+  "modified": "2025-10-13 12:41:20.796227",
+  "name": "EIL"
+ },
+ {
+  "certifications": "U Stamp",
+  "docstatus": 0,
+  "doctype": "Certification Type",
+  "modified": "2025-10-13 12:41:37.047715",
+  "name": "U Stamp"
+ },
+ {
+  "certifications": "PED",
+  "docstatus": 0,
+  "doctype": "Certification Type",
+  "modified": "2025-10-13 12:42:08.189120",
+  "name": "PED"
+ }
+]
