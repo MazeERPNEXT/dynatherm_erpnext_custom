@@ -79,10 +79,50 @@
 
 
 
-frappe.ui.form.on("Customer Request For Quotation", {
+// frappe.ui.form.on("Customer Request For Quotation", {
+//     refresh(frm) {
+//         if (frm.doc.docstatus === 1) {
+//             frm.add_custom_button(__('Estimate'), function() {
+//                 frm.events.make_estimate(frm);
+//             }, __("Create"));
+
+//             const create_btn = frm.page.set_inner_btn_group_as_primary(__('Create'));
+//             $(create_btn).css({
+//                 'background-color': 'black',
+//                 'color': 'white',
+//                 'font-weight': 'bold'
+//             });
+//         }
+//     },
+
+//     make_estimate(frm) {
+//         frappe.call({
+//             method: "erp_custom.erp_custom.doctype.customer_request_for_quotation.customer_request_for_quotation.make_estimate",
+//             args: { source_name: frm.doc.name },
+//             freeze: true,
+//             freeze_message: __("Checking and Creating Estimate..."),
+//             callback: function(r) {
+//                 if (r.message) {
+//                     frappe.model.sync(r.message);
+//                     frappe.set_route("Form", r.message.doctype, r.message.name);
+//                 }
+//             }
+//         });
+//     }
+// });
+
+
+
+
+
+
+
+
+frappe.ui.form.on('Customer Request For Quotation', {
     refresh(frm) {
+        // Show the button only after submission
         if (frm.doc.docstatus === 1) {
-            frm.add_custom_button(__('Estimate'), function() {
+            frm.add_custom_button(__('Estimate'), function () {
                 frm.events.make_estimate(frm);
             }, __("Create"));
 
@@ -95,18 +135,10 @@ frappe.ui.form.on("Customer Request For Quotation", {
         }
     },
 
-    make_estimate(frm) {
-        frappe.call({
+    make_estimate: function(frm) {
+        frappe.model.open_mapped_doc({
             method: "erp_custom.erp_custom.doctype.customer_request_for_quotation.customer_request_for_quotation.make_estimate",
-            args: { source_name: frm.doc.name },
-            freeze: true,
-            freeze_message: __("Checking and Creating Estimate..."),
-            callback: function(r) {
-                if (r.message) {
-                    frappe.model.sync(r.message);
-                    frappe.set_route("Form", r.message.doctype, r.message.name);
-                }
-            }
+            frm: frm
         });
     }
 });

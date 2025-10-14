@@ -2,7 +2,7 @@
  "actions": [],
  "allow_rename": 1,
  "autoname": "format:{PUR}-{CRFQ}-{YYYY}-{#####}",
- "creation": "2025-10-09 22:38:19.227058",
+ "creation": "2025-10-14 12:19:50.971991",
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
@@ -11,6 +11,7 @@
   "purpose",
   "type",
   "tag",
+  "estimate_status",
   "column_break_oqbn",
   "parent_moc",
   "moc_config",
@@ -70,22 +71,22 @@
   {
    "fieldname": "parent_moc",
    "fieldtype": "Data",
-   "label": " Parent MoC"
+   "label": "Parent MoC"
   },
   {
    "fieldname": "moc_config",
    "fieldtype": "Data",
-   "label": " MoC Config"
+   "label": "MoC Config"
   },
   {
    "fieldname": "cdd_days",
    "fieldtype": "Data",
-   "label": " CDD (Days)"
+   "label": "CDD (Days)"
   },
   {
    "fieldname": "ra_yn",
    "fieldtype": "Data",
-   "label": " RA (Y/N)"
+   "label": "RA (Y/N)"
   },
   {
    "fieldname": "status",
@@ -104,12 +105,12 @@
   {
    "fieldname": "pre_bid_meeting",
    "fieldtype": "Date",
-   "label": " Pre Bid Meeting"
+   "label": "Pre Bid Meeting"
   },
   {
    "fieldname": "pqc_technical",
    "fieldtype": "Data",
-   "label": " PQC Technical"
+   "label": "PQC Technical"
   },
   {
    "fieldname": "pqc_commercial",
@@ -129,12 +130,12 @@
   {
    "fieldname": "dapl_pqc",
    "fieldtype": "Data",
-   "label": " DAPL PQC"
+   "label": "DAPL PQC"
   },
   {
    "fieldname": "pqc_shop_floor",
    "fieldtype": "Data",
-   "label": " PQC Shop Floor"
+   "label": "PQC Shop Floor"
   },
   {
    "fieldname": "section_break_dsuh",
@@ -143,7 +144,7 @@
   {
    "fieldname": "total_basic",
    "fieldtype": "Data",
-   "label": " Total Basic"
+   "label": "Total Basic"
   },
   {
    "fieldname": "column_break_vgep",
@@ -152,7 +153,7 @@
   {
    "fieldname": "total_gst",
    "fieldtype": "Data",
-   "label": " Total GST"
+   "label": "Total GST"
   },
   {
    "fieldname": "section_break_hnhz",
@@ -193,13 +194,21 @@
    "print_hide": 1,
    "read_only": 1,
    "search_index": 1
+  },
+  {
+   "default": "Pending",
+   "fieldname": "estimate_status",
+   "fieldtype": "Select",
+   "label": "Estimate Status",
+   "options": "Pending\nCreated\nCancelled",
+   "read_only": 1
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-10-10 15:10:52.874610",
+ "modified": "2025-10-14 13:14:05.675850",
  "modified_by": "Administrator",
  "module": "ERP Custom",
  "name": "Customer Request For Quotation",
