@@ -89,3 +89,29 @@ frappe.ui.form.on('Estimate', {
         }
     }
 });
+
+
+
+// frappe.ui.form.on('Estimate', {
+//     validate: function(frm) {
+//         let total_weight = 0;
+
+//         // Calculate each item’s weight
+//         if (frm.doc.items && frm.doc.items.length > 0) {
+//             frm.doc.items.forEach(row => {
+//                 if (row.length && row.width && row.thickness && row.density) {
+//                     // formula: (L * W * T * Density) / 1,000,000  (assuming mm & g/cm³ units)
+//                     row.quantity = (row.length * row.width * row.thickness * row.density) / 1000000;
+//                 } else {
+//                     row.quantity = 0;
+//                 }
+
+//                 total_weight += flt(row.quantity);
+//             });
+//         }
+
+//         // Set total weight on Estimate
+//         frm.set_value("total_weight", flt(total_weight, 2));
+//         frm.refresh_field("items");
+//     }
+// });
