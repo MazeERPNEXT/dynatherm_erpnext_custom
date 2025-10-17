@@ -1,27 +1,3 @@
-# import frappe
-# from erpnext.manufacturing.doctype.work_order.work_order import make_work_order as original_make_work_order
-
-# @frappe.whitelist()
-# def make_work_order(source_name, target_doc=None):
-#     work_order = original_make_work_order(source_name, target_doc)
-
-#     bom_items = frappe.get_all(
-#         "BOM Item",
-#         filters={"parent": source_name},
-#         fields=["item_name", "custom_length", "custom_width", "custom_thickness"]
-#     )
-
-#     for wo_item in work_order.items:
-#         for bom_item in bom_items:
-#             if bom_item.item_name == wo_item.item_name:
-#                 wo_item.custom_length = bom_item.custom_length or 0
-#                 wo_item.custom_width = bom_item.custom_width or 0
-#                 wo_item.custom_thickness = bom_item.custom_thickness or 0
-
-#     return work_order
-
-
-
 import json
 import frappe
 from frappe import _
@@ -59,7 +35,7 @@ def make_work_order(bom_no, item, qty=0, project=None, variant_items=None, use_m
 		wo_doc.qty = flt(qty)
 		wo_doc.get_items_and_operations_from_bom()
 
-		# ✅ Fetch the 3 custom values from BOM Item for this item
+		# Fetch the 3 custom values from BOM Item for this item
 		bom_item = frappe.db.get_value(
 			"BOM Item",
 			{"parent": bom_no, "item_code": item},
@@ -68,14 +44,12 @@ def make_work_order(bom_no, item, qty=0, project=None, variant_items=None, use_m
 		)
 
 		if bom_item:
-			# Apply to all matching required items
 			for req_item in wo_doc.required_items:
 				if req_item.item_code == item:
 					req_item.custom_length = bom_item.custom_length or 0
 					req_item.custom_width = bom_item.custom_width or 0
 					req_item.custom_thickness = bom_item.custom_thickness or 0
 
-	# Handle variant items if needed
 	if variant_items and not wo_doc.use_multi_level_bom:
 		add_variant_item(variant_items, wo_doc, bom_no, "required_items")
 
