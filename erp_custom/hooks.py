@@ -324,11 +324,11 @@ doctype_js = {
     "Item": "public/js/item.js",
     "BOM": "public/js/bom.js",
     "BOM Item": "public/js/bom_item.js",
-    "Work Order": "public/js/work_order_custom.js",
+    "Work Order": "public/js/work_order.js",
 }
 
 
 override_whitelisted_methods = {
     "erpnext.manufacturing.doctype.work_order.work_order.make_work_order":
-        "erp_custom.erp_custom.overrides.work_order.make_work_order_custom"
+        "erp_custom.erp_custom.overrides.work_order.make_work_order"
 }

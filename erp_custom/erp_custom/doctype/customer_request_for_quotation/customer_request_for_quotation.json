@@ -7,22 +7,45 @@
  "engine": "InnoDB",
  "field_order": [
   "section_break_fksx",
+  "title",
+  "naming_series",
   "crfq_id__tender_id",
+  "quotation_to",
   "purpose",
   "type",
   "tag",
-  "estimate_status",
+  "party_name",
+  "customer",
   "column_break_oqbn",
+  "date",
+  "valid_till",
   "parent_moc",
   "moc_config",
   "cdd_days",
   "ra_yn",
   "status",
-  "section_break_hnhz",
-  "table_lnid",
-  "section_break_prdk",
+  "column_break_1",
+  "order_type",
+  "company",
+  "estimate_status",
+  "has_unit_price_items",
+  "currency_and_price_list",
+  "currency",
+  "conversion_rate",
+  "column_break_2",
+  "price_list",
+  "price_list_currency",
+  "price_list_exchange_rate",
+  "ignore_pricing_rule",
+  "items",
+  "section_break_23",
+  "total_qty",
+  "total_net_weight",
+  "column_break_28",
+  "column_break_o4og",
+  "base_net_total",
+  "column_break_ajey",
   "table_kjma",
-  "section_break_drhd",
   "technical_column",
   "pqc_technical",
   "dapl_pqc",
@@ -30,14 +53,7 @@
   "pqc_commercial",
   "pqc_shop_floor",
   "financial_column",
-  "pqc_financial",
-  "pre_bid_meeting",
-  "section_break_dsuh",
-  "unit_basic",
-  "column_break_vgep",
-  "total_basic",
-  "total_gst",
-  "amended_from"
+  "pqc_financial"
  ],
  "fields": [
   {
@@ -94,20 +110,6 @@
    "label": "Status"
   },
   {
-   "fieldname": "unit_basic",
-   "fieldtype": "Data",
-   "label": "Unit Basic"
-  },
-  {
-   "fieldname": "section_break_drhd",
-   "fieldtype": "Section Break"
-  },
-  {
-   "fieldname": "pre_bid_meeting",
-   "fieldtype": "Date",
-   "label": "Pre Bid Meeting"
-  },
-  {
    "fieldname": "pqc_technical",
    "fieldtype": "Data",
    "label": "PQC Technical"
@@ -138,38 +140,6 @@
    "label": "PQC Shop Floor"
   },
   {
-   "fieldname": "section_break_dsuh",
-   "fieldtype": "Section Break"
-  },
-  {
-   "fieldname": "total_basic",
-   "fieldtype": "Data",
-   "label": "Total Basic"
-  },
-  {
-   "fieldname": "column_break_vgep",
-   "fieldtype": "Column Break"
-  },
-  {
-   "fieldname": "total_gst",
-   "fieldtype": "Data",
-   "label": "Total GST"
-  },
-  {
-   "fieldname": "section_break_hnhz",
-   "fieldtype": "Section Break"
-  },
-  {
-   "fieldname": "table_lnid",
-   "fieldtype": "Table",
-   "label": "Items",
-   "options": "Customer Request For Quotation Item"
-  },
-  {
-   "fieldname": "section_break_prdk",
-   "fieldtype": "Section Break"
-  },
-  {
    "fieldname": "table_kjma",
    "fieldtype": "Table",
    "label": "Customers",
@@ -186,29 +156,172 @@
    "label": "Financial"
   },
   {
-   "fieldname": "amended_from",
-   "fieldtype": "Link",
-   "label": "Amended From",
-   "no_copy": 1,
-   "options": "Customer Request For Quotation",
-   "print_hide": 1,
-   "read_only": 1,
-   "search_index": 1
-  },
-  {
    "default": "Pending",
    "fieldname": "estimate_status",
    "fieldtype": "Select",
    "label": "Estimate Status",
    "options": "Pending\nCreated\nCancelled",
    "read_only": 1
+  },
+  {
+   "fieldname": "date",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "label": "Date",
+   "reqd": 1
+  },
+  {
+   "fieldname": "order_type",
+   "fieldtype": "Select",
+   "label": "Order Type"
+  },
+  {
+   "fieldname": "quotation_to",
+   "fieldtype": "Select",
+   "label": "Quotation To",
+   "options": "DocType"
+  },
+  {
+   "fieldname": "customer",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Customer",
+   "reqd": 1
+  },
+  {
+   "default": "{customer_name}",
+   "fieldname": "title",
+   "fieldtype": "Data",
+   "hidden": 1,
+   "label": "Title",
+   "print_hide": 1
+  },
+  {
+   "fieldname": "naming_series",
+   "fieldtype": "Select",
+   "label": "Series",
+   "options": "SAL-QTN-.YYYY.-"
+  },
+  {
+   "fieldname": "valid_till",
+   "fieldtype": "Date",
+   "label": "Valid Till"
+  },
+  {
+   "fieldname": "company",
+   "fieldtype": "Data",
+   "label": "Company"
+  },
+  {
+   "bold": 1,
+   "fieldname": "party_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Party",
+   "options": "quotation_to",
+   "print_hide": 1,
+   "search_index": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "has_unit_price_items",
+   "fieldtype": "Check",
+   "hidden": 1,
+   "label": "Has Unit Price Items",
+   "no_copy": 1
+  },
+  {
+   "fieldname": "currency",
+   "fieldtype": "Link",
+   "label": "Currency",
+   "options": "Currency"
+  },
+  {
+   "fieldname": "column_break_o4og",
+   "fieldtype": "Column Break",
+   "label": "Total (Company Currency)"
+  },
+  {
+   "fieldname": "price_list",
+   "fieldtype": "Link",
+   "label": "Price List",
+   "options": "Price List"
+  },
+  {
+   "fieldname": "price_list_currency",
+   "fieldtype": "Link",
+   "label": "Price List Currency",
+   "options": "Currency"
+  },
+  {
+   "fieldname": "price_list_exchange_rate",
+   "fieldtype": "Float",
+   "label": "Price List Exchange Rate"
+  },
+  {
+   "default": "0",
+   "fieldname": "ignore_pricing_rule",
+   "fieldtype": "Check",
+   "label": "Ignore Pricing Rule"
+  },
+  {
+   "fieldname": "currency_and_price_list",
+   "fieldtype": "Section Break",
+   "label": "Currency and Price List",
+   "options": "fa fa-tag"
+  },
+  {
+   "fieldname": "column_break_1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "conversion_rate",
+   "fieldtype": "Float",
+   "label": "Exchange Rate"
+  },
+  {
+   "fieldname": "column_break_2",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "section_break_23",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "items",
+   "fieldtype": "Table",
+   "label": "Items",
+   "options": "Customer Request For Quotation Item"
+  },
+  {
+   "fieldname": "total_qty",
+   "fieldtype": "Float",
+   "label": "Total Quantity"
+  },
+  {
+   "fieldname": "total_net_weight",
+   "fieldtype": "Float",
+   "label": "Total Net Weight"
+  },
+  {
+   "fieldname": "column_break_28",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "base_net_total",
+   "fieldtype": "Data",
+   "label": "Net Total (Company Currency)"
+  },
+  {
+   "fieldname": "column_break_ajey",
+   "fieldtype": "Column Break"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-10-14 13:14:05.675850",
+ "modified": "2025-10-16 12:20:47.847512",
  "modified_by": "Administrator",
  "module": "ERP Custom",
  "name": "Customer Request For Quotation",
