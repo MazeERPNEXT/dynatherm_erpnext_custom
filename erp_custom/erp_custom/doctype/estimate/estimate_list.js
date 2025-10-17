@@ -1,4 +1,4 @@
-frappe.listview_settings["Quotation"] = {
+frappe.listview_settings["Estimate"] = {
 	add_fields: ["customer_name", "base_grand_total", "status", "company", "currency", "valid_till"],
 
 	onload: function (listview) {

@@ -3,26 +3,35 @@
  "allow_auto_repeat": 1,
  "allow_import": 1,
  "autoname": "naming_series:",
- "creation": "2013-05-24 19:29:08",
+ "creation": "2025-10-17 19:29:08",
  "doctype": "DocType",
  "document_type": "Document",
  "editable_grid": 1,
  "engine": "InnoDB",
  "field_order": [
   "customer_section",
+  "crfq__tender_id",
   "title",
   "naming_series",
   "quotation_to",
   "party_name",
   "customer_name",
+  "customer_part",
+  "customer_part_name",
+  "item_name",
+  "tag",
   "column_break_7",
-  "transaction_date",
-  "valid_till",
-  "column_break1",
   "order_type",
   "company",
+  "transaction_date",
   "has_unit_price_items",
   "amended_from",
+  "valid_till",
+  "section_break_jbwv",
+  "parent_moc",
+  "supplier_type",
+  "column_break_nkyn",
+  "supplier_cat",
   "currency_and_price_list",
   "currency",
   "conversion_rate",
@@ -197,12 +206,6 @@
    "in_global_search": 1,
    "label": "Customer Name",
    "read_only": 1
-  },
-  {
-   "fieldname": "column_break1",
-   "fieldtype": "Column Break",
-   "oldfieldtype": "Column Break",
-   "width": "50%"
   },
   {
    "fieldname": "amended_from",
@@ -1102,13 +1105,61 @@
    "fieldtype": "Data",
    "is_virtual": 1,
    "label": "Last Scanned Warehouse"
+  },
+  {
+   "fieldname": "section_break_jbwv",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "crfq__tender_id",
+   "fieldtype": "Data",
+   "label": "CRFQ / Tender ID"
+  },
+  {
+   "fieldname": "tag",
+   "fieldtype": "Data",
+   "label": "Tag"
+  },
+  {
+   "fieldname": "item_name",
+   "fieldtype": "Data",
+   "label": "Item Name"
+  },
+  {
+   "fieldname": "parent_moc",
+   "fieldtype": "Data",
+   "label": "Parent MoC"
+  },
+  {
+   "fieldname": "supplier_type",
+   "fieldtype": "Data",
+   "label": "Supplier Type"
+  },
+  {
+   "fieldname": "supplier_cat",
+   "fieldtype": "Data",
+   "label": "Supplier Cat"
+  },
+  {
+   "fieldname": "column_break_nkyn",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "customer_part",
+   "fieldtype": "Data",
+   "label": "Customer Part"
+  },
+  {
+   "fieldname": "customer_part_name",
+   "fieldtype": "Data",
+   "label": "Customer Part Name"
   }
  ],
  "icon": "fa fa-shopping-cart",
  "idx": 82,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-07-31 17:23:48.875382",
+ "modified": "2025-10-17 16:34:14.481232",
  "modified_by": "Administrator",
  "module": "ERP Custom",
  "name": "Estimate",
