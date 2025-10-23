@@ -44,6 +44,8 @@
   "scan_barcode",
   "last_scanned_warehouse",
   "items",
+  "section_break_sixs",
+  "estimated_raw_materials",
   "sec_break23",
   "total_qty",
   "total_net_weight",
@@ -1153,13 +1155,23 @@
    "fieldname": "customer_part_name",
    "fieldtype": "Data",
    "label": "Customer Part Name"
+  },
+  {
+   "fieldname": "section_break_sixs",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "estimated_raw_materials",
+   "fieldtype": "Table",
+   "label": "Estimated Raw Materials",
+   "options": "Estimated BOM Materials"
   }
  ],
  "icon": "fa fa-shopping-cart",
  "idx": 82,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-10-17 16:34:14.481232",
+ "modified": "2025-10-23 14:42:00.912824",
  "modified_by": "Administrator",
  "module": "ERP Custom",
  "name": "Estimate",
