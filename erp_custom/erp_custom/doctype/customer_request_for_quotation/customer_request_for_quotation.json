@@ -31,7 +31,6 @@
   "purpose",
   "type",
   "location",
-  "quantity",
   "tag",
   "parent_moc",
   "moc_config",
@@ -1145,11 +1144,6 @@
    "label": "Time"
   },
   {
-   "fieldname": "quantity",
-   "fieldtype": "Float",
-   "label": "Quantity"
-  },
-  {
    "fieldname": "tag",
    "fieldtype": "Data",
    "label": "Tag"
@@ -1239,7 +1233,7 @@
  "idx": 82,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-10-17 14:40:47.660459",
+ "modified": "2025-10-23 11:42:21.392156",
  "modified_by": "Administrator",
  "module": "ERP Custom",
  "name": "Customer Request For Quotation",
