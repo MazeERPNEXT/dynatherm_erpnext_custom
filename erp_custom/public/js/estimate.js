@@ -1,25 +1,25 @@
-frappe.ui.form.on('Estimate', {
-    validate: function(frm) {
-        recompute_total_weight(frm);
-    },
+// frappe.ui.form.on('Estimate', {
+//     validate: function(frm) {
+//         recompute_total_net_weight(frm);
+//     },
 
-    items_on_form_render: function(frm, cdt, cdn) {
-    }
-});
+//     items_on_form_render: function(frm, cdt, cdn) {
+//     }
+// });
 
-function recompute_total_weight(frm) {
-    let total = 0.0;
+// function recompute_total_net_weight(frm) {
+//     let total = 0.0;
 
-    if (frm.doc.items && frm.doc.items.length) {
-        frm.doc.items.forEach(r => {
-            const q = Number(r.quantity) || 0;
-            total += q;
-        });
-    }
+//     if (frm.doc.items && frm.doc.items.length) {
+//         frm.doc.items.forEach(r => {
+//             const q = Number(r.quantity) || 0;
+//             total += q;
+//         });
+//     }
 
-    // round to 4 or 2 decimals as you prefer
-    const total_rounded = Number(total.toFixed(4));
-    frm.set_value('total_weight', total_rounded);
-    // refresh parent field explicitly if needed
-    frm.refresh_field('total_weight');
-}
+//     const total_rounded = Number(total.toFixed(4));
+
+//     frm.set_value('total_net_weight', total_rounded);
+//     frm.refresh_field('total_net_weight');
+// }
+    

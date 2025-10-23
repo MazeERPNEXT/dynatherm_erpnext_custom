@@ -1,8 +1,8 @@
+// erp_custom/doctype/estimate/estimate.js
 // Copyright (c) 2015, Frappe Technologies Pvt. Ltd. and Contributors
 // License: GNU General Public License v3. See license.txt
 
-cur_frm.cscript.tax_table = "Sales Taxes and Charges";
-
+// Keep ERPNext controller setup (these rely on global erpnext namespace)
 erpnext.accounts.taxes.setup_tax_validations("Sales Taxes and Charges Template");
 erpnext.accounts.taxes.setup_tax_filters("Sales Taxes and Charges");
 erpnext.pre_sales.set_as_lost("Estimate");
@@ -10,76 +10,127 @@ erpnext.sales_common.setup_selling_controller();
 
 frappe.ui.form.on("Estimate", {
 	setup: function (frm) {
-		(frm.custom_make_buttons = {
+		frm.custom_make_buttons = {
 			"Sales Order": "Sales Order",
-		}),
-			frm.set_query("quotation_to", function () {
-				return {
-					filters: {
-						name: ["in", ["Customer", "Lead", "Prospect"]],
-					},
-				};
-			});
+		};
 
-		frm.set_df_property("packed_items", "cannot_add_rows", true);
-		frm.set_df_property("packed_items", "cannot_delete_rows", true);
-
-		frm.set_query("serial_and_batch_bundle", "packed_items", (doc, cdt, cdn) => {
-			let row = locals[cdt][cdn];
+		frm.set_query("quotation_to", function () {
 			return {
 				filters: {
-					item_code: row.item_code,
-					voucher_type: doc.doctype,
-					voucher_no: ["in", [doc.name, ""]],
-					is_cancelled: 0,
+					name: ["in", ["Customer", "Lead", "Prospect"]],
 				},
 			};
 		});
 
+		// packed_items property (if present)
+		frm.set_df_property("packed_items", "cannot_add_rows", true);
+		frm.set_df_property("packed_items", "cannot_delete_rows", true);
+
+		// Indicator formatter example (keeps original behaviour)
 		frm.set_indicator_formatter("item_code", function (doc) {
 			return !doc.qty && frm.doc.has_unit_price_items ? "yellow" : "";
 		});
 	},
 
 	refresh: function (frm) {
+		// preserve existing label/dynamic behaviour
 		frm.trigger("set_label");
 		frm.trigger("set_dynamic_field_label");
 
-		if (frm.doc.docstatus === 0) {
-			erpnext.set_unit_price_items_note(frm);
-		}
-
-		let sbb_field = frm.get_docfield("packed_items", "serial_and_batch_bundle");
-		if (sbb_field) {
-			sbb_field.get_route_options_for_new_doc = (row) => {
-				return {
-					item_code: row.doc.item_code,
-					warehouse: row.doc.warehouse,
-					voucher_type: frm.doc.doctype,
-				};
-			};
-		}
+		// Recompute totals on refresh so Draft view also shows values
+		recompute_total(frm);
+		recompute_total_net_weight(frm);
 	},
 
 	quotation_to: function (frm) {
 		frm.trigger("set_label");
 		frm.trigger("toggle_reqd_lead_customer");
 		frm.trigger("set_dynamic_field_label");
-		// frm.set_value("party_name", ""); // removed to set party_name from url for crm integration
 		frm.set_value("customer_name", "");
 	},
 
 	set_label: function (frm) {
-		frm.fields_dict.customer_address.set_label(__(frm.doc.quotation_to + " Address"));
+		if (frm.fields_dict && frm.fields_dict.customer_address) {
+			frm.fields_dict.customer_address.set_label(__(frm.doc.quotation_to + " Address"));
+		}
 	},
+
+	// Child table add/remove events for estimated_bom_materials
+	estimated_bom_materials_add: function (frm, cdt, cdn) {
+		recompute_total(frm);
+	},
+	estimated_bom_materials_remove: function (frm, cdt, cdn) {
+		recompute_total(frm);
+	},
+
+	// When parent is being saved/validated, ensure totals are correct
+	validate: function (frm) {
+		recompute_total(frm);
+		recompute_total_net_weight(frm);
+	}
 });
+
+
+function recompute_total(frm) {
+	let total = 0.0;
+
+	if (frm.doc.estimated_bom_materials && frm.doc.estimated_bom_materials.length) {
+		frm.doc.estimated_bom_materials.forEach(row => {
+			// row.amount should be numeric; safely coerce
+			total += Number(row.amount) || 0;
+		});
+	}
+
+	// round to 2 decimals
+	const total_rounded = Number(total.toFixed(2));
+
+	// only set & refresh if value changed (minimize churn)
+	if (frm.doc.total !== total_rounded) {
+		frm.set_value('total', total_rounded);
+		frm.refresh_field('total');
+	}
+}
+
+function recompute_total_net_weight(frm) {
+	let total = 0.0;
+
+	if (frm.doc.items && frm.doc.items.length) {
+		frm.doc.items.forEach(row => {
+			const item_weight = (row.total_weight !== undefined && row.total_weight !== null)
+				? Number(row.total_weight)
+				: Number(row.qty || 0);
+			total += (isNaN(item_weight) ? 0 : item_weight);
+		});
+	}
+
+	const total_rounded = Number(total.toFixed(4));
+
+	if (frm.doc.total_net_weight !== total_rounded) {
+		frm.set_value('total_net_weight', total_rounded);
+		frm.refresh_field('total_net_weight');
+	}
+}
+
+
+frappe.ui.form.on("Estimated BOM Materials", {
+	amount: function(frm, cdt, cdn) {
+		recompute_total(frm);
+	}
+});
+
+frappe.ui.form.on("Estimate Item", {
+	total_weight: function(frm, cdt, cdn) {
+		recompute_total_net_weight(frm);
+	},
+	qty: function(frm, cdt, cdn) {
+		recompute_total_net_weight(frm);
+	}
+});
+
 
 erpnext.selling.QuotationController = class QuotationController extends erpnext.selling.SellingController {
 	onload(doc, dt, dn) {
 		super.onload(doc, dt, dn);
-
-		// TODO: think of better way to do this
-		// this.frm.trigger("disable_customer_if_creating_from_opportunity");
 	}
 	party_name() {
 		var me = this;
@@ -204,7 +255,6 @@ erpnext.selling.QuotationController = class QuotationController extends erpnext.
 	toggle_reqd_lead_customer() {
 		var me = this;
 
-		// to overwrite the customer_filter trigger from queries.js
 		this.frm.toggle_reqd("party_name", this.frm.doc.quotation_to);
 		this.frm.set_query("customer_address", this.address_query);
 		this.frm.set_query("shipping_address_name", this.address_query);
@@ -223,186 +273,16 @@ erpnext.selling.QuotationController = class QuotationController extends erpnext.
 			},
 		};
 	}
-
-	validate_company_and_party(party_field) {
-		if (!this.frm.doc.quotation_to) {
-			frappe.msgprint(
-				__("Please select a value for {0} quotation_to {1}", [
-					this.frm.doc.doctype,
-					this.frm.doc.name,
-				])
-			);
-			return false;
-		} else if (this.frm.doc.quotation_to == "Lead") {
-			return true;
-		} else {
-			return super.validate_company_and_party(party_field);
-		}
-	}
-
-	get_lead_details() {
-		var me = this;
-		if (!this.frm.doc.quotation_to === "Lead") {
-			return;
-		}
-
-		frappe.call({
-			method: "erpnext.crm.doctype.lead.lead.get_lead_details",
-			args: {
-				lead: this.frm.doc.party_name,
-				posting_date: this.frm.doc.transaction_date,
-				company: this.frm.doc.company,
-			},
-			callback: function (r) {
-				if (r.message) {
-					me.frm.updating_party_details = true;
-					me.frm.set_value(r.message);
-					me.frm.refresh();
-					me.frm.updating_party_details = false;
-				}
-			},
-		});
-	}
-
-	show_alternative_items_dialog() {
-		let me = this;
-
-		const table_fields = [
-			{
-				fieldtype: "Data",
-				fieldname: "name",
-				label: __("Name"),
-				read_only: 1,
-			},
-			{
-				fieldtype: "Link",
-				fieldname: "item_code",
-				options: "Item",
-				label: __("Item Code"),
-				read_only: 1,
-				in_list_view: 1,
-				columns: 2,
-				formatter: (value, df, options, doc) => {
-					return doc.is_alternative ? `<span class="indicator yellow">${value}</span>` : value;
-				},
-			},
-			{
-				fieldtype: "Text Editor",
-				fieldname: "description",
-				label: __("Description"),
-				in_list_view: 1,
-				read_only: 1,
-			},
-			{
-				fieldtype: "Currency",
-				fieldname: "amount",
-				label: __("Amount"),
-				options: "currency",
-				in_list_view: 1,
-				read_only: 1,
-			},
-			{
-				fieldtype: "Check",
-				fieldname: "is_alternative",
-				label: __("Is Alternative"),
-				read_only: 1,
-			},
-		];
-
-		this.data = this.frm.doc.items
-			.filter((item) => item.is_alternative || item.has_alternative_item)
-			.map((item) => {
-				return {
-					name: item.name,
-					item_code: item.item_code,
-					description: item.description,
-					amount: item.amount,
-					is_alternative: item.is_alternative,
-				};
-			});
-
-		const dialog = new frappe.ui.Dialog({
-			title: __("Select Alternative Items for Sales Order"),
-			fields: [
-				{
-					fieldname: "info",
-					fieldtype: "HTML",
-					read_only: 1,
-				},
-				{
-					fieldname: "alternative_items",
-					fieldtype: "Table",
-					cannot_add_rows: true,
-					cannot_delete_rows: true,
-					in_place_edit: true,
-					reqd: 1,
-					data: this.data,
-					description: __("Select an item from each set to be used in the Sales Order."),
-					get_data: () => {
-						return this.data;
-					},
-					fields: table_fields,
-				},
-			],
-			primary_action: function () {
-				frappe.model.open_mapped_doc({
-					method: "erpnext.selling.doctype.quotation.quotation.make_sales_order",
-					frm: me.frm,
-					args: {
-						selected_items: dialog.fields_dict.alternative_items.grid.get_selected_children(),
-					},
-				});
-				dialog.hide();
-			},
-			primary_action_label: __("Continue"),
-		});
-
-		dialog.fields_dict.info.$wrapper.html(
-			`<p class="small text-muted">
-				<span class="indicator yellow"></span>
-				${__("Alternative Items")}
-			</p>`
-		);
-		dialog.show();
-	}
-
-	currency() {
-		super.currency();
-		let me = this;
-		const company_currency = this.get_company_currency();
-		if (this.frm.doc.currency && this.frm.doc.currency !== company_currency) {
-			this.get_exchange_rate(
-				this.frm.doc.transaction_date,
-				this.frm.doc.currency,
-				company_currency,
-				function (exchange_rate) {
-					if (exchange_rate != me.frm.doc.conversion_rate) {
-						me.set_margin_amount_based_on_currency(exchange_rate);
-						me.set_actual_charges_based_on_currency(exchange_rate);
-						me.frm.set_value("conversion_rate", exchange_rate);
-					}
-				}
-			);
-		}
-	}
-
-	disable_customer_if_creating_from_opportunity(doc) {
-		if (doc.opportunity) {
-			this.frm.set_df_property("party_name", "read_only", 1);
-		}
-	}
 };
 
 cur_frm.script_manager.make(erpnext.selling.QuotationController);
 
-frappe.ui.form.on(
-	"Estimate Item",
-	"items_on_form_rendered",
-	"packed_items_on_form_rendered",
-	function (frm, cdt, cdn) {
-		// enable tax_amount field if Actual
+// small hooks for legacy events (no-op placeholders)
+frappe.ui.form.on("Estimate Item", {
+	items_on_form_rendered: function (frm, cdt, cdn) {
+		// optional: logic for item table rendering
 	}
-);
+});
 
 frappe.ui.form.on("Estimate Item", "stock_balance", function (frm, cdt, cdn) {
 	var d = frappe.model.get_doc(cdt, cdn);

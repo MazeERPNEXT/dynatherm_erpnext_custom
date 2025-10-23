@@ -45,7 +45,7 @@
   "last_scanned_warehouse",
   "items",
   "section_break_sixs",
-  "estimated_raw_materials",
+  "estimated_bom_materials",
   "sec_break23",
   "total_qty",
   "total_net_weight",
@@ -1161,9 +1161,9 @@
    "fieldtype": "Section Break"
   },
   {
-   "fieldname": "estimated_raw_materials",
+   "fieldname": "estimated_bom_materials",
    "fieldtype": "Table",
-   "label": "Estimated Raw Materials",
+   "label": "Estimated BOM Materials",
    "options": "Estimated BOM Materials"
   }
  ],
@@ -1171,7 +1171,7 @@
  "idx": 82,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-10-23 14:42:00.912824",
+ "modified": "2025-10-23 14:50:06.897143",
  "modified_by": "Administrator",
  "module": "ERP Custom",
  "name": "Estimate",
