@@ -1,287 +1,242 @@
 // erp_custom/doctype/estimate/estimate.js
-// Copyright (c) 2015, Frappe Technologies Pvt. Ltd. and Contributors
+// Copyright (c) 2015, Frappe Technologies Pvt. Ltd.
 // License: GNU General Public License v3. See license.txt
 
-// Keep ERPNext controller setup (these rely on global erpnext namespace)
-erpnext.accounts.taxes.setup_tax_validations("Sales Taxes and Charges Template");
-erpnext.accounts.taxes.setup_tax_filters("Sales Taxes and Charges");
-erpnext.pre_sales.set_as_lost("Estimate");
-erpnext.sales_common.setup_selling_controller();
-
-frappe.ui.form.on("Estimate", {
-	setup: function (frm) {
-		frm.custom_make_buttons = {
-			"Sales Order": "Sales Order",
-		};
-
-		frm.set_query("quotation_to", function () {
-			return {
-				filters: {
-					name: ["in", ["Customer", "Lead", "Prospect"]],
-				},
-			};
-		});
-
-		// packed_items property (if present)
-		frm.set_df_property("packed_items", "cannot_add_rows", true);
-		frm.set_df_property("packed_items", "cannot_delete_rows", true);
-
-		// Indicator formatter example (keeps original behaviour)
-		frm.set_indicator_formatter("item_code", function (doc) {
-			return !doc.qty && frm.doc.has_unit_price_items ? "yellow" : "";
-		});
-	},
-
-	refresh: function (frm) {
-		// preserve existing label/dynamic behaviour
-		frm.trigger("set_label");
-		frm.trigger("set_dynamic_field_label");
-
-		// Recompute totals on refresh so Draft view also shows values
-		recompute_total(frm);
-		recompute_total_net_weight(frm);
-	},
-
-	quotation_to: function (frm) {
-		frm.trigger("set_label");
-		frm.trigger("toggle_reqd_lead_customer");
-		frm.trigger("set_dynamic_field_label");
-		frm.set_value("customer_name", "");
-	},
-
-	set_label: function (frm) {
-		if (frm.fields_dict && frm.fields_dict.customer_address) {
-			frm.fields_dict.customer_address.set_label(__(frm.doc.quotation_to + " Address"));
-		}
-	},
-
-	// Child table add/remove events for estimated_bom_materials
-	estimated_bom_materials_add: function (frm, cdt, cdn) {
-		recompute_total(frm);
-	},
-	estimated_bom_materials_remove: function (frm, cdt, cdn) {
-		recompute_total(frm);
-	},
-
-	// When parent is being saved/validated, ensure totals are correct
-	validate: function (frm) {
-		recompute_total(frm);
-		recompute_total_net_weight(frm);
-	}
-});
-
-
-function recompute_total(frm) {
-	let total = 0.0;
-
-	if (frm.doc.estimated_bom_materials && frm.doc.estimated_bom_materials.length) {
-		frm.doc.estimated_bom_materials.forEach(row => {
-			// row.amount should be numeric; safely coerce
-			total += Number(row.amount) || 0;
-		});
-	}
-
-	// round to 2 decimals
-	const total_rounded = Number(total.toFixed(2));
-
-	// only set & refresh if value changed (minimize churn)
-	if (frm.doc.total !== total_rounded) {
-		frm.set_value('total', total_rounded);
-		frm.refresh_field('total');
+// -------------------- ERPNext Controller Setup --------------------
+if (typeof erpnext !== "undefined" && erpnext) {
+	try {
+		erpnext.accounts.taxes.setup_tax_validations("Sales Taxes and Charges Template");
+		erpnext.accounts.taxes.setup_tax_filters("Sales Taxes and Charges");
+		erpnext.pre_sales.set_as_lost("Estimate");
+		erpnext.sales_common.setup_selling_controller();
+	} catch (e) {
+		console.warn("erpnext integrations skipped:", e);
 	}
 }
 
+// -------------------- Helper Functions --------------------
+function safeNumber(v) {
+	if (v === null || v === undefined || v === "") return 0;
+	if (typeof v === "string") v = v.replace(/,/g, "");
+	const n = Number(v);
+	return isNaN(n) ? 0 : n;
+}
+
+// -------------------- Compute Total --------------------
+function recompute_total(frm) {
+	let bom_total = 0.0;
+
+	// Calculate only Estimated BOM Materials total
+	if (frm.doc.estimated_bom_materials && Array.isArray(frm.doc.estimated_bom_materials)) {
+		frm.doc.estimated_bom_materials.forEach(row => {
+			bom_total += safeNumber(row.amount);
+		});
+	}
+
+	// Set parent total = BOM total only
+	const total = Number(bom_total.toFixed(2));
+	if (frm.doc.total !== total) {
+		frm.set_value("total", total);
+		frm.refresh_field("total");
+	}
+
+	// Automatically set BOM total → first Estimate Item rate
+	update_first_item_rate_only(frm, total);
+}
+
+// -------------------- Sync BOM Total to First Item Rate Only --------------------
+function update_first_item_rate_only(frm, total) {
+	if (!frm.doc.items || frm.doc.items.length === 0) return;
+
+	const first = frm.doc.items[0];
+	const cdt = first.doctype || "Estimate Item";
+	const cdn = first.name;
+
+	const qty = safeNumber(first.qty) || 1;
+	const rate = Number((total / qty).toFixed(2));
+
+	// Set rate only (don’t recalc amount separately)
+	frappe.model.set_value(cdt, cdn, "rate", rate);
+
+	// Just refresh UI for clarity
+	frm.refresh_field("items");
+}
+
+// -------------------- Compute Total Net Weight --------------------
 function recompute_total_net_weight(frm) {
 	let total = 0.0;
 
-	if (frm.doc.items && frm.doc.items.length) {
+	if (frm.doc.items && Array.isArray(frm.doc.items)) {
 		frm.doc.items.forEach(row => {
-			const item_weight = (row.total_weight !== undefined && row.total_weight !== null)
-				? Number(row.total_weight)
-				: Number(row.qty || 0);
-			total += (isNaN(item_weight) ? 0 : item_weight);
+			const weight =
+				row.total_weight !== undefined && row.total_weight !== null && row.total_weight !== ""
+					? safeNumber(row.total_weight)
+					: safeNumber(row.qty);
+			total += weight;
 		});
 	}
 
 	const total_rounded = Number(total.toFixed(4));
 
 	if (frm.doc.total_net_weight !== total_rounded) {
-		frm.set_value('total_net_weight', total_rounded);
-		frm.refresh_field('total_net_weight');
+		frm.set_value("total_net_weight", total_rounded);
+		frm.refresh_field("total_net_weight");
 	}
 }
 
+// -------------------- Estimate Form Hooks --------------------
+frappe.ui.form.on("Estimate", {
+	setup(frm) {
+		frm.custom_make_buttons = { "Sales Order": "Sales Order" };
+
+		frm.set_query("quotation_to", () => ({
+			filters: { name: ["in", ["Customer", "Lead", "Prospect"]] },
+		}));
+
+		try {
+			frm.set_df_property("packed_items", "cannot_add_rows", true);
+			frm.set_df_property("packed_items", "cannot_delete_rows", true);
+		} catch (e) {}
+
+		frm.set_indicator_formatter &&
+			frm.set_indicator_formatter("item_code", (doc) =>
+				!doc.qty && frm.doc.has_unit_price_items ? "yellow" : ""
+			);
+	},
+
+	refresh(frm) {
+		frm.trigger("set_label");
+		frm.trigger("set_dynamic_field_label");
+
+		recompute_total(frm);
+		recompute_total_net_weight(frm);
+
+		if (frm.doc.docstatus == 1) {
+			cur_frm?.page?.set_inner_btn_group_as_primary?.(__("Create"));
+		}
+	},
+
+	quotation_to(frm) {
+		frm.trigger("set_label");
+		frm.trigger("toggle_reqd_lead_customer");
+		frm.trigger("set_dynamic_field_label");
+		frm.set_value("customer_name", "");
+	},
+
+	set_label(frm) {
+		if (frm.fields_dict && frm.fields_dict.customer_address) {
+			frm.fields_dict.customer_address.set_label(__(frm.doc.quotation_to + " Address"));
+		}
+	},
+
+	estimated_bom_materials_add(frm) {
+		recompute_total(frm);
+	},
+	estimated_bom_materials_remove(frm) {
+		recompute_total(frm);
+	},
+
+	validate(frm) {
+		recompute_total(frm);
+		recompute_total_net_weight(frm);
+	},
+
+	items_add(frm) {
+		recompute_total(frm);
+		recompute_total_net_weight(frm);
+	},
+
+	items_remove(frm) {
+		recompute_total(frm);
+		recompute_total_net_weight(frm);
+	},
+});
+
+// -------------------- Child Table Hooks --------------------
+frappe.ui.form.on("Estimate Item", {
+	rate(frm, cdt, cdn) {
+		const row = locals[cdt][cdn];
+		const qty = safeNumber(row.qty);
+		const amount = Number((qty * safeNumber(row.rate)).toFixed(2));
+		frappe.model.set_value(cdt, cdn, "amount", amount, () => recompute_total(frm));
+	},
+
+	qty(frm, cdt, cdn) {
+		const row = locals[cdt][cdn];
+		const amount = Number((safeNumber(row.qty) * safeNumber(row.rate)).toFixed(2));
+		frappe.model.set_value(cdt, cdn, "amount", amount, () => {
+			recompute_total(frm);
+			recompute_total_net_weight(frm);
+		});
+	},
+
+	total_weight(frm, cdt, cdn) {
+		recompute_total_net_weight(frm);
+	}
+});
 
 frappe.ui.form.on("Estimated BOM Materials", {
-	amount: function(frm, cdt, cdn) {
+	amount(frm, cdt, cdn) {
+		recompute_total(frm);
+	},
+	rate(frm, cdt, cdn) {
+		const row = locals[cdt][cdn];
+		row.amount = Number((safeNumber(row.qty) * safeNumber(row.rate)).toFixed(2));
+		frm.refresh_field("estimated_bom_materials");
+		recompute_total(frm);
+	},
+	qty(frm, cdt, cdn) {
+		const row = locals[cdt][cdn];
+		row.amount = Number((safeNumber(row.qty) * safeNumber(row.rate)).toFixed(2));
+		frm.refresh_field("estimated_bom_materials");
 		recompute_total(frm);
 	}
 });
 
-frappe.ui.form.on("Estimate Item", {
-	total_weight: function(frm, cdt, cdn) {
-		recompute_total_net_weight(frm);
-	},
-	qty: function(frm, cdt, cdn) {
-		recompute_total_net_weight(frm);
-	}
-});
-
-
-erpnext.selling.QuotationController = class QuotationController extends erpnext.selling.SellingController {
-	onload(doc, dt, dn) {
-		super.onload(doc, dt, dn);
-	}
-	party_name() {
-		var me = this;
-		erpnext.utils.get_party_details(this.frm, null, null, function () {
-			me.apply_price_list();
-		});
-
-		if (me.frm.doc.quotation_to == "Lead" && me.frm.doc.party_name) {
-			me.frm.trigger("get_lead_details");
-		}
-	}
-	refresh(doc, dt, dn) {
-		super.refresh(doc, dt, dn);
-		frappe.dynamic_link = {
-			doc: this.frm.doc,
-			fieldname: "party_name",
-			doctype: doc.quotation_to,
-		};
-
-		var me = this;
-
-		if (doc.__islocal && !doc.valid_till) {
-			if (frappe.boot.sysdefaults.quotation_valid_till) {
-				this.frm.set_value(
-					"valid_till",
-					frappe.datetime.add_days(
-						doc.transaction_date,
-						frappe.boot.sysdefaults.quotation_valid_till
-					)
-				);
-			} else {
-				this.frm.set_value("valid_till", frappe.datetime.add_months(doc.transaction_date, 1));
-			}
+// -------------------- ERPNext Controller Extension --------------------
+if (typeof erpnext !== "undefined" && erpnext) {
+	erpnext.selling.QuotationController = class QuotationController extends erpnext.selling.SellingController {
+		onload(doc, dt, dn) {
+			super.onload(doc, dt, dn);
 		}
 
-		if (doc.docstatus == 1 && !["Lost", "Ordered"].includes(doc.status)) {
-			if (
-				frappe.model.can_create("Sales Order") &&
-				(frappe.boot.sysdefaults.allow_sales_order_creation_for_expired_quotation ||
-					!doc.valid_till ||
-					frappe.datetime.get_diff(doc.valid_till, frappe.datetime.get_today()) >= 0)
-			) {
-				this.frm.add_custom_button(__("Sales Order"), () => this.make_sales_order(), __("Create"));
-			}
+		refresh(doc, dt, dn) {
+			super.refresh(doc, dt, dn);
+			this.toggle_reqd_lead_customer && this.toggle_reqd_lead_customer();
+		}
 
-			if (doc.status !== "Ordered" && this.frm.has_perm("write")) {
-				this.frm.add_custom_button(__("Set as Lost"), () => {
-					this.frm.trigger("set_as_lost_dialog");
+		make_sales_order() {
+			let has_alt = this.frm.doc.items.some((i) => i.is_alternative);
+			if (has_alt) this.show_alternative_items_dialog();
+			else
+				frappe.model.open_mapped_doc({
+					method: "erpnext.selling.doctype.quotation.quotation.make_sales_order",
+					frm: this.frm,
 				});
+		}
+
+		set_dynamic_field_label() {
+			if (this.frm.doc.quotation_to == "Customer") {
+				this.frm.set_df_property("party_name", "label", "Customer");
+				this.frm.fields_dict.party_name.get_query = null;
+			} else if (this.frm.doc.quotation_to == "Lead") {
+				this.frm.set_df_property("party_name", "label", "Lead");
+				this.frm.fields_dict.party_name.get_query = () => ({
+					query: "erpnext.controllers.queries.lead_query",
+				});
+			} else if (this.frm.doc.quotation_to == "Prospect") {
+				this.frm.set_df_property("party_name", "label", "Prospect");
+				this.frm.fields_dict.party_name.get_query = null;
 			}
-
-			cur_frm.page.set_inner_btn_group_as_primary(__("Create"));
 		}
+	};
 
-		if (this.frm.doc.docstatus === 0 && frappe.model.can_read("Opportunity")) {
-			this.frm.add_custom_button(
-				__("Opportunity"),
-				function () {
-					erpnext.utils.map_current_doc({
-						method: "erpnext.crm.doctype.opportunity.opportunity.make_quotation",
-						source_doctype: "Opportunity",
-						target: me.frm,
-						setters: [
-							{
-								label: "Party",
-								fieldname: "party_name",
-								fieldtype: "Link",
-								options: me.frm.doc.quotation_to,
-								default: me.frm.doc.party_name || undefined,
-							},
-							{
-								label: "Opportunity Type",
-								fieldname: "opportunity_type",
-								fieldtype: "Link",
-								options: "Opportunity Type",
-								default: me.frm.doc.order_type || undefined,
-							},
-						],
-						get_query_filters: {
-							status: ["not in", ["Lost", "Closed"]],
-							company: me.frm.doc.company,
-						},
-					});
-				},
-				__("Get Items From"),
-				"btn-default"
-			);
-		}
+	cur_frm.script_manager.make(erpnext.selling.QuotationController);
+}
 
-		this.toggle_reqd_lead_customer();
-	}
-
-	make_sales_order() {
-		var me = this;
-
-		let has_alternative_item = this.frm.doc.items.some((item) => item.is_alternative);
-		if (has_alternative_item) {
-			this.show_alternative_items_dialog();
-		} else {
-			frappe.model.open_mapped_doc({
-				method: "erpnext.selling.doctype.quotation.quotation.make_sales_order",
-				frm: me.frm,
-			});
-		}
-	}
-
-	set_dynamic_field_label() {
-		if (this.frm.doc.quotation_to == "Customer") {
-			this.frm.set_df_property("party_name", "label", "Customer");
-			this.frm.fields_dict.party_name.get_query = null;
-		} else if (this.frm.doc.quotation_to == "Lead") {
-			this.frm.set_df_property("party_name", "label", "Lead");
-			this.frm.fields_dict.party_name.get_query = function () {
-				return { query: "erpnext.controllers.queries.lead_query" };
-			};
-		} else if (this.frm.doc.quotation_to == "Prospect") {
-			this.frm.set_df_property("party_name", "label", "Prospect");
-			this.frm.fields_dict.party_name.get_query = null;
-		}
-	}
-
-	toggle_reqd_lead_customer() {
-		var me = this;
-
-		this.frm.toggle_reqd("party_name", this.frm.doc.quotation_to);
-		this.frm.set_query("customer_address", this.address_query);
-		this.frm.set_query("shipping_address_name", this.address_query);
-	}
-
-	tc_name() {
-		this.get_terms();
-	}
-
-	address_query(doc) {
-		return {
-			query: "frappe.contacts.doctype.address.address.address_query",
-			filters: {
-				link_doctype: frappe.dynamic_link.doctype,
-				link_name: doc.party_name,
-			},
-		};
-	}
-};
-
-cur_frm.script_manager.make(erpnext.selling.QuotationController);
-
-// small hooks for legacy events (no-op placeholders)
+// -------------------- Legacy / Optional Hooks --------------------
 frappe.ui.form.on("Estimate Item", {
-	items_on_form_rendered: function (frm, cdt, cdn) {
-		// optional: logic for item table rendering
-	}
+	items_on_form_rendered(frm, cdt, cdn) {},
 });
 
 frappe.ui.form.on("Estimate Item", "stock_balance", function (frm, cdt, cdn) {
