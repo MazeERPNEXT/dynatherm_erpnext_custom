@@ -30,10 +30,10 @@ class Estimate(SellingController):
 		)
 		from erpnext.crm.doctype.competitor_detail.competitor_detail import CompetitorDetail
 		from erpnext.selling.doctype.quotation_item.quotation_item import QuotationItem
-		from erpnext.setup.doctype.quotation_lost_reason_detail.quotation_lost_reason_detail import (
-			QuotationLostReasonDetail,
-		)
-		from erpnext.stock.doctype.packed_item.packed_item import PackedItem
+		# from erpnext.setup.doctype.quotation_lost_reason_detail.quotation_lost_reason_detail import (
+		# 	QuotationLostReasonDetail,
+		# )
+		# from erpnext.stock.doctype.packed_item.packed_item import PackedItem
 
 		additional_discount_percentage: DF.Float
 		address_display: DF.SmallText | None
@@ -76,15 +76,15 @@ class Estimate(SellingController):
 		items: DF.Table[QuotationItem]
 		language: DF.Data | None
 		letter_head: DF.Link | None
-		lost_reasons: DF.TableMultiSelect[QuotationLostReasonDetail]
+		# lost_reasons: DF.TableMultiSelect[QuotationLostReasonDetail]
 		named_place: DF.Data | None
 		naming_series: DF.Literal["SAL-QTN-.YYYY.-"]
 		net_total: DF.Currency
 		opportunity: DF.Link | None
 		order_lost_reason: DF.SmallText | None
-		order_type: DF.Literal["", "Sales", "Maintenance", "Shopping Cart"]
+		# order_type: DF.Literal["", "Sales", "Maintenance", "Shopping Cart"]
 		other_charges_calculation: DF.TextEditor | None
-		packed_items: DF.Table[PackedItem]
+		# packed_items: DF.Table[PackedItem]
 		party_name: DF.DynamicLink | None
 		payment_schedule: DF.Table[PaymentSchedule]
 		payment_terms_template: DF.Link | None

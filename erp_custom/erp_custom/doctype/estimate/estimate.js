@@ -7,8 +7,8 @@ if (typeof erpnext !== "undefined" && erpnext) {
 	try {
 		erpnext.accounts.taxes.setup_tax_validations("Sales Taxes and Charges Template");
 		erpnext.accounts.taxes.setup_tax_filters("Sales Taxes and Charges");
-		erpnext.pre_sales.set_as_lost("Estimate");
-		erpnext.sales_common.setup_selling_controller();
+		// erpnext.pre_sales.set_as_lost("Estimate");
+		// erpnext.sales_common.setup_selling_controller();
 	} catch (e) {
 		console.warn("erpnext integrations skipped:", e);
 	}
@@ -26,21 +26,18 @@ function safeNumber(v) {
 function recompute_total(frm) {
 	let bom_total = 0.0;
 
-	// Calculate only Estimated BOM Materials total
 	if (frm.doc.estimated_bom_materials && Array.isArray(frm.doc.estimated_bom_materials)) {
 		frm.doc.estimated_bom_materials.forEach(row => {
-			bom_total += safeNumber(row.amount);
+			bom_total += safeNumber(row.amount); // amount already includes margin
 		});
 	}
 
-	// Set parent total = BOM total only
 	const total = Number(bom_total.toFixed(2));
 	if (frm.doc.total !== total) {
 		frm.set_value("total", total);
 		frm.refresh_field("total");
 	}
 
-	// Automatically set BOM total → first Estimate Item rate
 	update_first_item_rate_only(frm, total);
 }
 
@@ -53,13 +50,26 @@ function update_first_item_rate_only(frm, total) {
 	const cdn = first.name;
 
 	const qty = safeNumber(first.qty) || 1;
-	const rate = Number((total / qty).toFixed(2));
+	const computed_rate = Number((total / qty).toFixed(2));
 
-	// Set rate only (don’t recalc amount separately)
-	frappe.model.set_value(cdt, cdn, "rate", rate);
-
-	// Just refresh UI for clarity
-	frm.refresh_field("items");
+	// Only override if current rate is less than computed_rate
+	const current_rate = safeNumber(first.rate);
+	if (current_rate < computed_rate) {
+		// set the rate on the first item to computed_rate
+		frappe.model.set_value(cdt, cdn, "rate", computed_rate, () => {
+			// ensure amount and total are consistent after changing the rate
+			const updated_row = locals[cdt][cdn];
+			const updated_qty = safeNumber(updated_row.qty) || qty;
+			const updated_amount = Number((updated_qty * safeNumber(computed_rate)).toFixed(2));
+			frappe.model.set_value(cdt, cdn, "amount", updated_amount, () => {
+				frm.refresh_field("items");
+				// recompute total (though recompute_total will be called by amount setter callback)
+				recompute_total(frm);
+			});
+		});
+	} else {
+		// current rate is equal or greater - do nothing
+	}
 }
 
 // -------------------- Compute Total Net Weight --------------------
@@ -78,10 +88,6 @@ function recompute_total_net_weight(frm) {
 
 	const total_rounded = Number(total.toFixed(4));
 
-	if (frm.doc.total_net_weight !== total_rounded) {
-		frm.set_value("total_net_weight", total_rounded);
-		frm.refresh_field("total_net_weight");
-	}
 }
 
 // -------------------- Estimate Form Hooks --------------------
@@ -152,18 +158,56 @@ frappe.ui.form.on("Estimate", {
 	},
 });
 
-// -------------------- Child Table Hooks --------------------
+// -------------------- Estimate Item Hooks --------------------
+// We modify rate handler so that if user edits rate of first item and sets lower than computed minimum, we reject it.
 frappe.ui.form.on("Estimate Item", {
 	rate(frm, cdt, cdn) {
 		const row = locals[cdt][cdn];
-		const qty = safeNumber(row.qty);
-		const amount = Number((qty * safeNumber(row.rate)).toFixed(2));
-		frappe.model.set_value(cdt, cdn, "amount", amount, () => recompute_total(frm));
+		const qty = safeNumber(row.qty) || 1;
+		const entered_rate = safeNumber(row.rate);
+
+		// Determine computed minimum rate from parent total
+		const parent_total = safeNumber(frm.doc.total);
+		const min_rate = Number((parent_total / qty).toFixed(2));
+
+		// Check if this row is the first item
+		const is_first = frm.doc.items && frm.doc.items.length > 0 && frm.doc.items[0].name === cdn;
+
+		if (is_first) {
+			if (entered_rate < min_rate) {
+				// Show error and revert to min_rate
+				frappe.msgprint({
+					title: __("Invalid Rate"),
+					message: __(
+						"Entered rate ({0}) is less than the minimum allowed rate ({1}). Reverting to minimum rate.",
+						[entered_rate.toFixed(2), min_rate.toFixed(2)]
+					),
+					indicator: "red",
+				});
+
+				// Set rate to min_rate and update amount
+				frappe.model.set_value(cdt, cdn, "rate", min_rate, () => {
+					const updated_amount = Number((qty * safeNumber(min_rate)).toFixed(2));
+					frappe.model.set_value(cdt, cdn, "amount", updated_amount, () => {
+						frm.refresh_field("items");
+						recompute_total(frm);
+					});
+				});
+				return;
+			}
+		}
+
+		// For non-first or valid entries, update amount normally
+		const amount = Number((qty * entered_rate).toFixed(2));
+		frappe.model.set_value(cdt, cdn, "amount", amount, () => {
+			recompute_total(frm);
+		});
 	},
 
 	qty(frm, cdt, cdn) {
 		const row = locals[cdt][cdn];
 		const amount = Number((safeNumber(row.qty) * safeNumber(row.rate)).toFixed(2));
+		// set amount and recompute totals & net weight
 		frappe.model.set_value(cdt, cdn, "amount", amount, () => {
 			recompute_total(frm);
 			recompute_total_net_weight(frm);
@@ -175,64 +219,84 @@ frappe.ui.form.on("Estimate Item", {
 	}
 });
 
+// -------------------- Estimated BOM Materials Hooks --------------------
 frappe.ui.form.on("Estimated BOM Materials", {
-	amount(frm, cdt, cdn) {
-		recompute_total(frm);
-	},
 	rate(frm, cdt, cdn) {
 		const row = locals[cdt][cdn];
-		row.amount = Number((safeNumber(row.qty) * safeNumber(row.rate)).toFixed(2));
+		const rate = safeNumber(row.rate);
+		const qty = safeNumber(row.qty);
+		const margin = safeNumber(row.margin);
+		row.amount = Number((qty * rate + margin).toFixed(2)); 
+		row.uom = "Kg";
+
 		frm.refresh_field("estimated_bom_materials");
 		recompute_total(frm);
 	},
+
 	qty(frm, cdt, cdn) {
 		const row = locals[cdt][cdn];
-		row.amount = Number((safeNumber(row.qty) * safeNumber(row.rate)).toFixed(2));
+		const rate = safeNumber(row.rate);
+		const qty = safeNumber(row.qty);
+		const margin = safeNumber(row.margin);
+		row.amount = Number((qty * rate + margin).toFixed(2));
+		row.uom = "Kg";
+
 		frm.refresh_field("estimated_bom_materials");
 		recompute_total(frm);
-	}
+	},
+
+	margin(frm, cdt, cdn) {
+		const row = locals[cdt][cdn];
+		const rate = safeNumber(row.rate);
+		const qty = safeNumber(row.qty);
+		const margin = safeNumber(row.margin);
+		row.amount = Number((qty * rate + margin).toFixed(2));
+		row.uom = "Kg";
+
+		frm.refresh_field("estimated_bom_materials");
+		recompute_total(frm);
+	},
+
+	length: calculate_bom_weight,
+	width: calculate_bom_weight,
+	thickness: calculate_bom_weight,
+	density: calculate_bom_weight,
+
+	estimated_bom_materials_add(frm, cdt, cdn) {
+		const row = locals[cdt][cdn];
+		row.uom = "Kg";
+		frappe.model.set_value(cdt, cdn, "margin", 0);
+		frappe.model.set_value(cdt, cdn, "amount", 0);
+		frm.refresh_field("estimated_bom_materials");
+	},
 });
 
-// -------------------- ERPNext Controller Extension --------------------
-if (typeof erpnext !== "undefined" && erpnext) {
-	erpnext.selling.QuotationController = class QuotationController extends erpnext.selling.SellingController {
-		onload(doc, dt, dn) {
-			super.onload(doc, dt, dn);
-		}
+// -------------------- Kilogram Calculation Logic --------------------
+function calculate_bom_weight(frm, cdt, cdn) {
+	let d = locals[cdt][cdn];
 
-		refresh(doc, dt, dn) {
-			super.refresh(doc, dt, dn);
-			this.toggle_reqd_lead_customer && this.toggle_reqd_lead_customer();
-		}
+	if (d.length && d.width && d.thickness && d.density) {
+		let length_m = safeNumber(d.length) / 1000;
+		let width_m = safeNumber(d.width) / 1000;
+		let thickness_m = safeNumber(d.thickness) / 1000;
 
-		make_sales_order() {
-			let has_alt = this.frm.doc.items.some((i) => i.is_alternative);
-			if (has_alt) this.show_alternative_items_dialog();
-			else
-				frappe.model.open_mapped_doc({
-					method: "erpnext.selling.doctype.quotation.quotation.make_sales_order",
-					frm: this.frm,
-				});
-		}
+		let volume_m3 = length_m * width_m * thickness_m;
+		let density_kg_m3 = safeNumber(d.density) * 1000;
+		let weight_kg = volume_m3 * density_kg_m3;
 
-		set_dynamic_field_label() {
-			if (this.frm.doc.quotation_to == "Customer") {
-				this.frm.set_df_property("party_name", "label", "Customer");
-				this.frm.fields_dict.party_name.get_query = null;
-			} else if (this.frm.doc.quotation_to == "Lead") {
-				this.frm.set_df_property("party_name", "label", "Lead");
-				this.frm.fields_dict.party_name.get_query = () => ({
-					query: "erpnext.controllers.queries.lead_query",
-				});
-			} else if (this.frm.doc.quotation_to == "Prospect") {
-				this.frm.set_df_property("party_name", "label", "Prospect");
-				this.frm.fields_dict.party_name.get_query = null;
-			}
-		}
-	};
+		frappe.model.set_value(cdt, cdn, "kilogramskgs", Number(weight_kg.toFixed(4)));
+		frappe.model.set_value(cdt, cdn, "qty", Number(weight_kg.toFixed(4)));
+		frappe.model.set_value(cdt, cdn, "uom", "Kg");
 
-	cur_frm.script_manager.make(erpnext.selling.QuotationController);
+		frm.refresh_field("estimated_bom_materials");
+	} else {
+		frappe.model.set_value(cdt, cdn, "kilogramskgs", 0);
+		frappe.model.set_value(cdt, cdn, "uom", "Kg");
+	}
 }
+
+// -------------------- ERPNext Controller Extension --------------------
+
 
 // -------------------- Legacy / Optional Hooks --------------------
 frappe.ui.form.on("Estimate Item", {

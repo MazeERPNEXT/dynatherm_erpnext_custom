@@ -11,7 +11,15 @@
   "uom",
   "column_break_eofu",
   "rate",
-  "amount"
+  "amount",
+  "margin",
+  "section_break_snpr",
+  "length",
+  "width",
+  "column_break_ofnl",
+  "thickness",
+  "density",
+  "kilogramskgs"
  ],
  "fields": [
   {
@@ -48,15 +56,56 @@
   {
    "fieldname": "amount",
    "fieldtype": "Currency",
-   "in_list_view": 1,
    "label": "Amount (INR)"
+  },
+  {
+   "fieldname": "section_break_snpr",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "length",
+   "fieldtype": "Float",
+   "in_list_view": 1,
+   "label": "Length"
+  },
+  {
+   "fieldname": "width",
+   "fieldtype": "Float",
+   "in_list_view": 1,
+   "label": "Width"
+  },
+  {
+   "fieldname": "column_break_ofnl",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "thickness",
+   "fieldtype": "Float",
+   "in_list_view": 1,
+   "label": "Thickness"
+  },
+  {
+   "fieldname": "density",
+   "fieldtype": "Float",
+   "in_list_view": 1,
+   "label": "Density"
+  },
+  {
+   "fieldname": "kilogramskgs",
+   "fieldtype": "Float",
+   "label": "Kilograms(Kgs)"
+  },
+  {
+   "fieldname": "margin",
+   "fieldtype": "Float",
+   "label": "Margin"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2025-10-23 14:59:29.415580",
+ "modified": "2025-10-24 17:24:24.480109",
  "modified_by": "Administrator",
  "module": "ERP Custom",
  "name": "Estimated BOM Materials",
