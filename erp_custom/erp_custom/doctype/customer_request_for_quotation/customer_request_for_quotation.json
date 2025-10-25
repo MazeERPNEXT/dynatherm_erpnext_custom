@@ -25,23 +25,26 @@
   "order_type",
   "company",
   "has_unit_price_items",
-  "amended_from",
   "valid_till",
+  "amended_from",
   "section_break_rlge",
   "purpose",
   "type",
   "location",
   "tag",
+  "column_break_kwyw",
   "parent_moc",
   "moc_config",
   "cdd_days",
   "ra_yn",
-  "column_break_qoep",
-  "prebid_meeting",
-  "pqc_technical",
+  "section_break_ntzh",
   "pqc_commercial",
-  "pqc_financial",
+  "prebid_meeting",
+  "column_break_gyiv",
+  "pqc_technical",
   "pqc_shop_floor",
+  "column_break_vjkr",
+  "pqc_financial",
   "dapl_pqc",
   "currency_and_price_list",
   "currency",
@@ -1130,10 +1133,6 @@
    "label": "Location"
   },
   {
-   "fieldname": "column_break_qoep",
-   "fieldtype": "Column Break"
-  },
-  {
    "fieldname": "closing_date",
    "fieldtype": "Date",
    "label": "Closing Date"
@@ -1227,13 +1226,29 @@
    "fieldname": "valid_till",
    "fieldtype": "Date",
    "label": "Valid Till"
+  },
+  {
+   "fieldname": "column_break_kwyw",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "section_break_ntzh",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "column_break_gyiv",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_vjkr",
+   "fieldtype": "Column Break"
   }
  ],
  "icon": "fa fa-shopping-cart",
  "idx": 82,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-10-23 11:42:21.392156",
+ "modified": "2025-10-25 13:33:12.821354",
  "modified_by": "Administrator",
  "module": "ERP Custom",
  "name": "Customer Request For Quotation",

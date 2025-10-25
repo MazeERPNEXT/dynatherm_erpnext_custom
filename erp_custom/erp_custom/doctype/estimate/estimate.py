@@ -41,7 +41,7 @@ class Estimate(SellingController):
 		apply_discount_on: DF.Literal["", "Grand Total", "Net Total"]
 		auto_repeat: DF.Link | None
 		base_discount_amount: DF.Currency
-		base_grand_total: DF.Currency
+		# base_grand_total: DF.Currency
 		base_in_words: DF.Data | None
 		base_net_total: DF.Currency
 		base_rounded_total: DF.Currency
@@ -80,7 +80,7 @@ class Estimate(SellingController):
 		named_place: DF.Data | None
 		naming_series: DF.Literal["SAL-QTN-.YYYY.-"]
 		net_total: DF.Currency
-		opportunity: DF.Link | None
+		# opportunity: DF.Link | None
 		order_lost_reason: DF.SmallText | None
 		# order_type: DF.Literal["", "Sales", "Maintenance", "Shopping Cart"]
 		other_charges_calculation: DF.TextEditor | None
@@ -283,15 +283,15 @@ class Estimate(SellingController):
 		else:
 			frappe.throw(_("Cannot set as Lost as Sales Order is made."))
 
-	def on_submit(self):
+	# def on_submit(self):
 		# Check for Approving Authority
-		frappe.get_doc("Authorization Control").validate_approving_authority(
-			self.doctype, self.company, self.base_grand_total, self
-		)
+		# frappe.get_doc("Authorization Control").validate_approving_authority(
+		# 	self.doctype, self.company, self.base_grand_total, self
+		# )
 
 		# update enquiry status
-		self.update_opportunity("Quotation")
-		self.update_lead()
+		# self.update_opportunity("Quotation")
+		# self.update_lead()
 
 	def on_cancel(self):
 		# if self.lost_reasons:
@@ -509,9 +509,9 @@ def _make_sales_invoice(source_name, target_doc=None, ignore_permissions=False, 
 		target.run_method("set_missing_values")
 		target.run_method("calculate_taxes_and_totals")
 
-	def update_item(obj, target, source_parent):
-		target.cost_center = None
-		target.stock_qty = flt(obj.qty) * flt(obj.conversion_factor)
+	# def update_item(obj, target, source_parent):
+	# 	target.cost_center = None
+	# 	target.stock_qty = flt(obj.qty) * flt(obj.conversion_factor)
 
 	def select_item(d):
 		filtered_items = args.get("filtered_children", [])

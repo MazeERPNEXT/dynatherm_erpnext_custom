@@ -28,7 +28,7 @@ class EstimateItem(Document):
 		blanket_order_rate: DF.Currency
 		brand: DF.Link | None
 		company_total_stock: DF.Float
-		conversion_factor: DF.Float
+		# conversion_factor: DF.Float
 		customer_item_code: DF.Data | None
 		description: DF.TextEditor | None
 		discount_amount: DF.Currency
