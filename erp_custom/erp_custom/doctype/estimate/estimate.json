@@ -3,7 +3,7 @@
  "allow_auto_repeat": 1,
  "allow_import": 1,
  "autoname": "field:crfq__tender_id",
- "creation": "2025-10-17 19:29:08",
+ "creation": "2025-10-24 18:50:31.927589",
  "doctype": "DocType",
  "document_type": "Document",
  "editable_grid": 1,
@@ -13,20 +13,18 @@
   "crfq__tender_id",
   "customer_name",
   "tag",
-  "column_break_7",
   "company",
+  "column_break_7",
   "transaction_date",
-  "amended_from",
   "valid_till",
-  "amended_from",
-  "customer_name",
-  "test_section",
+  "supplier_section",
   "column_break_zlvb",
-  "parent_moc",
-  "column_break_fciz",
-  "supplier_type",
-  "column_break_nkyn",
   "supplier_cat",
+  "column_break_fnpb",
+  "supplier_type",
+  "column_break_dklu",
+  "parent_moc",
+  "amended_from",
   "items_section",
   "items",
   "section_break_sixs",
@@ -125,12 +123,6 @@
    "reqd": 1,
    "search_index": 1,
    "width": "100px"
-  },
-  {
-   "fieldname": "valid_till",
-   "fieldtype": "Date",
-   "label": "Valid Till",
-   "reqd": 1
   },
   {
    "fieldname": "customer_address",
@@ -433,12 +425,6 @@
    "label": "Tag"
   },
   {
-   "fieldname": "parent_moc",
-   "fieldtype": "Data",
-   "label": "Parent MoC",
-   "reqd": 1
-  },
-  {
    "fieldname": "supplier_type",
    "fieldtype": "Data",
    "label": "Supplier Type"
@@ -447,10 +433,6 @@
    "fieldname": "supplier_cat",
    "fieldtype": "Data",
    "label": "Supplier Category"
-  },
-  {
-   "fieldname": "column_break_nkyn",
-   "fieldtype": "Column Break"
   },
   {
    "depends_on": "eval:doc.items && doc.items.length>0",
@@ -471,31 +453,45 @@
    "label": "Total"
   },
   {
-   "fieldname": "column_break_fciz",
-   "fieldtype": "Column Break"
-  },
-  {
    "depends_on": "eval:doc.items && doc.items.length>0",
    "fieldname": "column_break_zgob",
    "fieldtype": "Column Break"
   },
   {
-   "fieldname": "test_section",
-   "fieldtype": "Section Break",
-   "hide_border": 1,
-   "label": "Test",
-   "options": "fa fa-shopping-cart"
-  },
-  {
    "fieldname": "column_break_zlvb",
    "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "valid_till",
+   "fieldtype": "Date",
+   "label": "Valid Till"
+  },
+  {
+   "fieldname": "column_break_fnpb",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_dklu",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "parent_moc",
+   "fieldtype": "Data",
+   "label": "Parent MoC"
+  },
+  {
+   "fieldname": "supplier_section",
+   "fieldtype": "Section Break",
+   "hide_border": 1,
+   "label": "Supplier",
+   "options": "fa fa-shopping-cart"
   }
  ],
  "icon": "fa fa-shopping-cart",
  "idx": 82,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-10-24 18:35:19.149209",
+ "modified": "2025-10-25 11:01:38.417740",
  "modified_by": "Administrator",
  "module": "ERP Custom",
  "name": "Estimate",

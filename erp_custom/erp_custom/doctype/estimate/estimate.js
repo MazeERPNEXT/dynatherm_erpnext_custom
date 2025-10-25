@@ -104,10 +104,10 @@ frappe.ui.form.on("Estimate", {
 			frm.set_df_property("packed_items", "cannot_delete_rows", true);
 		} catch (e) {}
 
-		frm.set_indicator_formatter &&
-			frm.set_indicator_formatter("item_code", (doc) =>
-				!doc.qty && frm.doc.has_unit_price_items ? "yellow" : ""
-			);
+		// frm.set_indicator_formatter &&
+		// 	frm.set_indicator_formatter("item_code", (doc) =>
+		// 		!doc.qty && frm.doc.has_unit_price_items ? "yellow" : ""
+		// 	);
 	},
 
 	refresh(frm) {

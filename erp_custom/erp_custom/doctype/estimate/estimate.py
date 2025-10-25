@@ -69,8 +69,8 @@ class Estimate(SellingController):
 		enq_det: DF.Text | None
 		grand_total: DF.Currency
 		group_same_items: DF.Check
-		has_unit_price_items: DF.Check
-		ignore_pricing_rule: DF.Check
+		# has_unit_price_items: DF.Check
+		# ignore_pricing_rule: DF.Check
 		in_words: DF.Data | None
 		incoterm: DF.Link | None
 		items: DF.Table[QuotationItem]
@@ -85,7 +85,7 @@ class Estimate(SellingController):
 		# order_type: DF.Literal["", "Sales", "Maintenance", "Shopping Cart"]
 		other_charges_calculation: DF.TextEditor | None
 		# packed_items: DF.Table[PackedItem]
-		party_name: DF.DynamicLink | None
+		# party_name: DF.DynamicLink | None
 		payment_schedule: DF.Table[PaymentSchedule]
 		payment_terms_template: DF.Link | None
 		plc_conversion_rate: DF.Float
@@ -129,23 +129,23 @@ class Estimate(SellingController):
 			self.indicator_color = "gray"
 			self.indicator_title = "Expired"
 
-	def before_validate(self):
-		self.set_has_unit_price_items()
-		self.flags.allow_zero_qty = self.has_unit_price_items
+	# def before_validate(self):
+	# 	self.set_has_unit_price_items()
+	# 	self.flags.allow_zero_qty = self.has_unit_price_items
 
 	def validate(self):
-		super().validate()
+		# super().validate()
 		self.set_status()
 		self.validate_uom_is_integer("stock_uom", "stock_qty")
 		self.validate_uom_is_integer("uom", "qty")
 		self.validate_valid_till()
-		self.set_customer_name()
+		# self.set_customer_name()
 		if self.items:
 			self.with_items = 1
 
 		from erpnext.stock.doctype.packed_item.packed_item import make_packing_list
 
-		make_packing_list(self)
+		# make_packing_list(self)
 
 	def before_submit(self):
 		self.set_has_alternative_item()
@@ -164,16 +164,16 @@ class Estimate(SellingController):
 			if not row.is_alternative and row.name in items_with_alternatives:
 				row.has_alternative_item = 1
 
-	def set_has_unit_price_items(self):
-		"""
-		If permitted in settings and any item has 0 qty, the SO has unit price items.
-		"""
-		if not frappe.db.get_single_value("Selling Settings", "allow_zero_qty_in_quotation"):
-			return
+	# def set_has_unit_price_items(self):
+	# 	"""
+	# 	If permitted in settings and any item has 0 qty, the SO has unit price items.
+	# 	"""
+	# 	if not frappe.db.get_single_value("Selling Settings", "allow_zero_qty_in_quotation"):
+	# 		return
 
-		self.has_unit_price_items = any(
-			not row.qty for row in self.get("items") if (row.item_code and not row.qty)
-		)
+	# 	self.has_unit_price_items = any(
+	# 		not row.qty for row in self.get("items") if (row.item_code and not row.qty)
+	# 	)
 
 	def get_ordered_status(self):
 		ordered_items = get_ordered_items(self.name)
@@ -221,22 +221,22 @@ class Estimate(SellingController):
 	def is_partially_ordered(self):
 		return self.get_ordered_status() == "Partially Ordered"
 
-	def update_lead(self):
-		if self.quotation_to == "Lead" and self.party_name:
-			frappe.get_doc("Lead", self.party_name).set_status(update=True)
+	# def update_lead(self):
+	# 	if self.quotation_to == "Lead" and self.party_name:
+	# 		frappe.get_doc("Lead", self.party_name).set_status(update=True)
 
-	def set_customer_name(self):
-		if self.party_name and self.quotation_to == "Customer":
-			self.customer_name = frappe.db.get_value("Customer", self.party_name, "customer_name")
-		elif self.party_name and self.quotation_to == "Lead":
-			lead_name, company_name = frappe.db.get_value(
-				"Lead", self.party_name, ["lead_name", "company_name"]
-			)
-			self.customer_name = company_name or lead_name
-		elif self.party_name and self.quotation_to == "Prospect":
-			self.customer_name = self.party_name
-		elif self.party_name and self.quotation_to == "CRM Deal":
-			self.customer_name = frappe.db.get_value("CRM Deal", self.party_name, "organization")
+	# def set_customer_name(self):
+	# 	if self.party_name and self.quotation_to == "Customer":
+	# 		self.customer_name = frappe.db.get_value("Customer", self.party_name, "customer_name")
+	# 	elif self.party_name and self.quotation_to == "Lead":
+	# 		lead_name, company_name = frappe.db.get_value(
+	# 			"Lead", self.party_name, ["lead_name", "company_name"]
+	# 		)
+	# 		self.customer_name = company_name or lead_name
+	# 	elif self.party_name and self.quotation_to == "Prospect":
+	# 		self.customer_name = self.party_name
+	# 	elif self.party_name and self.quotation_to == "CRM Deal":
+	# 		self.customer_name = frappe.db.get_value("CRM Deal", self.party_name, "organization")
 
 	def update_opportunity(self, status):
 		for opportunity in set(d.prevdoc_docname for d in self.get("items")):
@@ -294,14 +294,14 @@ class Estimate(SellingController):
 		self.update_lead()
 
 	def on_cancel(self):
-		if self.lost_reasons:
-			self.lost_reasons = []
+		# if self.lost_reasons:
+		# 	self.lost_reasons = []
 		super().on_cancel()
 
 		# update enquiry status
 		self.set_status(update=True)
 		self.update_opportunity("Open")
-		self.update_lead()
+		# self.update_lead()
 
 	def print_other_charges(self, docname):
 		print_lst = []
@@ -376,10 +376,10 @@ def _make_sales_order(source_name, target_doc=None, ignore_permissions=False, ar
 	selected_rows = [x.get("name") for x in frappe.flags.get("args", {}).get("selected_items", [])]
 
 	# 0 qty is accepted, as the qty uncertain for some items
-	has_unit_price_items = frappe.db.get_value("Quotation", source_name, "has_unit_price_items")
+	# has_unit_price_items = frappe.db.get_value("Quotation", source_name, "has_unit_price_items")
 
-	def is_unit_price_row(source) -> bool:
-		return has_unit_price_items and source.qty == 0
+	# def is_unit_price_row(source) -> bool:
+	# 	return has_unit_price_items and source.qty == 0
 
 	def set_missing_values(source, target):
 		if customer:
@@ -408,34 +408,34 @@ def _make_sales_order(source_name, target_doc=None, ignore_permissions=False, ar
 		target.run_method("set_missing_values")
 		target.run_method("calculate_taxes_and_totals")
 
-	def update_item(obj, target, source_parent):
-		balance_qty = obj.qty if is_unit_price_row(obj) else obj.qty - ordered_items.get(obj.name, 0.0)
-		target.qty = balance_qty if balance_qty > 0 else 0
-		target.stock_qty = flt(target.qty) * flt(obj.conversion_factor)
+	# def update_item(obj, target, source_parent):
+	# 	balance_qty = obj.qty if is_unit_price_row(obj) else obj.qty - ordered_items.get(obj.name, 0.0)
+	# 	target.qty = balance_qty if balance_qty > 0 else 0
+	# 	target.stock_qty = flt(target.qty) * flt(obj.conversion_factor)
 
-		if obj.against_blanket_order:
-			target.against_blanket_order = obj.against_blanket_order
-			target.blanket_order = obj.blanket_order
-			target.blanket_order_rate = obj.blanket_order_rate
+	# 	if obj.against_blanket_order:
+	# 		target.against_blanket_order = obj.against_blanket_order
+	# 		target.blanket_order = obj.blanket_order
+	# 		target.blanket_order_rate = obj.blanket_order_rate
 
-	def can_map_row(item) -> bool:
-		"""
-		Row mapping from Quotation to Sales order:
-		1. If no selections, map all non-alternative rows (that sum up to the grand total)
-		2. If selections: Is Alternative Item/Has Alternative Item: Map if selected and adequate qty
-		3. If no selections: Simple row: Map if adequate qty
-		"""
-		if not ((item.qty > ordered_items.get(item.name, 0.0)) or is_unit_price_row(item)):
-			return False
+	# def can_map_row(item) -> bool:
+	# 	"""
+	# 	Row mapping from Quotation to Sales order:
+	# 	1. If no selections, map all non-alternative rows (that sum up to the grand total)
+	# 	2. If selections: Is Alternative Item/Has Alternative Item: Map if selected and adequate qty
+	# 	3. If no selections: Simple row: Map if adequate qty
+	# 	"""
+	# 	if not ((item.qty > ordered_items.get(item.name, 0.0)) or is_unit_price_row(item)):
+	# 		return False
 
-		if not selected_rows:
-			return not item.is_alternative
+	# 	if not selected_rows:
+	# 		return not item.is_alternative
 
-		if selected_rows and (item.is_alternative or item.has_alternative_item):
-			return item.name in selected_rows
+	# 	if selected_rows and (item.is_alternative or item.has_alternative_item):
+	# 		return item.name in selected_rows
 
-		# Simple row
-		return True
+	# 	# Simple row
+	# 	return True
 
 	def select_item(d):
 		filtered_items = args.get("filtered_children", [])
