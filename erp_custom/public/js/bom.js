@@ -110,7 +110,8 @@ function calculate_kgs(frm, cdt, cdn) {
 
     frappe.model.set_value(cdt, cdn, 'custom_kilogramskgs', weight);
 
-    frappe.model.set_value(cdt, cdn, 'qty', weight);
+    // frappe.model.set_value(cdt, cdn, 'qty', weight);
+    frappe.model.set_value(cdt, cdn, 'qty', flt(weight, 2));
     // frappe.model.set_value(cdt, cdn, 'qty', Math.round(weight));
     frappe.model.set_value(cdt, cdn, 'uom', "Kg");
 

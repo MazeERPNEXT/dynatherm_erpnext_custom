@@ -23,3 +23,4 @@
 //     frm.refresh_field('total_net_weight');
 // }
     
+
