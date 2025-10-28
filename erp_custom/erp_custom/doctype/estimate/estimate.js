@@ -89,82 +89,140 @@ function recompute_total_net_weight(frm) {
 
 
 // -------------------- Estimate Form Hooks --------------------
+
 frappe.ui.form.on("Estimate", {
-	setup(frm) {
-		frm.custom_make_buttons = { "Sales Order": "Sales Order" };
+	// -------------------- Auto Fetch Default BOM --------------------
+	finished_goods(frm) {
+		if (!frm.doc.finished_goods) return;
 
-		frm.set_query("quotation_to", () => ({
-			filters: { name: ["in", ["Customer", "Lead", "Prospect"]] },
-		}));
-
-		try {
-			frm.set_df_property("packed_items", "cannot_add_rows", true);
-			frm.set_df_property("packed_items", "cannot_delete_rows", true);
-		} catch (e) {}
+		frappe.db.get_value("Item", frm.doc.finished_goods, "default_bom", (r) => {
+			if (r && r.default_bom) {
+				frm.set_value("bom", r.default_bom);
+			} else {
+				frappe.msgprint(__("No Default BOM found for this Finished Goods item."));
+				frm.set_value("bom", "");
+			}
+		});
 	},
 
+	// -------------------- Fetch BOM Items into Estimated BOM Materials --------------------
+	get_items_from_bom(frm) {
+		if (!frm.doc.bom) {
+			frappe.msgprint(__("Please select a BOM first."));
+			return;
+		}
+
+		frappe.call({
+			method: "frappe.client.get",
+			args: { doctype: "BOM", name: frm.doc.bom },
+			callback: function (r) {
+				if (!r.message) {
+					frappe.msgprint(__("BOM not found."));
+					return;
+				}
+
+				const bom = r.message;
+				if (!bom.items || bom.items.length === 0) {
+					frappe.msgprint(__("No items found in the selected BOM."));
+					return;
+				}
+
+				// Avoid duplicate entries
+				const existing_items = new Set(
+					(frm.doc.estimated_bom_materials || []).map(row => row.item_code)
+				);
+
+				let added = 0;
+				bom.items.forEach((bom_item) => {
+					if (existing_items.has(bom_item.item_code)) return; // skip duplicates
+
+					let row = frm.add_child("estimated_bom_materials");
+					row.item_code = bom_item.item_code;
+					row.item_name = bom_item.item_name;
+					row.length = bom_item.custom_length || 0;
+					row.width = bom_item.custom_width || 0;
+					row.thickness = bom_item.custom_thickness || 0;
+					row.density = bom_item.custom_density || 0;
+					row.kilogramskgs = bom_item.custom_kilogramskgs || 0;
+					row.qty = bom_item.qty || 1;
+					row.uom = bom_item.uom || "Nos";
+
+					existing_items.add(bom_item.item_code);
+					added++;
+				});
+
+				if (added > 0) {
+					frappe.msgprint(__("{0} new item(s) added from BOM.", [added]));
+				} else {
+					frappe.msgprint(__("All BOM items already exist — no duplicates added."));
+				}
+
+				frm.refresh_field("estimated_bom_materials");
+			},
+		});
+	},
+
+	// -------------------- Create Quotation Button after Submission --------------------
 	refresh(frm) {
-		frm.trigger("set_label");
-		frm.trigger("set_dynamic_field_label");
-
-		recompute_total(frm);
-		recompute_total_net_weight(frm);
-
-		if (frm.doc.docstatus == 1) {
+		if (frm.doc.docstatus === 1) {
 			cur_frm?.page?.set_inner_btn_group_as_primary?.(__("Create"));
+
 			frm.add_custom_button(__('Quotation'), function() {
-				frappe.route_options = {
-					valid_till: frm.doc.valid_till,
-					total: frm.doc.total,
-				};
-				const estimate_items = (frm.doc.items || []).map((row) => ({
-					item_code: row.item_code,
-					item_name: row.item_name,
-					qty: row.qty,
-					rate: row.rate,
-					amount: row.amount,
-				}));
-				localStorage.setItem("estimate_items_temp", JSON.stringify(estimate_items));
-				frappe.set_route('Form', 'Quotation', 'new-quotation');
+				// Step 1: Check if a Quotation already exists for this Estimate
+				frappe.call({
+					method: "frappe.client.get_list",
+					args: {
+						doctype: "Quotation",
+						filters: {
+							custom_crfq__tender_id: frm.doc.crfq__tender_id
+						},
+						fields: ["name"],
+						limit: 1
+					},
+					callback: function (r) {
+						if (r.message && r.message.length > 0) {
+							// ✅ Quotation already exists, open it directly
+							let existing_quotation = r.message[0].name;
+							frappe.msgprint(__("Quotation already exists for this Estimate. Opening it."));
+							frappe.set_route("Form", "Quotation", existing_quotation);
+							return;
+						}
+
+						// Step 2: No Quotation found, create new one
+						frappe.route_options = {
+							valid_till: frm.doc.valid_till,
+							total: frm.doc.total,
+							party_name: frm.doc.customer_name,
+							custom_crfq__tender_id: frm.doc.crfq__tender_id || "",
+						};
+
+						const estimate_items = (frm.doc.items || [])
+							.filter(row => row.item_code)
+							.map(row => ({
+								item_code: row.item_code,
+								item_name: row.item_name,
+								qty: row.qty,
+								uom: row.uom,
+								description: row.description,
+								rate: row.rate,
+								amount: row.amount,
+							}));
+
+						if (!estimate_items.length) {
+							frappe.msgprint(__("No valid items found to create a Quotation."));
+							return;
+						}
+
+						localStorage.setItem("estimate_items_temp", JSON.stringify(estimate_items));
+						frappe.set_route('Form', 'Quotation', 'new-quotation');
+					}
+				});
 			}, __('Create'));
 		}
 	},
-
-	quotation_to(frm) {
-		frm.trigger("set_label");
-		frm.trigger("toggle_reqd_lead_customer");
-		frm.trigger("set_dynamic_field_label");
-		frm.set_value("customer_name", "");
-	},
-
-	set_label(frm) {
-		if (frm.fields_dict && frm.fields_dict.customer_address) {
-			frm.fields_dict.customer_address.set_label(__(frm.doc.quotation_to + " Address"));
-		}
-	},
-
-	estimated_bom_materials_add(frm) {
-		recompute_total(frm);
-	},
-	estimated_bom_materials_remove(frm) {
-		recompute_total(frm);
-	},
-
-	validate(frm) {
-		recompute_total(frm);
-		recompute_total_net_weight(frm);
-	},
-
-	items_add(frm) {
-		recompute_total(frm);
-		recompute_total_net_weight(frm);
-	},
-
-	items_remove(frm) {
-		recompute_total(frm);
-		recompute_total_net_weight(frm);
-	},
 });
+
+
 
 
 // -------------------- Estimate Item Hooks --------------------

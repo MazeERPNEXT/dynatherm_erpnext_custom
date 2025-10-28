@@ -11,15 +11,12 @@
  "field_order": [
   "customer_section",
   "crfq__tender_id",
-  "customer_name",
   "tag",
+  "customer_name",
   "company",
   "column_break_7",
   "transaction_date",
   "valid_till",
-  "finished_goods",
-  "bom",
-  "get_items_from_bom",
   "supplier_section",
   "column_break_zlvb",
   "supplier_cat",
@@ -30,6 +27,8 @@
   "amended_from",
   "items_section",
   "items",
+  "bom",
+  "get_items_from_bom",
   "section_break_sixs",
   "column_break_zgob",
   "estimated_bom_materials",
@@ -77,16 +76,6 @@
    "fieldname": "customer_section",
    "fieldtype": "Section Break",
    "options": "fa fa-user"
-  },
-  {
-   "bold": 1,
-   "fieldname": "customer_name",
-   "fieldtype": "Link",
-   "hidden": 1,
-   "in_global_search": 1,
-   "label": "Customer",
-   "options": "Customer",
-   "read_only": 1
   },
   {
    "fieldname": "amended_from",
@@ -488,12 +477,6 @@
    "options": "fa fa-shopping-cart"
   },
   {
-   "fieldname": "finished_goods",
-   "fieldtype": "Link",
-   "label": "Finished Goods",
-   "options": "Item"
-  },
-  {
    "fieldname": "get_items_from_bom",
    "fieldtype": "Button",
    "label": "Get Items From BOM"
@@ -501,15 +484,22 @@
   {
    "fetch_from": "finished_goods.default_bom",
    "fieldname": "bom",
-   "fieldtype": "Data",
-   "label": "BOM"
+   "fieldtype": "Link",
+   "label": "BOM",
+   "options": "BOM"
+  },
+  {
+   "fieldname": "customer_name",
+   "fieldtype": "Link",
+   "label": "Customer",
+   "options": "Customer"
   }
  ],
  "icon": "fa fa-shopping-cart",
  "idx": 82,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-10-27 16:26:24.035379",
+ "modified": "2025-10-28 14:02:11.217293",
  "modified_by": "Administrator",
  "module": "ERP Custom",
  "name": "Estimate",
