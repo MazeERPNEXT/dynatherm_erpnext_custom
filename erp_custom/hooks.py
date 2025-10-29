@@ -326,6 +326,7 @@ doctype_js = {
     "BOM Item": "public/js/bom_item.js",
     "Work Order": "public/js/work_order.js",
     "Quotation": "public/js/quotation.js",
+    "Stock Entry": "public/js/stock_entry.js",
 }
 
 
