@@ -28,6 +28,11 @@ required_apps = ["resilient-tech/india_compliance"]
 # app_include_css = "/assets/erp_custom/css/erp_custom.css"
 # app_include_js = "/assets/erp_custom/js/erp_custom.js"
 
+app_include_js = [
+    "/assets/erp_custom/js/stock_entry.js"
+]
+
+
 # include js, css files in header of web template
 # web_include_css = "/assets/erp_custom/css/erp_custom.css"
 # web_include_js = "/assets/erp_custom/js/erp_custom.js"
@@ -327,10 +332,21 @@ doctype_js = {
     "Work Order": "public/js/work_order.js",
     "Quotation": "public/js/quotation.js",
     "Stock Entry": "public/js/stock_entry.js",
+    "Material Request": "public/js/material_request.js",
 }
 
 
 override_whitelisted_methods = {
     "erpnext.manufacturing.doctype.work_order.work_order.make_work_order":
-        "erp_custom.erp_custom.overrides.work_order.make_work_order"
+        "erp_custom.erp_custom.overrides.work_order.make_work_order",
+        
+    # "erpnext.stock.doctype.stock_entry.stock_entry.make_stock_in_entry":
+    #     "erp_custom.erp_custom.overrides.stock_entry.make_stock_in_entry"
 }
+
+
+# doc_events = {
+#     "Stock Entry": {
+#         "before_save": "erp_custom.overrides.stock_entry_utils.copy_custom_dimensions_from_work_order"
+#     }
+# }
