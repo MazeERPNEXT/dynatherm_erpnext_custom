@@ -32,6 +32,8 @@ def make_stock_in_entry(source_name, target_doc=None):
         target_doc.custom_length = getattr(source_doc, "custom_length", None)
         target_doc.custom_width = getattr(source_doc, "custom_width", None)
         target_doc.custom_thickness = getattr(source_doc, "custom_thickness", None)
+        target_doc.custom_density = getattr(source_doc, "custom_density", None)
+        target_doc.custom_kilogramskgs = getattr(source_doc, "custom_kilogramskgs", None)
 
     doclist = get_mapped_doc(
         "Stock Entry",

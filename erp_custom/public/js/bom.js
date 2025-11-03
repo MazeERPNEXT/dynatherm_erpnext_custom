@@ -78,8 +78,6 @@
 
 
 
-
-
 frappe.ui.form.on('BOM Item', {
     items_add: function(frm, cdt, cdn) {
         const row = locals[cdt][cdn];

@@ -223,8 +223,6 @@ frappe.ui.form.on("Estimate", {
 });
 
 
-
-
 // -------------------- Estimate Item Hooks --------------------
 frappe.ui.form.on("Estimate Item", {
 	item_code(frm, cdt, cdn) {
@@ -369,3 +367,37 @@ frappe.ui.form.on("Estimate Item", "stock_balance", function (frm, cdt, cdn) {
    frappe.route_options = { item_code: d.item_code };
    frappe.set_route("query-report", "Stock Balance");
 });
+
+// -------------------- Estimated Operation --------------------
+frappe.ui.form.on('Estimated Operation', {
+    estimate_qty: function(frm, cdt, cdn) {
+        calculate_amount(frm, cdt, cdn);
+    },
+    estimate_rate: function(frm, cdt, cdn) {
+        calculate_amount(frm, cdt, cdn);
+    },
+    estimate_margin: function(frm, cdt, cdn) {
+        apply_margin(frm, cdt, cdn);
+    }
+});
+
+function calculate_amount(frm, cdt, cdn) {
+    let row = locals[cdt][cdn];
+    let qty = flt(row.estimate_qty);
+    let rate = flt(row.estimate_rate);
+
+    let amount = qty * rate;
+    frappe.model.set_value(cdt, cdn, 'estimate_amount', amount);
+}
+
+function apply_margin(frm, cdt, cdn) {
+    let row = locals[cdt][cdn];
+    let qty = flt(row.estimate_qty);
+    let rate = flt(row.estimate_rate);
+    let margin = flt(row.estimate_margin);
+
+    let base_amount = qty * rate;
+    let total_amount = base_amount + (base_amount * (margin / 100.0));
+
+    frappe.model.set_value(cdt, cdn, 'estimate_amount', total_amount);
+}

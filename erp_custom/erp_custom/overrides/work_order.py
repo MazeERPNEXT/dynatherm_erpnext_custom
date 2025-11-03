@@ -10,7 +10,7 @@ from frappe.utils import cint, flt
 def make_work_order(bom_no, item, qty=0, project=None, variant_items=None, use_multi_level_bom=None):
 	"""
 	Custom Work Order creation that dynamically fetches
-	custom_length, custom_width, and custom_thickness
+	custom_length, custom_width, custom_thickness, custom_density and custom_kilogramskgs
 	from the BOM Item linked to the selected item.
 	"""
 	if not frappe.has_permission("Work Order", "write"):
@@ -33,7 +33,7 @@ def make_work_order(bom_no, item, qty=0, project=None, variant_items=None, use_m
 		bom_items = frappe.get_all(
 			"BOM Item",
 			filters={"parent": bom_no},
-			fields=["item_code", "custom_length", "custom_width", "custom_thickness"]
+			fields=["item_code", "custom_length", "custom_width", "custom_thickness", "custom_density", "custom_kilogramskgs"]
 		)
 
 		bom_map = {bi.item_code: bi for bi in bom_items}
@@ -44,6 +44,8 @@ def make_work_order(bom_no, item, qty=0, project=None, variant_items=None, use_m
 				req_item.custom_length = bi.custom_length or 0
 				req_item.custom_width = bi.custom_width or 0
 				req_item.custom_thickness = bi.custom_thickness or 0
+				req_item.custom_density = bi.custom_density or 0
+				req_item.custom_kilogramskgs = bi.custom_kilogramskgs or 0
 
 	if variant_items and not wo_doc.use_multi_level_bom:
 		add_variant_item(variant_items, wo_doc, bom_no, "required_items")

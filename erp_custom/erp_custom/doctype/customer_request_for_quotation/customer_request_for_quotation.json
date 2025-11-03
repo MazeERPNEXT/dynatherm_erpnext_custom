@@ -15,6 +15,7 @@
   "naming_series",
   "quotation_to",
   "party_name",
+  "column_break_wwxx",
   "customer_name",
   "transaction_date",
   "closing_date",
@@ -55,8 +56,6 @@
   "plc_conversion_rate",
   "ignore_pricing_rule",
   "items_section",
-  "scan_barcode",
-  "last_scanned_warehouse",
   "items",
   "unit_basic",
   "sec_break23",
@@ -986,12 +985,6 @@
    "read_only": 1
   },
   {
-   "fieldname": "scan_barcode",
-   "fieldtype": "Data",
-   "label": "Scan Barcode",
-   "options": "Barcode"
-  },
-  {
    "fieldname": "address_and_contact_tab",
    "fieldtype": "Tab Break",
    "label": "Address & Contact"
@@ -1102,20 +1095,8 @@
    "no_copy": 1
   },
   {
-   "depends_on": "eval: doc.last_scanned_warehouse",
-   "fieldname": "last_scanned_warehouse",
-   "fieldtype": "Data",
-   "is_virtual": 1,
-   "label": "Last Scanned Warehouse"
-  },
-  {
    "fieldname": "section_break_rlge",
    "fieldtype": "Section Break"
-  },
-  {
-   "fieldname": "crfq__tender_id",
-   "fieldtype": "Data",
-   "label": "CRFQ / Tender ID"
   },
   {
    "fieldname": "purpose",
@@ -1242,13 +1223,22 @@
   {
    "fieldname": "column_break_vjkr",
    "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_wwxx",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "crfq__tender_id",
+   "fieldtype": "Data",
+   "label": "CRFQ / Tender ID"
   }
  ],
  "icon": "fa fa-shopping-cart",
  "idx": 82,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-10-25 13:33:12.821354",
+ "modified": "2025-11-03 14:37:50.747212",
  "modified_by": "Administrator",
  "module": "ERP Custom",
  "name": "Customer Request For Quotation",

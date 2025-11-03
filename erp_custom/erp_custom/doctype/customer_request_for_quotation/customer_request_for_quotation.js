@@ -9,69 +9,90 @@ erpnext.pre_sales.set_as_lost("Customer Request For Quotation");
 erpnext.sales_common.setup_selling_controller();
 
 frappe.ui.form.on("Customer Request For Quotation", {
-	setup: function (frm) {
-		(frm.custom_make_buttons = {
-			"Sales Order": "Sales Order",
-		}),
-			frm.set_query("quotation_to", function () {
-				return {
-					filters: {
-						name: ["in", ["Customer", "Lead", "Prospect"]],
-					},
-				};
-			});
+    setup: function (frm) {
+        (frm.custom_make_buttons = {
+            "Sales Order": "Sales Order",
+        });
 
-		frm.set_df_property("packed_items", "cannot_add_rows", true);
-		frm.set_df_property("packed_items", "cannot_delete_rows", true);
+        frm.set_query("quotation_to", function () {
+            return {
+                filters: {
+                    name: ["in", ["Customer", "Lead", "Prospect"]],
+                },
+            };
+        });
 
-		frm.set_query("serial_and_batch_bundle", "packed_items", (doc, cdt, cdn) => {
-			let row = locals[cdt][cdn];
-			return {
-				filters: {
-					item_code: row.item_code,
-					voucher_type: doc.doctype,
-					voucher_no: ["in", [doc.name, ""]],
-					is_cancelled: 0,
-				},
-			};
-		});
+        frm.set_df_property("packed_items", "cannot_add_rows", true);
+        frm.set_df_property("packed_items", "cannot_delete_rows", true);
 
-		frm.set_indicator_formatter("item_code", function (doc) {
-			return !doc.qty && frm.doc.has_unit_price_items ? "yellow" : "";
-		});
-	},
+        frm.set_query("serial_and_batch_bundle", "packed_items", (doc, cdt, cdn) => {
+            let row = locals[cdt][cdn];
+            return {
+                filters: {
+                    item_code: row.item_code,
+                    voucher_type: doc.doctype,
+                    voucher_no: ["in", [doc.name, ""]],
+                    is_cancelled: 0,
+                },
+            };
+        });
+crfq_id__tender_id
+        frm.set_indicator_formatter("item_code", function (doc) {
+            return !doc.qty && frm.doc.has_unit_price_items ? "yellow" : "";
+        });
+    },
 
-	refresh: function (frm) {
-		frm.trigger("set_label");
-		frm.trigger("set_dynamic_field_label");
+    refresh: function (frm) {
+        frm.trigger("set_label");
+        frm.trigger("set_dynamic_field_label");
 
-		if (frm.doc.docstatus === 0) {
-			erpnext.set_unit_price_items_note(frm);
-		}
+        if (frm.doc.docstatus === 0) {
+            erpnext.set_unit_price_items_note(frm);
+        }
 
-		let sbb_field = frm.get_docfield("packed_items", "serial_and_batch_bundle");
-		if (sbb_field) {
-			sbb_field.get_route_options_for_new_doc = (row) => {
-				return {
-					item_code: row.doc.item_code,
-					warehouse: row.doc.warehouse,
-					voucher_type: frm.doc.doctype,
-				};
-			};
-		}
-	},
+        let sbb_field = frm.get_docfield("packed_items", "serial_and_batch_bundle");
+        if (sbb_field) {
+            sbb_field.get_route_options_for_new_doc = (row) => {
+                return {
+                    item_code: row.doc.item_code,
+                    warehouse: row.doc.warehouse,
+                    voucher_type: frm.doc.doctype,
+                };
+            };
+        }
 
-	quotation_to: function (frm) {
-		frm.trigger("set_label");
-		frm.trigger("toggle_reqd_lead_customer");
-		frm.trigger("set_dynamic_field_label");
-		// frm.set_value("party_name", ""); // removed to set party_name from url for crm integration
-		frm.set_value("customer_name", "");
-	},
+        // ✅ Add "Create Estimate" button only after submit
+        if (frm.doc.docstatus === 1) {
+            frm.add_custom_button(__('Create Estimate'), function () {
+                frappe.model.with_doctype('Estimate', function () {
+                    let new_doc = frappe.model.get_new_doc('Estimate');
 
-	set_label: function (frm) {
-		frm.fields_dict.customer_address.set_label(__(frm.doc.quotation_to + " Address"));
-	},
+                    // Pass values from CRFQ to Estimate
+                    new_doc.crfq__tender_id = frm.doc.crfq__tender_id;
+                    new_doc.tag = frm.doc.tag;
+                    new_doc.item_name = frm.doc.item_name;
+                    new_doc.parent_moc = frm.doc.parent_moc;
+
+                    // Optionally link the CRFQ name (for traceability)
+                    new_doc.customer_request_for_quotation = frm.doc.name;
+
+                    // Route to new Estimate
+                    frappe.set_route('Form', 'Estimate', new_doc.name);
+                });
+            }).addClass('btn-primary');
+        }
+    },
+
+    quotation_to: function (frm) {
+        frm.trigger("set_label");
+        frm.trigger("toggle_reqd_lead_customer");
+        frm.trigger("set_dynamic_field_label");
+        frm.set_value("customer_name", "");
+    },
+
+    set_label: function (frm) {
+        frm.fields_dict.customer_address.set_label(__(frm.doc.quotation_to + " Address"));
+    },
 });
 
 erpnext.selling.QuotationController = class QuotationController extends erpnext.selling.SellingController {

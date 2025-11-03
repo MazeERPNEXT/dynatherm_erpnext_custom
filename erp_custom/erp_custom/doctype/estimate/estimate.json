@@ -13,8 +13,8 @@
   "crfq__tender_id",
   "tag",
   "customer_name",
-  "company",
   "column_break_7",
+  "company",
   "transaction_date",
   "valid_till",
   "supplier_section",
@@ -429,12 +429,12 @@
    "label": "Supplier Category"
   },
   {
+   "depends_on": "eval: doc.items && doc.items.length > 0 && doc.items.some(d => d.item_code && d.item_code.trim() !== \"\")",
    "fieldname": "section_break_sixs",
    "fieldtype": "Section Break",
    "label": "Estimated Details"
   },
   {
-   "depends_on": "eval: doc.items && doc.items.length > 0 && doc.items.some(d => d.item_code && d.item_code.trim() !== \"\")",
    "fieldname": "estimated_bom_materials",
    "fieldtype": "Table",
    "label": "Estimated BOM Materials",
@@ -512,7 +512,7 @@
  "idx": 82,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-10-31 17:51:57.022954",
+ "modified": "2025-11-03 11:12:09.346684",
  "modified_by": "Administrator",
  "module": "ERP Custom",
  "name": "Estimate",

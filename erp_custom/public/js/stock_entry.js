@@ -152,7 +152,9 @@ frappe.ui.form.on("Stock Entry", {
                     item_map[it.item_code] = {
                         custom_length: it.custom_length || 0,
                         custom_width: it.custom_width || 0,
-                        custom_thickness: it.custom_thickness || 0
+                        custom_thickness: it.custom_thickness || 0,
+                        custom_density: it.custom_density || 0,
+                        custom_kilogramskgs: it.custom_kilogramskgs || 0
                     };
                 });
 
@@ -162,6 +164,8 @@ frappe.ui.form.on("Stock Entry", {
                         frappe.model.set_value(se_item.doctype, se_item.name, "custom_length", match.custom_length);
                         frappe.model.set_value(se_item.doctype, se_item.name, "custom_width", match.custom_width);
                         frappe.model.set_value(se_item.doctype, se_item.name, "custom_thickness", match.custom_thickness);
+                        frappe.model.set_value(se_item.doctype, se_item.name, "custom_density", match.custom_density);
+                        frappe.model.set_value(se_item.doctype, se_item.name, "custom_kilogramskgs", match.custom_kilogramskgs);
                     }
                 });
 
@@ -224,6 +228,8 @@ function create_material_request_with_custom_fields(frm) {
             mr_item.custom_length = item.custom_length;
             mr_item.custom_width = item.custom_width;
             mr_item.custom_thickness = item.custom_thickness;
+            mr_item.custom_density = item.custom_density;
+            mr_item.custom_kilogramskgs = item.custom_kilogramskgs;
         });
 
         // Open the newly created MR
