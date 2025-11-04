@@ -36,7 +36,7 @@ frappe.ui.form.on("Customer Request For Quotation", {
                 },
             };
         });
-crfq_id__tender_id
+// crfq_id__tender_id
         frm.set_indicator_formatter("item_code", function (doc) {
             return !doc.qty && frm.doc.has_unit_price_items ? "yellow" : "";
         });
