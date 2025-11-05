@@ -1130,13 +1130,15 @@
   },
   {
    "fieldname": "item_name",
-   "fieldtype": "Data",
-   "label": "Item Name"
+   "fieldtype": "Link",
+   "label": "Item Name",
+   "options": "Item"
   },
   {
    "fieldname": "item_group",
-   "fieldtype": "Data",
-   "label": "Item Group"
+   "fieldtype": "Link",
+   "label": "Item Group",
+   "options": "Item Group"
   },
   {
    "fieldname": "parent_moc",
@@ -1238,7 +1240,7 @@
  "idx": 82,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-11-04 10:51:17.054344",
+ "modified": "2025-11-04 12:26:14.416928",
  "modified_by": "Administrator",
  "module": "ERP Custom",
  "name": "Customer Request For Quotation",

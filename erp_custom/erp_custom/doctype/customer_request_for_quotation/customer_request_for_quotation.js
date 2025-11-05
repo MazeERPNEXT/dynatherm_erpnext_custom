@@ -36,7 +36,7 @@ frappe.ui.form.on("Customer Request For Quotation", {
                 },
             };
         });
-// crfq_id__tender_id
+
         frm.set_indicator_formatter("item_code", function (doc) {
             return !doc.qty && frm.doc.has_unit_price_items ? "yellow" : "";
         });
@@ -64,21 +64,7 @@ frappe.ui.form.on("Customer Request For Quotation", {
         // ✅ Add "Create Estimate" button only after submit
         if (frm.doc.docstatus === 1) {
             frm.add_custom_button(__('Create Estimate'), function () {
-                frappe.model.with_doctype('Estimate', function () {
-                    let new_doc = frappe.model.get_new_doc('Estimate');
-
-                    // Pass values from CRFQ to Estimate
-                    new_doc.crfq__tender_id = frm.doc.crfq__tender_id;
-                    new_doc.tag = frm.doc.tag;
-                    new_doc.item_name = frm.doc.item_name;
-                    new_doc.parent_moc = frm.doc.parent_moc;
-
-                    // Optionally link the CRFQ name (for traceability)
-                    new_doc.customer_request_for_quotation = frm.doc.name;
-
-                    // Route to new Estimate
-                    frappe.set_route('Form', 'Estimate', new_doc.name);
-                });
+                create_estimate_from_crfq(frm);
             }).addClass('btn-primary');
         }
     },
@@ -94,6 +80,38 @@ frappe.ui.form.on("Customer Request For Quotation", {
         frm.fields_dict.customer_address.set_label(__(frm.doc.quotation_to + " Address"));
     },
 });
+
+
+// ✅ Custom Function: Create Estimate & copy both parent + child data
+function create_estimate_from_crfq(frm) {
+    frappe.model.with_doctype('Estimate', function () {
+        let new_doc = frappe.model.get_new_doc('Estimate');
+
+        // -------- Parent Field Mapping --------
+        new_doc.crfq__tender_id = frm.doc.crfq__tender_id;
+        new_doc.tag = frm.doc.tag;
+        new_doc.item_name = frm.doc.item_name;
+        new_doc.parent_moc = frm.doc.parent_moc;
+        new_doc.customer_name = frm.doc.customer_name;
+		new_doc.valid_till = frm.doc.valid_till;
+
+        // Optional: keep link for traceability
+        new_doc.customer_request_for_quotation = frm.doc.name;
+
+        // -------- Child Table Mapping --------
+        if (frm.doc.items && frm.doc.items.length > 0) {
+            frm.doc.items.forEach((item_row) => {
+                let child = frappe.model.add_child(new_doc, "Estimate Item", "items");
+                child.item_code = item_row.item_code;
+                child.item_name = item_row.item_name;
+            });
+        }
+
+        // -------- Redirect to new Estimate form --------
+        frappe.set_route('Form', 'Estimate', new_doc.name);
+    });
+}
+
 
 erpnext.selling.QuotationController = class QuotationController extends erpnext.selling.SellingController {
 	onload(doc, dt, dn) {
