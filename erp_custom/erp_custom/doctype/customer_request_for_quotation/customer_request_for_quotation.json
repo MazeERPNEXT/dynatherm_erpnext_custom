@@ -1110,8 +1110,9 @@
   },
   {
    "fieldname": "location",
-   "fieldtype": "Data",
-   "label": "Location"
+   "fieldtype": "Link",
+   "label": "Location",
+   "options": "Location"
   },
   {
    "fieldname": "closing_date",
@@ -1157,8 +1158,9 @@
   },
   {
    "fieldname": "ra_yn",
-   "fieldtype": "Data",
-   "label": "RA (Y/N)"
+   "fieldtype": "Select",
+   "label": "RA (Y/N)",
+   "options": "\nYes\nNo"
   },
   {
    "fieldname": "prebid_meeting",
@@ -1240,7 +1242,7 @@
  "idx": 82,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-11-04 12:26:14.416928",
+ "modified": "2025-11-07 18:09:53.667234",
  "modified_by": "Administrator",
  "module": "ERP Custom",
  "name": "Customer Request For Quotation",
