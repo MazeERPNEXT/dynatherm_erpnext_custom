@@ -154,7 +154,13 @@ frappe.ui.form.on("Stock Entry", {
                         custom_width: it.custom_width || 0,
                         custom_thickness: it.custom_thickness || 0,
                         custom_density: it.custom_density || 0,
-                        custom_kilogramskgs: it.custom_kilogramskgs || 0
+                        custom_kilogramskgs: it.custom_kilogramskgs || 0,
+
+                        custom_raw_material_type: it.custom_raw_material_type || 0,
+                        custom_outer_diameter: it.custom_outer_diameter || 0,
+                        custom_inner_diameter: it.custom_inner_diameter || 0,
+                        custom_wall_thickness: it.custom_wall_thickness || 0,
+                        custom_base_weight: it.custom_base_weight || 0
                     };
                 });
 
@@ -166,6 +172,12 @@ frappe.ui.form.on("Stock Entry", {
                         frappe.model.set_value(se_item.doctype, se_item.name, "custom_thickness", match.custom_thickness);
                         frappe.model.set_value(se_item.doctype, se_item.name, "custom_density", match.custom_density);
                         frappe.model.set_value(se_item.doctype, se_item.name, "custom_kilogramskgs", match.custom_kilogramskgs);
+
+                        frappe.model.set_value(se_item.doctype, se_item.name, "custom_raw_material_type", match.custom_raw_material_type);
+                        frappe.model.set_value(se_item.doctype, se_item.name, "custom_outer_diameter", match.custom_outer_diameter);
+                        frappe.model.set_value(se_item.doctype, se_item.name, "custom_inner_diameter", match.custom_inner_diameter);
+                        frappe.model.set_value(se_item.doctype, se_item.name, "custom_wall_thickness", match.custom_wall_thickness);
+                        frappe.model.set_value(se_item.doctype, se_item.name, "custom_base_weight", match.custom_base_weight);
                     }
                 });
 
@@ -230,6 +242,12 @@ function create_material_request_with_custom_fields(frm) {
             mr_item.custom_thickness = item.custom_thickness;
             mr_item.custom_density = item.custom_density;
             mr_item.custom_kilogramskgs = item.custom_kilogramskgs;
+
+            mr_item.custom_raw_material_type = item.custom_raw_material_type;
+            mr_item.custom_outer_diameter = item.custom_outer_diameter;
+            mr_item.custom_inner_diameter = item.custom_inner_diameter;
+            mr_item.custom_wall_thickness = item.custom_wall_thickness;
+            mr_item.custom_base_weight = item.custom_base_weight;
         });
 
         // Open the newly created MR
