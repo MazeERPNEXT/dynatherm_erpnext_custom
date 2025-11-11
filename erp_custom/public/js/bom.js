@@ -185,12 +185,28 @@
 
 
 
-
 frappe.ui.form.on('BOM Item', {
-    custom_raw_material_type(frm, cdt, cdn) {
+    // 🔹 When Item is selected, auto fetch Item Group and re-trigger weight logic
+    item_code(frm, cdt, cdn) {
+        const row = locals[cdt][cdn];
+        if (row.item_code) {
+            frappe.db.get_value('Item', row.item_code, 'item_group', (r) => {
+                if (r && r.item_group) {
+                    frappe.model.set_value(cdt, cdn, 'custom_item_group', r.item_group);
+                    toggle_fields(frm, cdt, cdn);
+                    calculate_kgs(frm, cdt, cdn);
+                }
+            });
+        }
+    },
+
+    // 🔹 Recalculate if user changes group manually
+    custom_item_group(frm, cdt, cdn) {
         toggle_fields(frm, cdt, cdn);
         calculate_kgs(frm, cdt, cdn);
     },
+
+    // 🔹 Recalculate when dimension/density fields change
     custom_length: calculate_kgs,
     custom_width: calculate_kgs,
     custom_thickness: calculate_kgs,
@@ -198,6 +214,8 @@ frappe.ui.form.on('BOM Item', {
     custom_inner_diameter: calculate_kgs,
     custom_wall_thickness: calculate_kgs,
     custom_density: calculate_kgs,
+
+    // 🔹 If quantity changes → update total weight
     qty(frm, cdt, cdn) {
         const row = locals[cdt][cdn];
         const qty_val = parseFloat(row.qty) || 0;
@@ -209,36 +227,35 @@ frappe.ui.form.on('BOM Item', {
 function toggle_fields(frm, cdt, cdn) {
     const row = locals[cdt][cdn];
     const grid = frm.fields_dict["items"].grid;
-    const type = row.custom_raw_material_type;
+    const type = row.custom_item_group;
 
-    // 🔹 Hide all first
     const all_fields = [
         "custom_length", "custom_width", "custom_thickness",
         "custom_outer_diameter", "custom_inner_diameter", "custom_wall_thickness"
     ];
     all_fields.forEach(f => grid.toggle_display(f, false));
 
-    // 🔹 Show only what’s needed
-    if (type === "Plate") {
+    // ✅ Show only relevant fields per material
+    if (type === "Plates") {
         grid.toggle_display("custom_length", true);
         grid.toggle_display("custom_width", true);
         grid.toggle_display("custom_thickness", true);
     } 
-    else if (["Tube", "Pipe"].includes(type)) {
+    else if (["Tubes", "Pipes"].includes(type)) {
         grid.toggle_display("custom_length", true);
         grid.toggle_display("custom_outer_diameter", true);
         grid.toggle_display("custom_wall_thickness", true);
     } 
-    else if (["Flange", "Ring"].includes(type)) {
+    else if (["Flanges", "Rings"].includes(type)) {
         grid.toggle_display("custom_outer_diameter", true);
         grid.toggle_display("custom_inner_diameter", true);
         grid.toggle_display("custom_thickness", true);
     } 
-    else if (type === "Rod") {
+    else if (type === "Rods") {
         grid.toggle_display("custom_length", true);
         grid.toggle_display("custom_outer_diameter", true);
     } 
-    else if (type === "Forging") {
+    else if (type === "Forgings") {
         grid.toggle_display("custom_length", true);
         grid.toggle_display("custom_outer_diameter", true);
         grid.toggle_display("custom_wall_thickness", true);
@@ -249,13 +266,13 @@ function toggle_fields(frm, cdt, cdn) {
 
 function calculate_kgs(frm, cdt, cdn) {
     const row = locals[cdt][cdn];
-    const type = row.custom_raw_material_type;
-    const density = parseFloat(row.custom_density) || 0;
+    const type = row.custom_item_group;
+    const density = parseFloat(row.custom_density) || 0; 
     const π = Math.PI;
     let base_weight = 0;
 
-    // ---- Plate ----
-    if (type === "Plate") {
+    // ---- Plates ----
+    if (type === "Plates") {
         const L = parseFloat(row.custom_length) || 0;
         const W = parseFloat(row.custom_width) || 0;
         const T = parseFloat(row.custom_thickness) || 0;
@@ -263,8 +280,8 @@ function calculate_kgs(frm, cdt, cdn) {
             base_weight = (L * W * T * density) / 1_000_000;
     }
 
-    // ---- Tube / Pipe ----
-    else if (["Tube", "Pipe"].includes(type)) {
+    // ---- Tubes / Pipes ----
+    else if (["Tubes", "Pipes"].includes(type)) {
         const L = parseFloat(row.custom_length) || 0;
         const OD = parseFloat(row.custom_outer_diameter) || 0;
         const WT = parseFloat(row.custom_wall_thickness) || 0;
@@ -275,8 +292,8 @@ function calculate_kgs(frm, cdt, cdn) {
         }
     }
 
-    // ---- Flange / Ring ----
-    else if (["Flange", "Ring"].includes(type)) {
+    // ---- Flanges / Rings ----
+    else if (["Flanges", "Rings"].includes(type)) {
         const OD = parseFloat(row.custom_outer_diameter) || 0;
         const ID = parseFloat(row.custom_inner_diameter) || 0;
         const T = parseFloat(row.custom_thickness) || 0;
@@ -287,8 +304,8 @@ function calculate_kgs(frm, cdt, cdn) {
         }
     }
 
-    // ---- Rod (solid cylinder) ----
-    else if (type === "Rod") {
+    // ---- Rods (solid cylinder) ----
+    else if (type === "Rods") {
         const L = parseFloat(row.custom_length) || 0;
         const D = parseFloat(row.custom_outer_diameter) || 0;
         if (L && D && density) {
@@ -298,8 +315,8 @@ function calculate_kgs(frm, cdt, cdn) {
         }
     }
 
-    // ---- Forging (hollow or solid cylinder) ----
-    else if (type === "Forging") {
+    // ---- Forgings ----
+    else if (type === "Forgings") {
         const L = parseFloat(row.custom_length) || 0;
         const OD = parseFloat(row.custom_outer_diameter) || 0;
         const WT = parseFloat(row.custom_wall_thickness) || 0;
@@ -311,12 +328,12 @@ function calculate_kgs(frm, cdt, cdn) {
         }
     }
 
-    // ---- Other ----
+    // ---- Others ----
     else if (type === "Other") {
         base_weight = parseFloat(row.custom_kilogramskgs) / (parseFloat(row.qty) || 1) || 0;
     }
 
-    // ✅ Update weight fields
+    // ✅ Update all weight-related fields
     frappe.model.set_value(cdt, cdn, 'custom_base_weight', flt(base_weight, 4));
     const total_weight = flt(base_weight * (parseFloat(row.qty) || 1), 2);
     frappe.model.set_value(cdt, cdn, 'custom_kilogramskgs', total_weight);
