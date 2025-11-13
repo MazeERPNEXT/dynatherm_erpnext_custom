@@ -77,7 +77,7 @@
 
 
 
-//   Last used worked code
+// //   Last used worked code
 // frappe.ui.form.on('BOM Item', {
 //     items_add: function(frm, cdt, cdn) {
 //         const row = locals[cdt][cdn];
@@ -501,3 +501,4 @@ function calculate_kgs(frm, cdt, cdn) {
 
     frm.refresh_field("items");
 }
+
