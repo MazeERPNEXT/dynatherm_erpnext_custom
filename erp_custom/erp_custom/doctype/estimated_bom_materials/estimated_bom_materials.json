@@ -72,12 +72,14 @@
    "fieldtype": "Section Break"
   },
   {
+   "depends_on": "eval: ['Plates','Tubes','Pipes','Forgings','Rods','Bars'].includes(doc.item_group)\n",
    "fieldname": "length",
    "fieldtype": "Float",
    "in_list_view": 1,
    "label": "Length"
   },
   {
+   "depends_on": "eval: doc.item_group === 'Plates'\n",
    "fieldname": "width",
    "fieldtype": "Float",
    "in_list_view": 1,
@@ -88,12 +90,14 @@
    "fieldtype": "Column Break"
   },
   {
+   "depends_on": "eval: ['Plates','Flanges'].includes(doc.item_group)\n",
    "fieldname": "thickness",
    "fieldtype": "Float",
    "in_list_view": 1,
    "label": "Thickness"
   },
   {
+   "depends_on": "eval: ['Plates','Tubes','Pipes','Rods','Bars','Flanges','Forgings'].includes(doc.item_group)\n",
    "fieldname": "density",
    "fieldtype": "Float",
    "in_list_view": 1,
@@ -125,18 +129,21 @@
    "label": "Raw Material Type"
   },
   {
+   "depends_on": "eval: ['Tubes','Pipes','Rods','Bars','Flanges','Forgings'].includes(doc.item_group)\n",
    "fieldname": "outer_diameter",
    "fieldtype": "Float",
    "in_list_view": 1,
    "label": "Outer Diameter"
   },
   {
+   "depends_on": "eval: ['Flanges'].includes(doc.item_group)\n",
    "fieldname": "inner_diameter",
    "fieldtype": "Float",
    "in_list_view": 1,
    "label": "Inner Diameter"
   },
   {
+   "depends_on": "eval: ['Tubes','Pipes','Forgings'].includes(doc.item_group)\n",
    "fieldname": "wall_thickness",
    "fieldtype": "Float",
    "in_list_view": 1,
@@ -163,7 +170,7 @@
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2025-11-13 18:24:14.175138",
+ "modified": "2025-11-20 17:49:45.191627",
  "modified_by": "Administrator",
  "module": "ERP Custom",
  "name": "Estimated BOM Materials",

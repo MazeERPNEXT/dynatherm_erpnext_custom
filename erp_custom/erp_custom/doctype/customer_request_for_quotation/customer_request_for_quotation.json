@@ -20,8 +20,8 @@
   "transaction_date",
   "closing_date",
   "time",
-  "item_group",
   "item_name",
+  "item_group",
   "column_break_7",
   "order_type",
   "company",
@@ -1137,9 +1137,8 @@
   },
   {
    "fieldname": "item_group",
-   "fieldtype": "Link",
-   "label": "Item Group",
-   "options": "Item Group"
+   "fieldtype": "Data",
+   "label": "Item Group"
   },
   {
    "fieldname": "parent_moc",
@@ -1242,7 +1241,7 @@
  "idx": 82,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-11-07 18:09:53.667234",
+ "modified": "2025-11-19 11:04:54.325379",
  "modified_by": "Administrator",
  "module": "ERP Custom",
  "name": "Customer Request For Quotation",

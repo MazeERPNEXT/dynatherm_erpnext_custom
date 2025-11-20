@@ -36,6 +36,7 @@
   "get_subassembly_items",
   "sub_assembly_items_section",
   "estimated_sub_assembly_items",
+  "total_sub_assembly",
   "estimated_operation_section",
   "estimated_operation",
   "taxes_section",
@@ -527,13 +528,18 @@
    "fieldname": "get_subassembly_items",
    "fieldtype": "Button",
    "label": "Get subassembly Items"
+  },
+  {
+   "fieldname": "total_sub_assembly",
+   "fieldtype": "Float",
+   "label": "Total (Sub Assembly)"
   }
  ],
  "icon": "fa fa-shopping-cart",
  "idx": 82,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-11-13 15:46:55.213710",
+ "modified": "2025-11-19 13:33:27.803463",
  "modified_by": "Administrator",
  "module": "ERP Custom",
  "name": "Estimate",

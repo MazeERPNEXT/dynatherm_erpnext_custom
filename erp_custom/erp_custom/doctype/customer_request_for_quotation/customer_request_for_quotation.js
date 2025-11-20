@@ -79,6 +79,20 @@ frappe.ui.form.on("Customer Request For Quotation", {
     set_label: function (frm) {
         frm.fields_dict.customer_address.set_label(__(frm.doc.quotation_to + " Address"));
     },
+
+	item_name(frm, cdt, cdn) {
+    const row = locals[cdt][cdn];
+    const item_name = row.item_name;
+
+    if (!item_name) return;
+
+    frappe.db.get_value("Item", { item_name: item_name }, ["item_group"])
+        .then(r => {
+            if (r && r.message && r.message.item_group) {
+                frappe.model.set_value(cdt, cdn, "item_group", r.message.item_group);
+            }
+        });
+	},
 });
 
 
