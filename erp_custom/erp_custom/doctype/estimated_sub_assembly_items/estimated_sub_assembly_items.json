@@ -16,6 +16,8 @@
   "rate",
   "amount",
   "margin",
+  "transport_cost",
+  "get_items",
   "section_break_emju",
   "dimension_column",
   "length",
@@ -165,14 +167,27 @@
   {
    "fieldname": "margin",
    "fieldtype": "Float",
-   "label": "Margin"
+   "label": "Scrap Margin"
+  },
+  {
+   "fieldname": "transport_cost",
+   "fieldtype": "Float",
+   "in_list_view": 1,
+   "label": "Transport Cost"
+  },
+  {
+   "default": "0",
+   "fieldname": "get_items",
+   "fieldtype": "Check",
+   "in_list_view": 1,
+   "label": "Get Items"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2025-11-20 17:58:27.897352",
+ "modified": "2025-11-21 18:20:19.211843",
  "modified_by": "Administrator",
  "module": "ERP Custom",
  "name": "Estimated Sub Assembly Items",

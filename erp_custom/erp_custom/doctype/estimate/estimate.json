@@ -29,14 +29,17 @@
   "items",
   "bom",
   "get_items_from_bom",
+  "transport_fg_costs",
   "section_break_sixs",
   "column_break_zgob",
   "estimated_bom_materials",
   "total",
   "get_subassembly_items",
+  "transport_sfg_costs",
   "sub_assembly_items_section",
   "estimated_sub_assembly_items",
   "total_sub_assembly",
+  "transport_rm_costs",
   "estimated_operation_section",
   "estimated_operation",
   "taxes_section",
@@ -49,6 +52,8 @@
   "base_total_taxes_and_charges",
   "column_break_42",
   "total_taxes_and_charges",
+  "consumable_tab",
+  "table_galp",
   "address_and_contact_tab",
   "billing_address_section",
   "customer_address",
@@ -533,13 +538,38 @@
    "fieldname": "total_sub_assembly",
    "fieldtype": "Float",
    "label": "Total (Sub Assembly)"
+  },
+  {
+   "fieldname": "consumable_tab",
+   "fieldtype": "Tab Break",
+   "label": "Consumable"
+  },
+  {
+   "fieldname": "table_galp",
+   "fieldtype": "Table",
+   "options": "Estimated Consumable"
+  },
+  {
+   "fieldname": "transport_sfg_costs",
+   "fieldtype": "Float",
+   "label": "Transport SFG Costs"
+  },
+  {
+   "fieldname": "transport_rm_costs",
+   "fieldtype": "Float",
+   "label": "Transport RM Costs"
+  },
+  {
+   "fieldname": "transport_fg_costs",
+   "fieldtype": "Float",
+   "label": "Transport FG Costs"
   }
  ],
  "icon": "fa fa-shopping-cart",
  "idx": 82,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-11-19 13:33:27.803463",
+ "modified": "2025-11-21 22:12:40.434191",
  "modified_by": "Administrator",
  "module": "ERP Custom",
  "name": "Estimate",
