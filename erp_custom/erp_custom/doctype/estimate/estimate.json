@@ -53,7 +53,8 @@
   "column_break_42",
   "total_taxes_and_charges",
   "consumable_tab",
-  "table_galp",
+  "estimated_consumable",
+  "total_consumable_costs",
   "transport_consumable_costs",
   "address_and_contact_tab",
   "billing_address_section",
@@ -546,11 +547,6 @@
    "label": "Consumable"
   },
   {
-   "fieldname": "table_galp",
-   "fieldtype": "Table",
-   "options": "Estimated Consumable"
-  },
-  {
    "fieldname": "transport_sfg_costs",
    "fieldtype": "Float",
    "label": "Transport SFG Costs"
@@ -569,13 +565,24 @@
    "fieldname": "transport_consumable_costs",
    "fieldtype": "Float",
    "label": "Transport Consumable Costs"
+  },
+  {
+   "fieldname": "estimated_consumable",
+   "fieldtype": "Table",
+   "label": "Estimated Consumable",
+   "options": "Estimated Consumable"
+  },
+  {
+   "fieldname": "total_consumable_costs",
+   "fieldtype": "Float",
+   "label": "Total Consumable Costs"
   }
  ],
  "icon": "fa fa-shopping-cart",
  "idx": 82,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-11-22 12:20:06.654450",
+ "modified": "2025-11-25 14:45:35.319360",
  "modified_by": "Administrator",
  "module": "ERP Custom",
  "name": "Estimate",
