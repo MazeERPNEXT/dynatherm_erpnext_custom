@@ -20,6 +20,7 @@
   "transaction_date",
   "closing_date",
   "time",
+  "item_code",
   "item_name",
   "item_group",
   "column_break_7",
@@ -55,7 +56,7 @@
   "price_list_currency",
   "plc_conversion_rate",
   "ignore_pricing_rule",
-  "items_section",
+  "customer_request_for_quotation_item_section",
   "items",
   "unit_basic",
   "sec_break23",
@@ -229,7 +230,7 @@
    "no_copy": 1,
    "oldfieldname": "amended_from",
    "oldfieldtype": "Data",
-   "options": "Quotation",
+   "options": "Customer Request For Quotation",
    "print_hide": 1,
    "read_only": 1,
    "width": "150px"
@@ -428,13 +429,6 @@
    "label": "Ignore Pricing Rule",
    "permlevel": 1,
    "print_hide": 1
-  },
-  {
-   "fieldname": "items_section",
-   "fieldtype": "Section Break",
-   "hide_border": 1,
-   "oldfieldtype": "Section Break",
-   "options": "fa fa-shopping-cart"
   },
   {
    "allow_bulk_edit": 1,
@@ -1131,9 +1125,8 @@
   },
   {
    "fieldname": "item_name",
-   "fieldtype": "Link",
-   "label": "Item Name",
-   "options": "Item"
+   "fieldtype": "Data",
+   "label": "Item Name"
   },
   {
    "fieldname": "item_group",
@@ -1235,13 +1228,27 @@
    "fieldname": "crfq__tender_id",
    "fieldtype": "Data",
    "label": "CRFQ / Tender ID"
+  },
+  {
+   "fieldname": "item_code",
+   "fieldtype": "Link",
+   "label": "Item Code",
+   "options": "Item"
+  },
+  {
+   "fieldname": "customer_request_for_quotation_item_section",
+   "fieldtype": "Section Break",
+   "hide_border": 1,
+   "label": "Customer Request For Quotation Item",
+   "oldfieldtype": "Section Break",
+   "options": "fa fa-shopping-cart"
   }
  ],
  "icon": "fa fa-shopping-cart",
  "idx": 82,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-11-19 11:04:54.325379",
+ "modified": "2025-11-26 13:13:21.241288",
  "modified_by": "Administrator",
  "module": "ERP Custom",
  "name": "Customer Request For Quotation",

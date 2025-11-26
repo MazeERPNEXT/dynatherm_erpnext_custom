@@ -98,7 +98,7 @@
    "no_copy": 1,
    "oldfieldname": "amended_from",
    "oldfieldtype": "Data",
-   "options": "Quotation",
+   "options": "Estimate",
    "print_hide": 1,
    "read_only": 1,
    "width": "150px"
@@ -582,7 +582,7 @@
  "idx": 82,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-11-25 14:45:35.319360",
+ "modified": "2025-11-26 13:14:14.301435",
  "modified_by": "Administrator",
  "module": "ERP Custom",
  "name": "Estimate",
