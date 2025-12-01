@@ -1,24 +1,48 @@
+// frappe.ui.form.on("Purchase Order", {
+//     refresh(frm) {
+//         frm.set_query("supplier", () => {
+//             return {
+//                 filters: {
+//                     workflow_state: "Approved"
+//                 }
+//             };
+//         });
+
+//         setTimeout(() => {
+//             let f = frm.fields_dict["supplier"];
+//             if (f && f.df) {
+//                 f.df.get_query = function () {
+//                     return {
+//                         filters: {
+//                             workflow_state: "Approved"
+//                         }
+//                     };
+//                 };
+//             }
+//         }, 0);
+//     }
+// });
+
+
+
 frappe.ui.form.on("Purchase Order", {
     refresh(frm) {
+        // Filter for Supplier (already working for you)
         frm.set_query("supplier", () => {
             return {
-                filters: {
-                    workflow_state: "Approved"
-                }
+                filters: { workflow_state: "Approved" }
             };
         });
 
-        setTimeout(() => {
-            let f = frm.fields_dict["supplier"];
-            if (f && f.df) {
-                f.df.get_query = function () {
-                    return {
-                        filters: {
-                            workflow_state: "Approved"
-                        }
-                    };
-                };
-            }
-        }, 0);
+        // Filter for Item Code inside the child table
+        frm.fields_dict["items"].grid.get_field("item_code").get_query = function (doc, cdt, cdn) {
+            return {
+                filters: {
+                    workflow_state: "Approved",
+                    is_purchase_item: 1,  
+                    has_variants: 0    
+                }
+            };
+        };
     }
 });

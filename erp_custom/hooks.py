@@ -329,11 +329,21 @@ doctype_js = {
     "Item": "public/js/item.js",
     "BOM": "public/js/bom.js",
     "BOM Item": "public/js/bom_item.js",
-    "Work Order": "public/js/work_order.js",
     "Quotation": "public/js/quotation.js",
+    
+    "Work Order": "public/js/work_order.js",
     "Stock Entry": "public/js/stock_entry.js",
     "Material Request": "public/js/material_request.js",
+    
     "Purchase Order": "public/js/purchase_order.js",
+    "Purchase Receipt": "public/js/purchase_receipt.js",
+    "Purchase Invoice": "public/js/purchase_invoice.js",
+    
+    "Sales Order": "public/js/sales_order.js",
+    "Sales Invoice": "public/js/sales_invoice.js",
+    "Delivery Note": "public/js/delivery_note.js",
+    
+    "Stock Order": "public/js/stock_order.js",
 }
 
 
