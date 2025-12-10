@@ -425,11 +425,12 @@ frappe.ui.form.on("Estimated BOM Materials", {
     item_code(frm, cdt, cdn) {
         const row = locals[cdt][cdn];
 
-        frappe.db.get_value("Item", row.item_code, ["item_name", "item_group"])
+        frappe.db.get_value("Item", row.item_code, ["item_name", "item_group","custom_material_type"])
             .then(r => {
                 if (r && r.message) {
                     row.item_name = r.message.item_name || row.item_name;
                     row.item_group = r.message.item_group || row.item_group;
+                    row.material_type = r.message.custom_material_type || row.custom_material_type;
                 }
 
                 calculate_estimate_weight(frm, cdt, cdn);
@@ -580,10 +581,11 @@ frappe.ui.form.on("Estimated Sub Assembly Items", {
         if (!row.item_code) return;
 
         // 1 Get Item Name + Item Group
-        let item = await frappe.db.get_value("Item", row.item_code, ["item_name", "item_group"]);
+        let item = await frappe.db.get_value("Item", row.item_code, ["item_name", "item_group","custom_material_type"]);
         if (item && item.message) {
             frappe.model.set_value(cdt, cdn, "item_name", item.message.item_name);
             frappe.model.set_value(cdt, cdn, "item_group", item.message.item_group);
+            frappe.model.set_value(cdt, cdn, "material_type", item.message.custom_material_type);
         }
 
         // 2 Get Item Price → price_list_rate

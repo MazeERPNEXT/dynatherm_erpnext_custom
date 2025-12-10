@@ -128,7 +128,7 @@ function calculate_item_kgs(frm) {
     }
 
     // FLANGES
-    else if (type === "Flanges") {
+    else if (type === "Flanges", "Rings") {
         const OD = flt(frm.doc.custom_outer_diameter);
         const ID = flt(frm.doc.custom_inner_diameter);
         const T = flt(frm.doc.custom_thickness);
