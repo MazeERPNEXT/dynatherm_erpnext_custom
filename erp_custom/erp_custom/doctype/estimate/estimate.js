@@ -105,6 +105,36 @@ function fetch_bom_recursive(bom_name, opts, cb) {
 frappe.ui.form.on("Estimate", {
 	refresh(frm) {
 
+        if (frm.doc.docstatus === 1) {
+
+    frm.add_custom_button("Create Quotation", () => {
+
+        frappe.model.with_doctype("Quotation", () => {
+            let doc = frappe.model.get_new_doc("Quotation");
+
+            // Header fields
+            doc.custom_crfq__tender_id = frm.doc.crfq__tender_id || "";
+            doc.party_name = frm.doc.customer_name || "";
+
+            // Child table build
+            (frm.doc.items || []).forEach(row => {
+                let child = frappe.model.add_child(doc, "items");
+                child.item_code = row.item_code;
+                child.item_name = row.item_name;
+                child.item_group = row.item_group;
+
+                // BOM from Estimate Header
+                child.custom_bom_no = frm.doc.bom || "";
+            });
+
+            // Now open Quotation — with fully initialized child grid
+            frappe.set_route("Form", doc.doctype, doc.name);
+        });
+
+    }).addClass("btn-primary");
+}
+
+
      // child table fieldname in Estimate form
         const child_fieldname = "estimated_consumable";
 
@@ -425,18 +455,26 @@ frappe.ui.form.on("Estimated BOM Materials", {
     item_code(frm, cdt, cdn) {
         const row = locals[cdt][cdn];
 
-        frappe.db.get_value("Item", row.item_code, ["item_name", "item_group","custom_material_type"])
-            .then(r => {
-                if (r && r.message) {
-                    row.item_name = r.message.item_name || row.item_name;
-                    row.item_group = r.message.item_group || row.item_group;
-                    row.material_type = r.message.custom_material_type || row.custom_material_type;
-                }
+        frappe.db.get_value(
+            "Item",
+            row.item_code,
+            ["item_name", "item_group", "custom_material_type", "custom_density"]
+        ).then(r => {
+            if (r && r.message) {
+                let data = r.message;
 
-                calculate_estimate_weight(frm, cdt, cdn);
-                frm.refresh_field("estimated_bom_materials");
-                compute_transport_sfg_total(frm);
-            });
+                row.item_name = data.item_name || row.item_name;
+                row.item_group = data.item_group || row.item_group;
+
+                // *** FIXED MATERIAL TYPE ***
+                row.material_type = data.custom_material_type || row.material_type;
+                row.density = flt(data.custom_density) || row.density;
+            }
+
+            calculate_estimate_weight(frm, cdt, cdn);
+            frm.refresh_field("estimated_bom_materials");
+            compute_transport_sfg_total(frm);
+        });
     },
 
     rate: function(frm, cdt, cdn) {
@@ -475,6 +513,7 @@ frappe.ui.form.on("Estimated BOM Materials", {
         frm.refresh_field("estimated_bom_materials");
     },
 });
+
 
 
 // -------------------------- WEIGHT CALCULATION (All Item Groups)------------------------------------
@@ -580,12 +619,18 @@ frappe.ui.form.on("Estimated Sub Assembly Items", {
         const row = locals[cdt][cdn];
         if (!row.item_code) return;
 
-        // 1 Get Item Name + Item Group
-        let item = await frappe.db.get_value("Item", row.item_code, ["item_name", "item_group","custom_material_type"]);
+        // 1 Get Item Name + Item Group + Custom Fields
+        let item = await frappe.db.get_value("Item", row.item_code, 
+            ["item_name", "item_group", "custom_material_type", "custom_density"]
+        );
+
         if (item && item.message) {
             frappe.model.set_value(cdt, cdn, "item_name", item.message.item_name);
             frappe.model.set_value(cdt, cdn, "item_group", item.message.item_group);
+
+            // CUSTOM MATERIAL TYPE → child.material_type
             frappe.model.set_value(cdt, cdn, "material_type", item.message.custom_material_type);
+            frappe.model.set_value(cdt, cdn, "density", item.message.custom_density);
         }
 
         // 2 Get Item Price → price_list_rate
@@ -606,11 +651,9 @@ frappe.ui.form.on("Estimated Sub Assembly Items", {
         calculate_amount_and_total(frm, cdt, cdn);
         calculate_transport_cost_total(frm);
 
-        // ensure UI is up-to-date
         frm.refresh_field("estimated_sub_assembly_items");
     },
 
-    // qty, rate, margin changes recalc
     qty(frm, cdt, cdn) {
         calculate_sub_assembly_weight(frm, cdt, cdn);
         calculate_amount_and_total(frm, cdt, cdn);
@@ -627,17 +670,14 @@ frappe.ui.form.on("Estimated Sub Assembly Items", {
         calculate_transport_cost_total(frm);
     },
 
-    // Transport Cost direct change -> recalc parent transport
     transport_cost(frm, cdt, cdn) {
         calculate_transport_cost_total(frm);
     },
 
-    // IMPORTANT: listen to amount changes so parent total updates immediately
     amount(frm, cdt, cdn) {
         update_total_sub_assembly(frm);
     },
 
-    // Dimension triggers
     length: calculate_sub_assembly_weight,
     width: calculate_sub_assembly_weight,
     thickness: calculate_sub_assembly_weight,
@@ -646,7 +686,6 @@ frappe.ui.form.on("Estimated Sub Assembly Items", {
     inner_diameter: calculate_sub_assembly_weight,
     wall_thickness: calculate_sub_assembly_weight,
 
-    // When a new row is added: set sensible defaults and update totals immediately
     estimated_sub_assembly_items_add(frm, cdt, cdn) {
         const row = locals[cdt][cdn];
         if (row) {
@@ -655,12 +694,10 @@ frappe.ui.form.on("Estimated Sub Assembly Items", {
             if (!row.amount) frappe.model.set_value(cdt, cdn, "amount", 0);
             if (!row.transport_cost) frappe.model.set_value(cdt, cdn, "transport_cost", 0);
         }
-        // keep parent totals in sync
         calculate_transport_cost_total(frm);
         update_total_sub_assembly(frm);
     },
 
-    // When a row is removed: delay a tick so frm.doc reflects removal, then update totals
     estimated_sub_assembly_items_remove(frm) {
         setTimeout(() => {
             calculate_transport_cost_total(frm);
@@ -668,7 +705,6 @@ frappe.ui.form.on("Estimated Sub Assembly Items", {
         }, 10);
     }
 });
-
 
 // ----------------------- Get Child Table Fieldname ---------------------------
 function get_sub_assembly_child_table(frm) {
@@ -804,16 +840,26 @@ function calculate_sub_assembly_weight(frm, cdt, cdn) {
 // -------------------- Estimated Operation --------------------
 // ------------------------------------------------------------
 frappe.ui.form.on('Estimated Operation', {
-    estimate_qty: function(frm, cdt, cdn) {
+    estimate_qty(frm, cdt, cdn) {
         calculate_amount(frm, cdt, cdn);
+        calculate_total_operation_costs(frm);
     },
-    estimate_rate: function(frm, cdt, cdn) {
+    estimate_rate(frm, cdt, cdn) {
         calculate_amount(frm, cdt, cdn);
+        calculate_total_operation_costs(frm);
     },
-    estimate_margin: function(frm, cdt, cdn) {
+    estimate_margin(frm, cdt, cdn) {
         apply_margin(frm, cdt, cdn);
+        calculate_total_operation_costs(frm);
+    },
+
+    // when row deleted → recalc total
+    estimated_operation_remove(frm) {
+        calculate_total_operation_costs(frm);
     }
 });
+
+// ========== Amount Calculations ==========
 
 function calculate_amount(frm, cdt, cdn) {
     let row = locals[cdt][cdn];
@@ -834,6 +880,19 @@ function apply_margin(frm, cdt, cdn) {
     let total_amount = base_amount + (base_amount * (margin / 100.0));
 
     frappe.model.set_value(cdt, cdn, 'estimate_amount', total_amount);
+}
+
+// ========== GRAND TOTAL CALCULATOR ==========
+
+function calculate_total_operation_costs(frm) {
+    let total = 0;
+
+    (frm.doc.estimated_operation || []).forEach(row => {
+        total += flt(row.estimate_amount);
+    });
+
+    frm.set_value("total_operation_costs", total);
+    frm.refresh_field("total_operation_costs");
 }
 
 // ------------------------------------------------------------

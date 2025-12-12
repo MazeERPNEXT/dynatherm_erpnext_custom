@@ -42,6 +42,7 @@
   "transport_rm_costs",
   "estimated_operation_section",
   "estimated_operation",
+  "total_operation_costs",
   "taxes_section",
   "tax_category",
   "column_break_36",
@@ -576,13 +577,18 @@
    "fieldname": "total_consumable_costs",
    "fieldtype": "Float",
    "label": "Total Consumable Costs"
+  },
+  {
+   "fieldname": "total_operation_costs",
+   "fieldtype": "Float",
+   "label": "Total (Opertion)"
   }
  ],
  "icon": "fa fa-shopping-cart",
  "idx": 82,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-11-27 18:32:03.157413",
+ "modified": "2025-12-11 13:05:40.371000",
  "modified_by": "Administrator",
  "module": "ERP Custom",
  "name": "Estimate",
