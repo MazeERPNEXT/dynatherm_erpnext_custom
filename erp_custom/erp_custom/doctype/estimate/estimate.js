@@ -105,35 +105,44 @@ function fetch_bom_recursive(bom_name, opts, cb) {
 frappe.ui.form.on("Estimate", {
 	refresh(frm) {
 
-        if (frm.doc.docstatus === 1) {
+       if (frm.doc.docstatus === 1) {
 
-    frm.add_custom_button("Create Quotation", () => {
+            frm.add_custom_button("Create Quotation", () => {
 
-        frappe.model.with_doctype("Quotation", () => {
-            let doc = frappe.model.get_new_doc("Quotation");
+                frappe.model.with_doctype("Quotation", () => {
+                    let quotation = frappe.model.get_new_doc("Quotation");
 
-            // Header fields
-            doc.custom_crfq__tender_id = frm.doc.crfq__tender_id || "";
-            doc.party_name = frm.doc.customer_name || "";
+                    // Map Header fields
+                    quotation.custom_crfq__tender_id = frm.doc.crfq__tender_id || "";
+                    quotation.party_name = frm.doc.customer_name || "";
 
-            // Child table build
-            (frm.doc.items || []).forEach(row => {
-                let child = frappe.model.add_child(doc, "items");
-                child.item_code = row.item_code;
-                child.item_name = row.item_name;
-                child.item_group = row.item_group;
+                    // Child table mapping
+                    (frm.doc.items || []).forEach(item => {
 
-                // BOM from Estimate Header
-                child.custom_bom_no = frm.doc.bom || "";
-            });
+                        let child = frappe.model.add_child(quotation, "items");
 
-            // Now open Quotation — with fully initialized child grid
-            frappe.set_route("Form", doc.doctype, doc.name);
-        });
+                        Object.assign(child, {
+                            item_code: item.item_code,
+                            item_name: item.item_name,
+                            item_group: item.item_group,
 
-    }).addClass("btn-primary");
-}
+                            stock_uom: item.uom,     
+                            uom: item.uom,           
+                            qty: item.qty,
+                            rate: item.rate,
+                            amount: item.amount,
 
+                            custom_bom_no: frm.doc.bom || "",
+                            estimate_rate: item.rate 
+                        });
+                    });
+
+                    quotation.__run_link_triggers = true; // prevent auto fetch override
+                    frappe.set_route("Form", quotation.doctype, quotation.name);
+                });
+
+            }).addClass("btn-primary");
+        }
 
      // child table fieldname in Estimate form
         const child_fieldname = "estimated_consumable";

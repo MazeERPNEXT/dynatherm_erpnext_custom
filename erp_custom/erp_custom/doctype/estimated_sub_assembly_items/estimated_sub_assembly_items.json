@@ -114,6 +114,7 @@
   {
    "fieldname": "raw_material_type",
    "fieldtype": "Data",
+   "hidden": 1,
    "in_list_view": 1,
    "label": "Raw Material Type"
   },
@@ -141,6 +142,7 @@
   {
    "fieldname": "base_weight",
    "fieldtype": "Float",
+   "hidden": 1,
    "in_list_view": 1,
    "label": "Base Weight"
   },
@@ -191,7 +193,7 @@
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2025-12-10 17:26:50.548333",
+ "modified": "2025-12-13 10:28:16.883200",
  "modified_by": "Administrator",
  "module": "ERP Custom",
  "name": "Estimated Sub Assembly Items",
