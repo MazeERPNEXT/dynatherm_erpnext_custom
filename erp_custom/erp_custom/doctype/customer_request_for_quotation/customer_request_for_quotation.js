@@ -124,15 +124,22 @@ frappe.ui.form.on("Customer Request For Quotation", {
 
 // When creating a new child row, inherit parent item fields (if parent has them)
 frappe.ui.form.on("Customer Request For Quotation Item", {
-    items_add: function(frm, cdt, cdn) {
-        // new row is locals[cdt][cdn]
-        let row = locals[cdt][cdn];
-        if (frm.doc.item_code) {
-            frappe.model.set_value(cdt, cdn, "item_code", frm.doc.item_code);
-            frappe.model.set_value(cdt, cdn, "item_name", frm.doc.item_name || "");
-            frappe.model.set_value(cdt, cdn, "item_group", frm.doc.item_group || "");
-        }
-    },
+    items_add: function (frm, cdt, cdn) {
+    let row = locals[cdt][cdn];
+    if (!row.item_code) return;
+
+    frappe.db.get_value(
+        "Item",
+        row.item_code,
+        ["item_name", "item_group", "default_bom"]
+    ).then(r => {
+        if (!r.message) return;
+
+        frappe.model.set_value(cdt, cdn, "item_name", r.message.item_name);
+        frappe.model.set_value(cdt, cdn, "item_group", r.message.item_group);
+        frappe.model.set_value(cdt, cdn, "bom_no", r.message.default_bom || "");
+    });
+},
 
 	item_code(frm, cdt, cdn) {
         let row = locals[cdt][cdn];
@@ -150,7 +157,6 @@ frappe.ui.form.on("Customer Request For Quotation Item", {
 });
 
 
-// ✅ Custom Function: Create Estimate & copy both parent + child data
 function create_estimate_from_crfq(frm) {
     frappe.model.with_doctype('Estimate', function () {
         let new_doc = frappe.model.get_new_doc('Estimate');
@@ -163,24 +169,33 @@ function create_estimate_from_crfq(frm) {
         new_doc.customer_name = frm.doc.customer_name;
         new_doc.valid_till = frm.doc.valid_till;
 
-        // Optional: keep link for traceability
+        // Link for traceability
         new_doc.customer_request_for_quotation = frm.doc.name;
 
-        // -------- Child Table Mapping --------
+        // -------- BOM Mapping (IMPORTANT) --------
         if (frm.doc.items && frm.doc.items.length > 0) {
-            frm.doc.items.forEach((item_row) => {
-                let child = frappe.model.add_child(new_doc, "Estimate Item", "items");
-                child.item_code = item_row.item_code;
-                child.item_name = item_row.item_name;
-                child.item_group = item_row.item_group;
-            });
+            // take BOM from first item
+            new_doc.bom = frm.doc.items[0].bom_no || "";
         }
 
-        // -------- Redirect to new Estimate form --------
+        // -------- Child Table Mapping --------
+        frm.doc.items.forEach((item_row) => {
+            let child = frappe.model.add_child(
+                new_doc,
+                "Estimate Item",
+                "items"
+            );
+
+            child.item_code = item_row.item_code;
+            child.item_name = item_row.item_name;
+            child.item_group = item_row.item_group;
+            child.bom_no = item_row.bom_no;
+        });
+
+        // -------- Redirect --------
         frappe.set_route('Form', 'Estimate', new_doc.name);
     });
 }
-
 
 // ---------- Existing controller code preserved below ----------
 

@@ -10,6 +10,7 @@
   "customer_item_code",
   "col_break1",
   "item_name",
+  "bom_no",
   "section_break_5",
   "description",
   "item_group",
@@ -695,12 +696,17 @@
    "print_hide": 1,
    "read_only": 1,
    "report_hide": 1
+  },
+  {
+   "fieldname": "bom_no",
+   "fieldtype": "Data",
+   "label": "BOM No"
   }
  ],
  "idx": 1,
  "istable": 1,
  "links": [],
- "modified": "2025-11-17 12:33:26.907430",
+ "modified": "2025-12-13 15:21:52.505793",
  "modified_by": "Administrator",
  "module": "ERP Custom",
  "name": "Customer Request For Quotation Item",

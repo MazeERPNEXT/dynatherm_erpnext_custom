@@ -159,7 +159,7 @@ function calculate_item_kgs(frm) {
     frm.set_value("custom_kilogramskgs", final_weight);
     frm.set_value("weight_per_unit", final_weight);
     frm.set_value("custom_base_weight", final_weight); 
-    frm.set_value("weight_uom", "Kg");
+    // frm.set_value("weight_uom", "Kg");
 }
 
 
