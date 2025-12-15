@@ -4,35 +4,59 @@ frappe.ui.form.on("BOM Item", {
         const row = locals[cdt][cdn];
         if (!row.item_code) return;
 
-        frappe.db.get_value("Item", row.item_code,
-            ["item_name", "item_group", "default_bom", "custom_material_type", "custom_density"],
-            (r) => {
-                if (!r) return;
+        /* -----------------------------------------------------------
+           1️⃣ FETCH ITEM MASTER DATA
+        ----------------------------------------------------------- */
+        frappe.db.get_value(
+            "Item",
+            row.item_code,
+            [
+                "item_group",
+                "default_bom",
+                "custom_material_type",
+                "custom_density"
+            ]
+        ).then(r => {
+            if (!r || !r.message) return;
 
-                // existing logic
-                if (r.item_group) {
-                    frappe.model.set_value(cdt, cdn, "custom_item_group", r.item_group);
-                }
+            const item = r.message;
 
-                if (r.default_bom) {
-                    frappe.model.set_value(cdt, cdn, "bom_no", r.default_bom);
-                }
+            frappe.model.set_value(cdt, cdn, "custom_item_group", item.item_group || "");
+            frappe.model.set_value(cdt, cdn, "bom_no", item.default_bom || "");
+            frappe.model.set_value(cdt, cdn, "custom_material_type", item.custom_material_type || "");
+            frappe.model.set_value(cdt, cdn, "custom_density", item.custom_density || 0);
 
-                if (r.custom_material_type) {
-                    frappe.model.set_value(cdt, cdn, "custom_material_type", r.custom_material_type);
-                }
+            calculate_kgs(frm, cdt, cdn);
+        });
 
-                if (r.custom_density) {
-                    frappe.model.set_value(cdt, cdn, "custom_density", r.custom_density);
-                }
+        /* -----------------------------------------------------------
+           2️⃣ FETCH LAST PURCHASE PRICE (ITEM PRICE)
+        ----------------------------------------------------------- */
+        frappe.db.get_list("Item Price", {
+            filters: {
+                item_code: row.item_code,
+                buying: 1
+            },
+            fields: ["price_list_rate"],
+            order_by: "modified desc",
+            limit: 1
+        }).then(res => {
+            const rate = (res && res.length)
+                ? res[0].price_list_rate
+                : 0;
 
-                calculate_kgs(frm, cdt, cdn);
-            }
-        );
+            frappe.model.set_value(
+                cdt,
+                cdn,
+                "custom_last_purchase_price",
+                rate
+            );
+        });
     },
 
-
-    // NEW: Re-fetch density if user changes material type manually
+    /* -----------------------------------------------------------
+       RE-FETCH DENSITY IF MATERIAL TYPE IS CHANGED MANUALLY
+    ----------------------------------------------------------- */
     custom_material_type(frm, cdt, cdn) {
         const row = locals[cdt][cdn];
         if (!row.item_code || !row.custom_material_type) return;
@@ -42,11 +66,12 @@ frappe.ui.form.on("BOM Item", {
             row.item_code,
             ["custom_material_type", "custom_density"]
         ).then(r => {
+            if (!r || !r.message) return;
+
             const item = r.message;
 
-            // Only update if material matches item master
             if (item.custom_material_type === row.custom_material_type) {
-                frappe.model.set_value(cdt, cdn, "custom_density", item.custom_density);
+                frappe.model.set_value(cdt, cdn, "custom_density", item.custom_density || 0);
             } else {
                 frappe.model.set_value(cdt, cdn, "custom_density", 0);
             }
@@ -55,8 +80,9 @@ frappe.ui.form.on("BOM Item", {
         });
     },
 
-
-    // existing weight recalculation triggers
+    /* -----------------------------------------------------------
+       WEIGHT RECALCULATION TRIGGERS
+    ----------------------------------------------------------- */
     custom_item_group: calculate_kgs,
     custom_length: calculate_kgs,
     custom_width: calculate_kgs,
@@ -72,13 +98,14 @@ frappe.ui.form.on("BOM Item", {
 
         if (!manual_groups.includes(row.custom_item_group)) {
             const weight = flt(row.custom_kilogramskgs) || 0;
+            // optional qty sync if needed
             // frappe.model.set_value(cdt, cdn, "qty", weight);
-            // frappe.model.set_value(cdt, cdn, "custom_base_weight", weight);
         }
 
         frm.refresh_field("items");
     }
 });
+
 
 // ----------------------------------------------------
 // FINAL — CORRECT WEIGHT CALCULATION (no double update)
