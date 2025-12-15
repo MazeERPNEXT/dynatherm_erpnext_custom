@@ -463,21 +463,35 @@ function safeNumber(v) {
 frappe.ui.form.on("Estimated BOM Materials", {
     item_code(frm, cdt, cdn) {
         const row = locals[cdt][cdn];
+        if (!row.item_code) return;
 
         frappe.db.get_value(
             "Item",
             row.item_code,
-            ["item_name", "item_group", "custom_material_type", "custom_density"]
+            [
+                "item_name",
+                "item_group",
+                "custom_material_type",
+                "custom_density",
+                "default_bom"   // ✅ FETCH DEFAULT BOM
+            ]
         ).then(r => {
             if (r && r.message) {
-                let data = r.message;
+                const data = r.message;
 
                 row.item_name = data.item_name || row.item_name;
                 row.item_group = data.item_group || row.item_group;
 
-                // *** FIXED MATERIAL TYPE ***
+                // material logic
                 row.material_type = data.custom_material_type || row.material_type;
                 row.density = flt(data.custom_density) || row.density;
+
+                // ✅ AUTO SET BOM
+                if (data.default_bom) {
+                    row.bom_no = data.default_bom;
+                } else {
+                    row.bom_no = null;
+                }
             }
 
             calculate_estimate_weight(frm, cdt, cdn);
@@ -516,7 +530,7 @@ frappe.ui.form.on("Estimated BOM Materials", {
 
     estimated_bom_materials_add(frm, cdt, cdn) {
         let row = locals[cdt][cdn];
-        row.uom = "Kg";
+        // row.uom = "Kg";
         row.margin = 0;
         row.amount = 0;
         frm.refresh_field("estimated_bom_materials");
@@ -581,11 +595,21 @@ function calculate_estimate_weight(frm, cdt, cdn) {
         }
     }
 
+    // // ---- Update weight fields ----
+    // row.base_weight = flt(base, 4);
+    // row.qty = flt(base, 3);
+    // row.kilogramskgs = flt(row.qty);
+    // row.uom = "Kg";
+    
     // ---- Update weight fields ----
-    row.base_weight = flt(base, 4);
-    row.qty = flt(base, 3);
-    row.kilogramskgs = flt(row.qty);
-    row.uom = "Kg";
+        row.base_weight = flt(base, 4);
+
+        // ❌ Do NOT set qty from calculated weight
+        // row.qty = flt(base, 3);
+
+        row.kilogramskgs = flt(base, 3); // keep weight only for reference
+        row.uom = "Kg";
+
 
     compute_bom_amount(frm, cdt, cdn);
     frm.refresh_field("estimated_bom_materials");
@@ -628,34 +652,47 @@ frappe.ui.form.on("Estimated Sub Assembly Items", {
         const row = locals[cdt][cdn];
         if (!row.item_code) return;
 
-        // 1 Get Item Name + Item Group + Custom Fields
-        let item = await frappe.db.get_value("Item", row.item_code, 
-            ["item_name", "item_group", "custom_material_type", "custom_density"]
+        // 1️⃣ Fetch Item details INCLUDING default_bom
+        let item = await frappe.db.get_value(
+            "Item",
+            row.item_code,
+            [
+                "item_name",
+                "item_group",
+                "custom_material_type",
+                "custom_density",
+                "default_bom" // ✅ IMPORTANT
+            ]
         );
 
         if (item && item.message) {
-            frappe.model.set_value(cdt, cdn, "item_name", item.message.item_name);
-            frappe.model.set_value(cdt, cdn, "item_group", item.message.item_group);
+            const data = item.message;
 
-            // CUSTOM MATERIAL TYPE → child.material_type
-            frappe.model.set_value(cdt, cdn, "material_type", item.message.custom_material_type);
-            frappe.model.set_value(cdt, cdn, "density", item.message.custom_density);
+            frappe.model.set_value(cdt, cdn, "item_name", data.item_name);
+            frappe.model.set_value(cdt, cdn, "item_group", data.item_group);
+
+            // Custom fields
+            frappe.model.set_value(cdt, cdn, "material_type", data.custom_material_type);
+            frappe.model.set_value(cdt, cdn, "density", data.custom_density);
+
+            // ✅ AUTO SET BOM
+            if (data.default_bom) {
+                frappe.model.set_value(cdt, cdn, "bom_no", data.default_bom);
+            } else {
+                frappe.model.set_value(cdt, cdn, "bom_no", null);
+            }
         }
 
-        // 2 Get Item Price → price_list_rate
+        // 2️⃣ Fetch Item Price
         let price = await frappe.db.get_list("Item Price", {
             filters: { item_code: row.item_code },
             fields: ["price_list_rate"],
             limit: 1
         });
 
-        if (price && price.length) {
-            frappe.model.set_value(cdt, cdn, "last_purchase_price", price[0].price_list_rate);
-        } else {
-            frappe.model.set_value(cdt, cdn, "last_purchase_price", 0);
-        }
+        frappe.model.set_value(cdt,cdn, "last_purchase_price", price && price.length ? price[0].price_list_rate : 0);
 
-        // 3 Recalculate weight + amount
+        // 3️⃣ Recalculate
         calculate_sub_assembly_weight(frm, cdt, cdn);
         calculate_amount_and_total(frm, cdt, cdn);
         calculate_transport_cost_total(frm);

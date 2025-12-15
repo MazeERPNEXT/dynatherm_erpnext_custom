@@ -72,8 +72,8 @@ frappe.ui.form.on("BOM Item", {
 
         if (!manual_groups.includes(row.custom_item_group)) {
             const weight = flt(row.custom_kilogramskgs) || 0;
-            frappe.model.set_value(cdt, cdn, "qty", weight);
-            frappe.model.set_value(cdt, cdn, "custom_base_weight", weight);
+            // frappe.model.set_value(cdt, cdn, "qty", weight);
+            // frappe.model.set_value(cdt, cdn, "custom_base_weight", weight);
         }
 
         frm.refresh_field("items");
@@ -185,7 +185,7 @@ function calculate_kgs(frm, cdt, cdn) {
     const final_weight = flt(base_weight, 4);
 
     frappe.model.set_value(cdt, cdn, "custom_kilogramskgs", final_weight);
-    frappe.model.set_value(cdt, cdn, "uom", "Kg");
+    // frappe.model.set_value(cdt, cdn, "uom", "Kg");
 
     frm.refresh_field("items");
 }
