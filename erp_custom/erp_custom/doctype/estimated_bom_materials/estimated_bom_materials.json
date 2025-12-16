@@ -9,6 +9,7 @@
   "item_code",
   "item_name",
   "item_group",
+  "item_source",
   "qty",
   "uom",
   "column_break_eofu",
@@ -30,7 +31,8 @@
   "inner_diameter",
   "wall_thickness",
   "kilogramskgs",
-  "base_weight"
+  "base_weight",
+  "total_weight"
  ],
  "fields": [
   {
@@ -110,7 +112,7 @@
    "fieldname": "kilogramskgs",
    "fieldtype": "Float",
    "in_list_view": 1,
-   "label": "Kilograms(Kgs)"
+   "label": "Kgs Per Unit"
   },
   {
    "fieldname": "margin",
@@ -186,13 +188,24 @@
    "fieldname": "material_type",
    "fieldtype": "Data",
    "label": "Material Type"
+  },
+  {
+   "fieldname": "item_source",
+   "fieldtype": "Select",
+   "label": "Item Source",
+   "options": "\nMake\nBuy"
+  },
+  {
+   "fieldname": "total_weight",
+   "fieldtype": "Float",
+   "label": "Total Weight"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2025-12-13 11:01:45.532529",
+ "modified": "2025-12-16 16:19:15.984847",
  "modified_by": "Administrator",
  "module": "ERP Custom",
  "name": "Estimated BOM Materials",

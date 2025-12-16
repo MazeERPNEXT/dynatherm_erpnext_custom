@@ -261,6 +261,15 @@ frappe.ui.form.on("Estimate", {
 
 	// (2) Button → get_subassembly_items
 	get_subassembly_items(frm) {
+
+        // 🔗 Build BOM → Parent Item map
+        let bom_parent_map = {};
+        (frm.doc.estimated_bom_materials || []).forEach(row => {
+            if (row.bom_no && row.item_code) {
+                bom_parent_map[row.bom_no] = row.item_code;
+            }
+        });
+
 		if (!frm.doc.estimated_bom_materials || frm.doc.estimated_bom_materials.length === 0) {
 			return frappe.msgprint(__("No Estimated BOM Materials found. Please get BOM materials first."));
 		}
@@ -306,17 +315,24 @@ frappe.ui.form.on("Estimate", {
 				items.forEach(bi => {
 					if (exist.has(bi.item_code)) return;
 
-					let row = frm.add_child("estimated_sub_assembly_items");
-					row.item_code = bi.item_code;
-					row.item_group = bi.custom_item_group;
-					row.item_name = bi.item_name || bi.description || "";
+                    let row = frm.add_child("estimated_sub_assembly_items");
 
-					// ✅ Ensure bom_no comes from the current BOM we are processing
-					row.bom_no =
-						(bi.bom_no && bi.bom_no.toString().trim()) ||
-						current_bom ||
-						(bi.item_code && /^BOM[-\/]/i.test(bi.item_code) ? bi.item_code : "") ||
-						"";
+                    // Child item (actual sub-assembly)
+                    row.item_code = bi.item_code;
+                    row.item_name = bi.item_name || bi.description || "";
+                    row.item_group = bi.custom_item_group;
+
+                    // ✅ Parent Assembly Item (from Estimated BOM Materials)
+                    row.sub_assembly_item =
+                        bom_parent_map[current_bom] ||      // ✅ BEST (via bom_no)
+                        bi.parent_item ||                   // fallback (if backend provides)
+                        "";                                  // safe fallback
+
+                    // BOM reference
+                    row.bom_no =
+                        (bi.bom_no && bi.bom_no.toString().trim()) ||
+                        current_bom ||
+                        "";
 
 					// Common material fields
 					row.length = bi.custom_length || bi.length || 0;
@@ -456,7 +472,6 @@ function safeNumber(v) {
     return isNaN(parseFloat(v)) ? 0 : parseFloat(v);
 }
 
-
 // ---------------------------------------------------------
 // Estimated BOM Materials - Child Table Events
 // ---------------------------------------------------------
@@ -506,6 +521,7 @@ frappe.ui.form.on("Estimated BOM Materials", {
     },
 
     qty: function(frm, cdt, cdn) {
+        calculate_total_weight(frm, cdt, cdn);   // ✅ ADDED
         compute_bom_amount(frm, cdt, cdn);
         compute_transport_sfg_total(frm);
     },
@@ -530,7 +546,6 @@ frappe.ui.form.on("Estimated BOM Materials", {
 
     estimated_bom_materials_add(frm, cdt, cdn) {
         let row = locals[cdt][cdn];
-        // row.uom = "Kg";
         row.margin = 0;
         row.amount = 0;
         frm.refresh_field("estimated_bom_materials");
@@ -550,9 +565,11 @@ function calculate_estimate_weight(frm, cdt, cdn) {
     if (manual_groups.includes(type)) {
 
         row.base_weight = 0;
-        row.kilogramskgs = flt(row.qty);   
-        row.uom = "Nos"; 
-          return; 
+        row.kilogramskgs = flt(row.qty);
+        row.uom = "Nos";
+
+        calculate_total_weight(frm, cdt, cdn); // ✅ ADDED
+        return;
     }
 
     let base = 0;
@@ -595,26 +612,30 @@ function calculate_estimate_weight(frm, cdt, cdn) {
         }
     }
 
-    // // ---- Update weight fields ----
-    // row.base_weight = flt(base, 4);
-    // row.qty = flt(base, 3);
-    // row.kilogramskgs = flt(row.qty);
-    // row.uom = "Kg";
-    
     // ---- Update weight fields ----
-        row.base_weight = flt(base, 4);
+    row.base_weight = flt(base, 4);
+    row.kilogramskgs = flt(base, 3);
+    row.uom = "Kg";
 
-        // ❌ Do NOT set qty from calculated weight
-        // row.qty = flt(base, 3);
-
-        row.kilogramskgs = flt(base, 3); // keep weight only for reference
-        row.uom = "Kg";
-
+    calculate_total_weight(frm, cdt, cdn); // ✅ ADDED
 
     compute_bom_amount(frm, cdt, cdn);
     frm.refresh_field("estimated_bom_materials");
     compute_transport_sfg_total(frm);
 }
+
+
+// ---------------------------- TOTAL WEIGHT CALCULATION -------------------------------------------
+function calculate_total_weight(frm, cdt, cdn) {
+    const row = locals[cdt][cdn];
+
+    // ✅ qty * kilogramskgs = total_weight
+    row.total_weight = flt(row.qty) * flt(row.kilogramskgs);
+
+    frm.refresh_field("estimated_bom_materials");
+}
+
+
 
 // ----------------------------AMOUNT CALCULATION-------------------------------------------
 function compute_bom_amount(frm, cdt, cdn) {
@@ -641,8 +662,6 @@ function compute_transport_sfg_total(frm) {
 
     frm.set_value("transport_sfg_costs", total.toFixed(2));
 }
-
-
 
 // ---------------------------------------------------------
 // Estimated Sub Assembly Items - Child Table Events 
@@ -690,7 +709,12 @@ frappe.ui.form.on("Estimated Sub Assembly Items", {
             limit: 1
         });
 
-        frappe.model.set_value(cdt,cdn, "last_purchase_price", price && price.length ? price[0].price_list_rate : 0);
+        frappe.model.set_value(
+            cdt,
+            cdn,
+            "last_purchase_price",
+            price && price.length ? price[0].price_list_rate : 0
+        );
 
         // 3️⃣ Recalculate
         calculate_sub_assembly_weight(frm, cdt, cdn);
@@ -702,6 +726,7 @@ frappe.ui.form.on("Estimated Sub Assembly Items", {
 
     qty(frm, cdt, cdn) {
         calculate_sub_assembly_weight(frm, cdt, cdn);
+        calculate_sub_assembly_total_weight(frm, cdt, cdn); // ✅ ADDED
         calculate_amount_and_total(frm, cdt, cdn);
         calculate_transport_cost_total(frm);
     },
@@ -765,7 +790,6 @@ function calculate_amount_and_total(frm, cdt, cdn) {
     let row = locals[cdt][cdn];
     if (!row) return;
 
-    // Use flt which ERPNext provides
     let qty    = flt(row.qty);
     let rate   = flt(row.rate);
     let margin = flt(row.margin);
@@ -823,8 +847,10 @@ function calculate_sub_assembly_weight(frm, cdt, cdn) {
 
     if (manual_groups.includes(type)) {
         row.base_weight = 0;
-        row.kilogramskgs = flt(row.qty);   // user will enter qty manually
+        row.kilogramskgs = flt(row.qty);
         row.uom = "Nos";
+
+        calculate_sub_assembly_total_weight(frm, cdt, cdn); // ✅ ADDED
         frm.refresh_field("estimated_sub_assembly_items");
         return;
     }
@@ -837,7 +863,6 @@ function calculate_sub_assembly_weight(frm, cdt, cdn) {
             base = (row.length * row.width * row.thickness * row.density) / 1_000_000;
         }
     }
-
     // Tubes / Pipes
     else if (["Tubes", "Pipes"].includes(type)) {
         if (row.length && row.outer_diameter && row.wall_thickness && row.density) {
@@ -846,7 +871,6 @@ function calculate_sub_assembly_weight(frm, cdt, cdn) {
             base = (π * (R**2 - r**2) * row.length * row.density) / 1_000_000;
         }
     }
-
     // Flanges / Rings
     else if (["Flanges", "Rings"].includes(type)) {
         if (row.outer_diameter && row.inner_diameter && row.thickness && row.density) {
@@ -855,7 +879,6 @@ function calculate_sub_assembly_weight(frm, cdt, cdn) {
             base = (π * (R**2 - r**2) * row.thickness * row.density) / 1_000_000;
         }
     }
-
     // Rods
     else if (type === "Rods") {
         if (row.length && row.outer_diameter && row.density) {
@@ -863,7 +886,6 @@ function calculate_sub_assembly_weight(frm, cdt, cdn) {
             base = (π * R**2 * row.length * row.density) / 1_000_000;
         }
     }
-
     // Forgings
     else if (type === "Forgings") {
         if (row.length && row.outer_diameter && row.wall_thickness && row.density) {
@@ -873,11 +895,20 @@ function calculate_sub_assembly_weight(frm, cdt, cdn) {
         }
     }
 
-    // Update fields derived from base weight
     row.base_weight = flt(base, 4);
-    row.qty = flt(base, 3);
-    row.kilogramskgs = flt(row.qty);
+    row.kilogramskgs = flt(base, 3);
     row.uom = "Kg";
+
+    calculate_sub_assembly_total_weight(frm, cdt, cdn); // ✅ ADDED
+    frm.refresh_field("estimated_sub_assembly_items");
+}
+
+// ---------------------------- TOTAL WEIGHT (qty × kilogramskgs) ----------------------------
+function calculate_sub_assembly_total_weight(frm, cdt, cdn) {
+    const row = locals[cdt][cdn];
+    if (!row) return;
+
+    row.total_weight = flt(row.qty) * flt(row.kilogramskgs);
 
     frm.refresh_field("estimated_sub_assembly_items");
 }
