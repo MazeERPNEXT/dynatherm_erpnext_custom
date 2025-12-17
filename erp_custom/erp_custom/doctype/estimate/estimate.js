@@ -243,11 +243,12 @@ frappe.ui.form.on("Estimate", {
 					row.density = bi.custom_density || 0;
 					row.kilogramskgs = bi.custom_kilogramskgs || 0;
 
-					row.raw_material_type = bi.raw_material_type || "";
+					row.material_type = bi.custom_material_type || "";
 					row.outer_diameter = bi.custom_outer_diameter || 0;
 					row.inner_diameter = bi.custom_inner_diameter || 0;
 					row.wall_thickness = bi.custom_wall_thickness || 0;
 					row.base_weight = bi.custom_base_weight || 0;
+                    row.total_weight = bi.custom_total_weight || 0;
 
 					exist.add(bi.item_code);
 					added++;
@@ -323,16 +324,10 @@ frappe.ui.form.on("Estimate", {
                     row.item_group = bi.custom_item_group;
 
                     // ✅ Parent Assembly Item (from Estimated BOM Materials)
-                    row.sub_assembly_item =
-                        bom_parent_map[current_bom] ||      // ✅ BEST (via bom_no)
-                        bi.parent_item ||                   // fallback (if backend provides)
-                        "";                                  // safe fallback
+                    row.sub_assembly_item = bom_parent_map[current_bom] || bi.parent_item || "";
 
                     // BOM reference
-                    row.bom_no =
-                        (bi.bom_no && bi.bom_no.toString().trim()) ||
-                        current_bom ||
-                        "";
+                    row.bom_no = String(bi.bom_no || "").trim() || current_bom || "";
 
 					// Common material fields
 					row.length = bi.custom_length || bi.length || 0;
@@ -341,11 +336,13 @@ frappe.ui.form.on("Estimate", {
 					row.density = bi.custom_density || bi.density || 0;
 					row.kilogramskgs = bi.custom_kilogramskgs || 0;
 
-					row.raw_material_type = bi.raw_material_type || "";
+					row.material_type = bi.custom_material_type || "";
 					row.outer_diameter = bi.custom_outer_diameter || bi.outer_diameter || 0;
 					row.inner_diameter = bi.custom_inner_diameter || bi.inner_diameter || 0;
 					row.wall_thickness = bi.custom_wall_thickness || bi.wall_thickness || 0;
 					row.base_weight = bi.custom_base_weight || bi.base_weight || 0;
+                    row.total_weight = bi.custom_total_weight || bi.total_weight || 0;
+                    row.last_purchase_price = bi.custom_last_purchase_price || bi.last_purchase_price || 0;
 
 					row.qty = safeNumber(bi.qty) || 1;
 					row.uom = bi.uom || "Nos";
