@@ -103,55 +103,86 @@ function fetch_bom_recursive(bom_name, opts, cb) {
 // -------------------- Estimate Form --------------------
 // ----------------------------------------------------
 frappe.ui.form.on("Estimate", {
-	refresh(frm) {
+	 refresh(frm) {
 
-       if (frm.doc.docstatus === 1) {
+        // Show button only when Estimate is submitted
+        if (frm.doc.docstatus !== 1 || !frm.doc.crfq__tender_id) return;
 
-            frm.add_custom_button("Create Quotation", () => {
+        frm.add_custom_button("Create Quotation", () => {
 
-                frappe.model.with_doctype("Quotation", () => {
-                    let quotation = frappe.model.get_new_doc("Quotation");
+            // STEP 1: Check if quotation already exists for same Tender ID
+            frappe.call({
+                method: "frappe.client.get_list",
+                args: {
+                    doctype: "Quotation",
+                    filters: {
+                        custom_crfq__tender_id: frm.doc.crfq__tender_id,
+                        docstatus: 1
+                    },
+                    fields: ["name"],
+                    limit_page_length: 1
+                },
+                callback: function (r) {
 
-                    // Map Header fields
-                    quotation.custom_crfq__tender_id = frm.doc.crfq__tender_id || "";
-                    quotation.party_name = frm.doc.customer_name || "";
+                    // STEP 2: If quotation already exists → OPEN IT
+                    if (r.message && r.message.length > 0) {
+                        frappe.set_route("Form", "Quotation", r.message[0].name);
+                        return;
+                    }
 
-                    // Child table mapping
-                    (frm.doc.items || []).forEach(item => {
+                    // STEP 3: Else → CREATE NEW QUOTATION
+                    frappe.model.with_doctype("Quotation", () => {
 
-                        let child = frappe.model.add_child(quotation, "items");
+                        let quotation = frappe.model.get_new_doc("Quotation");
 
-                        Object.assign(child, {
-                            item_code: item.item_code,
-                            item_name: item.item_name,
-                            item_group: item.item_group,
+                        // -------- Header Mapping --------
+                        quotation.custom_crfq__tender_id = frm.doc.crfq__tender_id;
+                        quotation.party_name = frm.doc.customer_name || "";
+                        quotation.quotation_to = "Customer";
 
-                            stock_uom: item.uom,     
-                            uom: item.uom,           
-                            qty: item.qty,
-                            rate: item.rate,
-                            amount: item.amount,
+                        // -------- Child Table Mapping --------
+                        (frm.doc.items || []).forEach(item => {
 
-                            custom_bom_no: frm.doc.bom || "",
-                            estimate_rate: item.rate 
+                            let child = frappe.model.add_child(
+                                quotation,
+                                "Quotation Item",
+                                "items"
+                            );
+
+                            child.item_code = item.item_code;
+                            child.item_name = item.item_name;
+                            child.item_group = item.item_group;
+
+                            child.stock_uom = item.uom;
+                            child.uom = item.uom;
+                            child.qty = item.qty;
+                            child.rate = item.rate;
+                            child.amount = item.amount;
+
+                            child.custom_bom_no = frm.doc.bom || "";
+                            child.estimate_rate = item.rate;
                         });
+
+                        // Prevent auto-fetch overriding values
+                        quotation.__run_link_triggers = true;
+
+                        // Redirect to new quotation
+                        frappe.set_route("Form", "Quotation", quotation.name);
                     });
+                }
+            });
 
-                    quotation.__run_link_triggers = true; // prevent auto fetch override
-                    frappe.set_route("Form", quotation.doctype, quotation.name);
-                });
+        }).addClass("btn-primary");
 
-            }).addClass("btn-primary");
-        }
+        // ---------------------------
+        // CONSUMABLE ITEM FILTER LOGIC
+        // ---------------------------
 
-     // child table fieldname in Estimate form
         const child_fieldname = "estimated_consumable";
-
-        // Ensure child table exists
         const grid = frm.fields_dict[child_fieldname]?.grid;
         if (!grid) return;
 
-        // --- Correct filter for item_code inside the child table ---
+        // Filter using set_query
         frm.set_query("item_code", child_fieldname, function () {
             return {
                 filters: {
@@ -160,7 +191,7 @@ frappe.ui.form.on("Estimate", {
             };
         });
 
-        // --- Also apply directly on grid field (strongest method) ---
+        // Strong filter directly on grid field
         setTimeout(() => {
             const item_field = grid.get_field("item_code");
             if (item_field) {
@@ -847,7 +878,7 @@ function calculate_sub_assembly_weight(frm, cdt, cdn) {
         row.kilogramskgs = flt(row.qty);
         row.uom = "Nos";
 
-        calculate_sub_assembly_total_weight(frm, cdt, cdn); // ✅ ADDED
+        calculate_sub_assembly_total_weight(frm, cdt, cdn); 
         frm.refresh_field("estimated_sub_assembly_items");
         return;
     }
@@ -896,7 +927,7 @@ function calculate_sub_assembly_weight(frm, cdt, cdn) {
     row.kilogramskgs = flt(base, 3);
     row.uom = "Kg";
 
-    calculate_sub_assembly_total_weight(frm, cdt, cdn); // ✅ ADDED
+    calculate_sub_assembly_total_weight(frm, cdt, cdn);
     frm.refresh_field("estimated_sub_assembly_items");
 }
 
