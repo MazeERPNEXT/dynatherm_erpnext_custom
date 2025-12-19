@@ -311,14 +311,28 @@ frappe.ui.form.on("Estimate", {
 		frm.refresh_field("estimated_sub_assembly_items");
 
 		// --- New logic: Pick selected BOMs, else pick all ---
-		let selected = frm.doc.estimated_bom_materials.filter(d => d.pick_parts == 1 && d.bom_no);
-		let bom_list = (selected.length > 0 ? selected : frm.doc.estimated_bom_materials)
-			.map(d => d.bom_no)
-			.filter(b => b && b.trim() !== "");
+		// let selected = frm.doc.estimated_bom_materials.filter(d => d.pick_parts == 1 && d.bom_no);
+		// let bom_list = (selected.length > 0 ? selected : frm.doc.estimated_bom_materials)
+		// 	.map(d => d.bom_no)
+		// 	.filter(b => b && b.trim() !== "");
 
-		if (bom_list.length === 0) {
-			return frappe.msgprint(__("No valid BOM numbers found in Estimated BOM Materials."));
-		}
+		// if (bom_list.length === 0) {
+		// 	return frappe.msgprint(__("No valid BOM numbers found in Estimated BOM Materials."));
+		// }
+
+        // --- New logic: Pick selected BOMs, else pick all ---
+        // --- EXCLUDE item_source = "Buy" ---
+        let selected = frm.doc.estimated_bom_materials.filter(d =>
+            d.pick_parts == 1 &&
+            d.bom_no &&
+            d.item_source !== "Buy"
+        );
+
+        let bom_list = (selected.length > 0 ? selected : frm.doc.estimated_bom_materials)
+            .filter(d => d.bom_no && d.item_source !== "Buy") // 🔥 CORE FILTER
+            .map(d => d.bom_no)
+            .filter(b => b && b.trim() !== "");
+
 
 		let exist = new Set((frm.doc.estimated_sub_assembly_items || []).map(i => i.item_code));
 		let added = 0;

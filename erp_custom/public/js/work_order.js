@@ -43,7 +43,7 @@ frappe.ui.form.on("Work Order Item", {
                 method: "frappe.client.get_list",
                 args: {
                     doctype: "BOM Item",
-                    fields: ["custom_length", "custom_width", "custom_thickness","custom_density","custom_kilogramskgs","custom_raw_material_type","custom_outer_diameter","custom_inner_diameter","custom_wall_thickness","custom_base_weight"],
+                    fields: ["custom_length", "custom_width", "custom_thickness","custom_density","custom_kilogramskgs","custom_raw_material_type","custom_outer_diameter","custom_inner_diameter","custom_wall_thickness","custom_base_weight","custom_total_weight"],
                     filters: {
                         parent: frm.doc.bom,
                         item_code: row.item_code
@@ -65,6 +65,7 @@ frappe.ui.form.on("Work Order Item", {
                         frappe.model.set_value(cdt, cdn, "custom_inner_diameter", bom_item.custom_inner_diameter || 0);
                         frappe.model.set_value(cdt, cdn, "custom_wall_thickness", bom_item.custom_wall_thickness || 0);
                         frappe.model.set_value(cdt, cdn, "custom_base_weight", bom_item.custom_base_weight || 0);
+                        frappe.model.set_value(cdt, cdn, "custom_total_weight", bom_item.custom_total_weight || 0);
 
                         frm.refresh_field("items");
                     }
