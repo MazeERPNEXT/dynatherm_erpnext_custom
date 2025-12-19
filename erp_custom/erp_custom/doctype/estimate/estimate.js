@@ -306,19 +306,9 @@ frappe.ui.form.on("Estimate", {
 			return frappe.msgprint(__("No Estimated BOM Materials found. Please get BOM materials first."));
 		}
 
-			// 🧹 Clear old output every time user clicks button
+			// Clear old output every time user clicks button
 		frm.clear_table("estimated_sub_assembly_items");
 		frm.refresh_field("estimated_sub_assembly_items");
-
-		// --- New logic: Pick selected BOMs, else pick all ---
-		// let selected = frm.doc.estimated_bom_materials.filter(d => d.pick_parts == 1 && d.bom_no);
-		// let bom_list = (selected.length > 0 ? selected : frm.doc.estimated_bom_materials)
-		// 	.map(d => d.bom_no)
-		// 	.filter(b => b && b.trim() !== "");
-
-		// if (bom_list.length === 0) {
-		// 	return frappe.msgprint(__("No valid BOM numbers found in Estimated BOM Materials."));
-		// }
 
         // --- New logic: Pick selected BOMs, else pick all ---
         // --- EXCLUDE item_source = "Buy" ---
@@ -329,7 +319,7 @@ frappe.ui.form.on("Estimate", {
         );
 
         let bom_list = (selected.length > 0 ? selected : frm.doc.estimated_bom_materials)
-            .filter(d => d.bom_no && d.item_source !== "Buy") // 🔥 CORE FILTER
+            .filter(d => d.bom_no && d.item_source !== "Buy") 
             .map(d => d.bom_no)
             .filter(b => b && b.trim() !== "");
 
@@ -358,43 +348,82 @@ frappe.ui.form.on("Estimate", {
 					return process_next_bom();
 				}
 
-				items.forEach(bi => {
-					if (exist.has(bi.item_code)) return;
+				// items.forEach(bi => {
+				// 	if (exist.has(bi.item_code)) return;
 
-                    let row = frm.add_child("estimated_sub_assembly_items");
+                //     let row = frm.add_child("estimated_sub_assembly_items");
 
-                    // Child item (actual sub-assembly)
-                    row.item_code = bi.item_code;
-                    row.item_name = bi.item_name || bi.description || "";
-                    row.item_group = bi.custom_item_group;
+                //     // Child item (actual sub-assembly)
+                //     row.item_code = bi.item_code;
+                //     row.item_name = bi.item_name || bi.description || "";
+                //     row.item_group = bi.custom_item_group;
 
-                    // ✅ Parent Assembly Item (from Estimated BOM Materials)
-                    row.sub_assembly_item = bom_parent_map[current_bom] || bi.parent_item || "";
+                //     // Parent Assembly Item (from Estimated BOM Materials)
+                //     row.sub_assembly_item = bom_parent_map[current_bom] || bi.parent_item || "";
 
-                    // BOM reference
-                    row.bom_no = String(bi.bom_no || "").trim() || current_bom || "";
+                //     // BOM reference
+                //     row.bom_no = String(bi.bom_no || "").trim() || current_bom || "";
 
-					// Common material fields
-					row.length = bi.custom_length || bi.length || 0;
-					row.width = bi.custom_width || bi.width || 0;
-					row.thickness = bi.custom_thickness || bi.thickness || 0;
-					row.density = bi.custom_density || bi.density || 0;
-					row.kilogramskgs = bi.custom_kilogramskgs || 0;
+				// 	// Common material fields
+				// 	row.length = bi.custom_length || bi.length || 0;
+				// 	row.width = bi.custom_width || bi.width || 0;
+				// 	row.thickness = bi.custom_thickness || bi.thickness || 0;
+				// 	row.density = bi.custom_density || bi.density || 0;
+				// 	row.kilogramskgs = bi.custom_kilogramskgs || 0;
 
-					row.material_type = bi.custom_material_type || "";
-					row.outer_diameter = bi.custom_outer_diameter || bi.outer_diameter || 0;
-					row.inner_diameter = bi.custom_inner_diameter || bi.inner_diameter || 0;
-					row.wall_thickness = bi.custom_wall_thickness || bi.wall_thickness || 0;
-					row.base_weight = bi.custom_base_weight || bi.base_weight || 0;
-                    row.total_weight = bi.custom_total_weight || bi.total_weight || 0;
-                    row.last_purchase_price = bi.custom_last_purchase_price || bi.last_purchase_price || 0;
+				// 	row.material_type = bi.custom_material_type || "";
+				// 	row.outer_diameter = bi.custom_outer_diameter || bi.outer_diameter || 0;
+				// 	row.inner_diameter = bi.custom_inner_diameter || bi.inner_diameter || 0;
+				// 	row.wall_thickness = bi.custom_wall_thickness || bi.wall_thickness || 0;
+				// 	row.base_weight = bi.custom_base_weight || bi.base_weight || 0;
+                //     row.total_weight = bi.custom_total_weight || bi.total_weight || 0;
+                //     row.last_purchase_price = bi.custom_last_purchase_price || bi.last_purchase_price || 0;
 
-					row.qty = safeNumber(bi.qty) || 1;
-					row.uom = bi.uom || "Nos";
+				// 	row.qty = safeNumber(bi.qty) || 1;
+				// 	row.uom = bi.uom || "Nos";
 
-					exist.add(bi.item_code);
-					added++;
-				});
+				// 	exist.add(bi.item_code);
+				// 	added++;
+				// });
+
+                items.forEach(bi => {
+
+    let row = frm.add_child("estimated_sub_assembly_items");
+
+    // Child item (actual material / sub-assembly)
+    row.item_code = bi.item_code;
+    row.item_name = bi.item_name || bi.description || "";
+    row.item_group = bi.custom_item_group;
+
+    // Parent Assembly reference (important for traceability)
+    row.sub_assembly_item = bom_parent_map[current_bom] || bi.parent_item || "";
+
+    // BOM reference
+    row.bom_no = String(bi.bom_no || "").trim() || current_bom || "";
+
+    // Dimensions (THIS is what differentiates SAME item_code)
+    row.length = bi.custom_length || bi.length || 0;
+    row.width = bi.custom_width || bi.width || 0;
+    row.thickness = bi.custom_thickness || bi.thickness || 0;
+    row.density = bi.custom_density || bi.density || 0;
+
+    row.outer_diameter = bi.custom_outer_diameter || bi.outer_diameter || 0;
+    row.inner_diameter = bi.custom_inner_diameter || bi.inner_diameter || 0;
+    row.wall_thickness = bi.custom_wall_thickness || bi.wall_thickness || 0;
+
+    row.kilogramskgs = bi.custom_kilogramskgs || 0;
+    row.base_weight = bi.custom_base_weight || bi.base_weight || 0;
+    row.total_weight = bi.custom_total_weight || bi.total_weight || 0;
+
+    row.material_type = bi.custom_material_type || "";
+    row.last_purchase_price = bi.custom_last_purchase_price || bi.last_purchase_price || 0;
+
+    row.qty = safeNumber(bi.qty) || 1;
+    row.uom = bi.uom || "Nos";
+
+    added++;
+});
+
 
 				process_next_bom();
 			});
