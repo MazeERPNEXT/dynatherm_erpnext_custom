@@ -495,7 +495,7 @@
   {
    "fieldname": "get_items_from_bom",
    "fieldtype": "Button",
-   "label": "Get Items From BOM"
+   "label": "Get SFG Items From FG"
   },
   {
    "fetch_from": "finished_goods.default_bom",
@@ -535,7 +535,7 @@
   {
    "fieldname": "get_subassembly_items",
    "fieldtype": "Button",
-   "label": "Get subassembly Items"
+   "label": "Get subassembly Items From SFG"
   },
   {
    "fieldname": "total_sub_assembly",
@@ -588,7 +588,7 @@
  "idx": 82,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-12-15 23:37:32.098248",
+ "modified": "2025-12-19 16:31:41.952070",
  "modified_by": "Administrator",
  "module": "ERP Custom",
  "name": "Estimate",
