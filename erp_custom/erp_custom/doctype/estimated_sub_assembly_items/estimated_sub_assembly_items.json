@@ -16,8 +16,8 @@
   "bom_no",
   "rate",
   "amount",
-  "margin",
-  "transport_cost",
+  "scrap_margin",
+  "transportation_rate",
   "last_purchase_price",
   "section_break_emju",
   "dimension_column",
@@ -26,14 +26,16 @@
   "width",
   "thickness",
   "density",
-  "column_break_ejyj",
-  "raw_material_type",
   "outer_diameter",
   "inner_diameter",
   "wall_thickness",
+  "column_break_ejyj",
+  "raw_material_type",
   "kilogramskgs",
   "base_weight",
-  "total_weight"
+  "total_weight",
+  "scrap_quantity",
+  "transportation_cost"
  ],
  "fields": [
   {
@@ -107,7 +109,8 @@
    "fieldname": "kilogramskgs",
    "fieldtype": "Float",
    "in_list_view": 1,
-   "label": "Kgs Per Unit"
+   "label": "Kgs Per Unit",
+   "read_only": 1
   },
   {
    "fieldname": "column_break_ejyj",
@@ -167,18 +170,9 @@
   {
    "fieldname": "amount",
    "fieldtype": "Currency",
-   "label": "Amount (INR)"
-  },
-  {
-   "fieldname": "margin",
-   "fieldtype": "Float",
-   "label": "Scrap Margin"
-  },
-  {
-   "fieldname": "transport_cost",
-   "fieldtype": "Float",
    "in_list_view": 1,
-   "label": "Transport Cost"
+   "label": "Amount (INR)",
+   "read_only": 1
   },
   {
    "fieldname": "last_purchase_price",
@@ -200,14 +194,38 @@
   {
    "fieldname": "total_weight",
    "fieldtype": "Float",
-   "label": "Total Weight"
+   "label": "Total Weight",
+   "read_only": 1
+  },
+  {
+   "fieldname": "scrap_margin",
+   "fieldtype": "Percent",
+   "label": "Scrap Margin"
+  },
+  {
+   "fieldname": "transportation_rate",
+   "fieldtype": "Float",
+   "in_list_view": 1,
+   "label": "Transportation Rate (\u20b9 / Kg)"
+  },
+  {
+   "fieldname": "scrap_quantity",
+   "fieldtype": "Float",
+   "label": "Scrap Quantity (Kg)",
+   "read_only": 1
+  },
+  {
+   "fieldname": "transportation_cost",
+   "fieldtype": "Float",
+   "label": "Transportation Cost (\u20b9)",
+   "read_only": 1
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2025-12-16 16:22:11.713410",
+ "modified": "2025-12-23 10:22:28.813454",
  "modified_by": "Administrator",
  "module": "ERP Custom",
  "name": "Estimated Sub Assembly Items",
