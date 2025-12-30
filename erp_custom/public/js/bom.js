@@ -11,7 +11,7 @@ frappe.ui.form.on("BOM Item", {
         frappe.db.get_value(
             "Item",
             row.item_code,
-            ["item_group", "default_bom", "custom_material_type", "custom_density"]
+            ["item_group", "default_bom", "custom_material_type", "custom_density","custom_thickness"]
         ).then(r => {
             if (!r || !r.message) return;
 
@@ -21,6 +21,7 @@ frappe.ui.form.on("BOM Item", {
             frappe.model.set_value(cdt, cdn, "bom_no", item.default_bom || "");
             frappe.model.set_value(cdt, cdn, "custom_material_type", item.custom_material_type || "");
             frappe.model.set_value(cdt, cdn, "custom_density", item.custom_density || 0);
+            frappe.model.set_value(cdt, cdn, "custom_thickness", item.custom_thickness || 0);
 
             calculate_kgs(frm, cdt, cdn);
         });
@@ -188,4 +189,35 @@ function calculate_scrap_and_transport(frm, cdt, cdn) {
         "custom_transportation_cost_kgs",
         flt(transport_cost, 2)
     );
+}
+
+
+
+
+
+// =========================================================
+// FORCE RATE OVERRIDE (SERVER CONFIRMED)
+// =========================================================
+function force_rate_override(frm, cdt, cdn) {
+    const row = locals[cdt][cdn];
+    if (!row.item_code || !frm.doc.name) return;
+
+    frappe.call({
+        method: "erp_custom.erp_custom.overrides.bom.make_variant_bom",
+        args: {
+            bom: frm.doc.name,
+            item_code: row.item_code,
+            custom_total_weight: row.custom_total_weight
+        },
+        callback(r) {
+            if (r.message === undefined || r.message === null) return;
+
+            frappe.model.set_value(
+                cdt,
+                cdn,
+                "rate",
+                flt(r.message)
+            );
+        }
+    });
 }

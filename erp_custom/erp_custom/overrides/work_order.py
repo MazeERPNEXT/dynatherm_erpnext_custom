@@ -33,7 +33,7 @@ def make_work_order(bom_no, item, qty=0, project=None, variant_items=None, use_m
 		bom_items = frappe.get_all(
 			"BOM Item",
 			filters={"parent": bom_no},
-			fields=["item_code", "custom_item_group", "custom_length", "custom_width", "custom_thickness", "custom_density", "custom_kilogramskgs", "custom_raw_material_type", "custom_outer_diameter", "custom_inner_diameter", "custom_wall_thickness", "custom_base_weight"]
+			fields=["item_code", "custom_item_group", "custom_material_type", "custom_length", "custom_width", "custom_thickness", "custom_density", "custom_outer_diameter", "custom_inner_diameter", "custom_wall_thickness", "custom_kilogramskgs", "custom_total_weight", "custom_scrap_margin_percentage", "custom_scrap_margin_kgs", "custom_transportation_cost", "custom_transportation_cost_kgs"]
 		)
 
 		bom_map = {bi.item_code: bi for bi in bom_items}
@@ -41,18 +41,22 @@ def make_work_order(bom_no, item, qty=0, project=None, variant_items=None, use_m
 		for req_item in wo_doc.required_items:
 			bi = bom_map.get(req_item.item_code)
 			if bi:
+				req_item.custom_item_group = bi.custom_item_group or 0
+				req_item.custom_material_type = bi.custom_material_type or ""
 				req_item.custom_length = bi.custom_length or 0
 				req_item.custom_width = bi.custom_width or 0
 				req_item.custom_thickness = bi.custom_thickness or 0
 				req_item.custom_density = bi.custom_density or 0
-				req_item.custom_kilogramskgs = bi.custom_kilogramskgs or 0
-
-				req_item.custom_raw_material_type = bi.custom_raw_material_type or ""
 				req_item.custom_outer_diameter = bi.custom_outer_diameter or 0
 				req_item.custom_inner_diameter = bi.custom_inner_diameter or 0
 				req_item.custom_wall_thickness = bi.custom_wall_thickness or 0
-				req_item.custom_base_weight = bi.custom_base_weight or 0
-				req_item.custom_item_group = bi.custom_item_group or 0
+    
+				req_item.custom_kilogramskgs = bi.custom_kilogramskgs or 0
+				req_item.custom_total_weight = bi.custom_total_weight or 0
+				req_item.custom_scrap_margin_percentage = bi.custom_scrap_margin_percentage or 0
+				req_item.custom_scrap_margin_kg = bi.custom_scrap_margin_kgs or 0
+				req_item.custom_transportation_cost___kg = bi.custom_transportation_cost or 0
+				req_item.custom_transportation_cost_kgs = bi.custom_transportation_cost_kgs or 0
     
 
 	if variant_items and not wo_doc.use_multi_level_bom:

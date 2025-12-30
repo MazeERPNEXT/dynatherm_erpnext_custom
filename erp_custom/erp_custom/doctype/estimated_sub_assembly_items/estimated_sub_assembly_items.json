@@ -30,9 +30,7 @@
   "inner_diameter",
   "wall_thickness",
   "column_break_ejyj",
-  "raw_material_type",
   "kilogramskgs",
-  "base_weight",
   "total_weight",
   "scrap_quantity",
   "transportation_cost"
@@ -82,28 +80,28 @@
    "fieldname": "length",
    "fieldtype": "Float",
    "in_list_view": 1,
-   "label": "Length"
+   "label": "Length (mm)"
   },
   {
    "depends_on": "eval: doc.item_group === 'Plates'\n",
    "fieldname": "width",
    "fieldtype": "Float",
    "in_list_view": 1,
-   "label": "Width"
+   "label": "Width (mm)"
   },
   {
    "depends_on": "eval: ['Plates','Flanges'].includes(doc.item_group)\n",
    "fieldname": "thickness",
    "fieldtype": "Float",
    "in_list_view": 1,
-   "label": "Thickness"
+   "label": "Thickness (mm)"
   },
   {
    "depends_on": "eval: ['Plates','Tubes','Pipes','Rods','Bars','Flanges','Forgings'].includes(doc.item_group)\n",
    "fieldname": "density",
    "fieldtype": "Float",
    "in_list_view": 1,
-   "label": "Density"
+   "label": "Density (kg/m\u00b3)"
   },
   {
    "fieldname": "kilogramskgs",
@@ -117,39 +115,25 @@
    "fieldtype": "Column Break"
   },
   {
-   "fieldname": "raw_material_type",
-   "fieldtype": "Data",
-   "hidden": 1,
-   "in_list_view": 1,
-   "label": "Raw Material Type"
-  },
-  {
    "depends_on": "eval: ['Tubes','Pipes','Rods','Bars','Flanges','Forgings'].includes(doc.item_group)\n",
    "fieldname": "outer_diameter",
    "fieldtype": "Float",
    "in_list_view": 1,
-   "label": "Outer Diameter"
+   "label": "Outer Diameter (mm)"
   },
   {
    "depends_on": "eval: ['Flanges'].includes(doc.item_group)\n",
    "fieldname": "inner_diameter",
    "fieldtype": "Float",
    "in_list_view": 1,
-   "label": "Inner Diameter"
+   "label": "Inner Diameter (mm)"
   },
   {
    "depends_on": "eval: ['Tubes','Pipes','Forgings'].includes(doc.item_group)\n",
    "fieldname": "wall_thickness",
    "fieldtype": "Float",
    "in_list_view": 1,
-   "label": "Wall Thickness"
-  },
-  {
-   "fieldname": "base_weight",
-   "fieldtype": "Float",
-   "hidden": 1,
-   "in_list_view": 1,
-   "label": "Base Weight"
+   "label": "Wall Thickness (mm)"
   },
   {
    "fieldname": "qty",
@@ -200,7 +184,7 @@
   {
    "fieldname": "scrap_margin",
    "fieldtype": "Percent",
-   "label": "Scrap Margin"
+   "label": "Scrap Margin (%)"
   },
   {
    "fieldname": "transportation_rate",
@@ -225,7 +209,7 @@
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2025-12-23 10:22:28.813454",
+ "modified": "2025-12-29 18:53:43.877301",
  "modified_by": "Administrator",
  "module": "ERP Custom",
  "name": "Estimated Sub Assembly Items",

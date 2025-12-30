@@ -327,7 +327,7 @@ frappe.ui.form.on("Estimate", {
 					row.item_name = bi.item_name;
 					row.item_group = bi.custom_item_group;
 					row.qty = bi.qty || 1;
-					row.uom = bi.uom || "Nos";
+					// row.uom = bi.uom || "Nos";
 					row.bom_no = bom_no || "";
 
 					row.length = bi.custom_length || 0;
@@ -442,7 +442,7 @@ frappe.ui.form.on("Estimate", {
                 row.last_purchase_price = bi.custom_last_purchase_price || bi.last_purchase_price || 0;
 
                 row.qty = safeNumber(bi.qty) || 1;
-                row.uom = bi.uom || "Nos";
+                // row.uom = bi.uom || "Nos";
                 added++;
             });
 
@@ -665,7 +665,7 @@ function calculate_estimate_weight(frm, cdt, cdn) {
     if (manual_groups.includes(type)) {
         row.base_weight = 0;
         row.kilogramskgs = flt(row.qty);
-        row.uom = "Nos";
+        // row.uom = "Nos";
         calculate_total_weight(frm, cdt, cdn);
         return;
     }
@@ -707,7 +707,7 @@ function calculate_estimate_weight(frm, cdt, cdn) {
 
     row.base_weight = flt(base, 4);
     row.kilogramskgs = flt(base, 3);
-    row.uom = "Kg";
+    // row.uom = "Kg";
 
     calculate_total_weight(frm, cdt, cdn);
     compute_bom_amount(frm, cdt, cdn);
@@ -733,7 +733,7 @@ function calculate_total_weight(frm, cdt, cdn) {
 function compute_bom_amount(frm, cdt, cdn) {
     const r = locals[cdt][cdn];
 
-    const base = flt(r.qty) * flt(r.rate);
+    const base = flt(r.qty) * flt(r.rate) * flt(r.total_weight);
     const marginAmt = base * (flt(r.margin) / 100);
 
     r.amount = flt(base + marginAmt, 2);
@@ -881,7 +881,7 @@ function calculate_amount_and_total(frm, cdt, cdn) {
     const r = locals[cdt][cdn];
     if (!r) return;
 
-    const base = flt(r.qty) * flt(r.rate);
+    const base = flt(r.qty) * flt(r.rate) * flt(r.total_weight) ;
     const margin_amt = base * flt(r.margin) / 100;
 
     frappe.model.set_value(cdt, cdn, "amount", flt(base + margin_amt, 2));
@@ -935,7 +935,7 @@ function calculate_sub_assembly_weight(frm, cdt, cdn) {
 
     if (["Fasteners", "Gaskets"].includes(r.item_group)) {
         frappe.model.set_value(cdt, cdn, "kilogramskgs", flt(r.qty));
-        frappe.model.set_value(cdt, cdn, "uom", "Nos");
+        // frappe.model.set_value(cdt, cdn, "uom", "Nos");
         calculate_sub_assembly_total_weight(frm, cdt, cdn);
         return;
     }
@@ -964,7 +964,7 @@ function calculate_sub_assembly_weight(frm, cdt, cdn) {
     }
 
     frappe.model.set_value(cdt, cdn, "kilogramskgs", flt(base, 3));
-    frappe.model.set_value(cdt, cdn, "uom", "Kg");
+    // frappe.model.set_value(cdt, cdn, "uom", "Kg");
 
     calculate_sub_assembly_total_weight(frm, cdt, cdn);
 }
