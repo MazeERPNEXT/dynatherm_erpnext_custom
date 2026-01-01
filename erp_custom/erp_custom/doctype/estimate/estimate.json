@@ -33,13 +33,19 @@
   "section_break_sixs",
   "column_break_zgob",
   "estimated_bom_materials",
-  "total",
   "get_subassembly_items",
+  "section_break_enow",
+  "total",
   "transport_sfg_costs",
+  "sfg_grand_total_cost",
   "sub_assembly_items_section",
   "estimated_sub_assembly_items",
+  "section_break_zmut",
   "total_sub_assembly",
+  "column_break_hrrv",
   "transport_rm_costs",
+  "column_break_evoq",
+  "rm_grand_total_cost",
   "estimated_operation_section",
   "estimated_operation",
   "total_operation_costs",
@@ -455,11 +461,6 @@
    "options": "Estimated BOM Materials"
   },
   {
-   "fieldname": "total",
-   "fieldtype": "Float",
-   "label": "Total (Sub Assembly)"
-  },
-  {
    "fieldname": "column_break_zgob",
    "fieldtype": "Column Break"
   },
@@ -540,7 +541,7 @@
   {
    "fieldname": "total_sub_assembly",
    "fieldtype": "Float",
-   "label": "Total (Raw Materials)"
+   "label": "RM Total Cost (\u20b9)"
   },
   {
    "fieldname": "consumable_tab",
@@ -548,14 +549,9 @@
    "label": "Consumable"
   },
   {
-   "fieldname": "transport_sfg_costs",
-   "fieldtype": "Float",
-   "label": "Transport SFG Costs"
-  },
-  {
    "fieldname": "transport_rm_costs",
    "fieldtype": "Float",
-   "label": "Transport RM Costs"
+   "label": "RM Transport Cost (\u20b9)"
   },
   {
    "fieldname": "transport_fg_costs",
@@ -582,13 +578,49 @@
    "fieldname": "total_operation_costs",
    "fieldtype": "Float",
    "label": "Total (Opertion)"
+  },
+  {
+   "fieldname": "section_break_zmut",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "column_break_hrrv",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_evoq",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "rm_grand_total_cost",
+   "fieldtype": "Float",
+   "label": "RM Grand Total Cost (\u20b9)"
+  },
+  {
+   "fieldname": "total",
+   "fieldtype": "Float",
+   "label": "SFG Total Cost (\u20b9)"
+  },
+  {
+   "fieldname": "transport_sfg_costs",
+   "fieldtype": "Float",
+   "label": "SFG Transport Cost (\u20b9)"
+  },
+  {
+   "fieldname": "sfg_grand_total_cost",
+   "fieldtype": "Float",
+   "label": "SFG Grand Total Cost (\u20b9)"
+  },
+  {
+   "fieldname": "section_break_enow",
+   "fieldtype": "Section Break"
   }
  ],
  "icon": "fa fa-shopping-cart",
  "idx": 82,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-12-19 16:31:41.952070",
+ "modified": "2025-12-31 16:07:30.225270",
  "modified_by": "Administrator",
  "module": "ERP Custom",
  "name": "Estimate",
