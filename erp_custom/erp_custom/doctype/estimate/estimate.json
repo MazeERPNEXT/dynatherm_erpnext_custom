@@ -30,13 +30,25 @@
   "bom",
   "get_items_from_bom",
   "transport_fg_costs",
+  "section_break_zgys",
+  "vehicle_type",
+  "from_location",
+  "to_location",
+  "total_kilometer",
+  "column_break_kbpx",
+  "weight_in_tonnes",
+  "vehicle_rate",
+  "holding_charge",
+  "final_vehicle_cost",
   "section_break_sixs",
   "column_break_zgob",
   "estimated_bom_materials",
-  "get_subassembly_items",
   "section_break_enow",
   "total",
+  "get_subassembly_items",
+  "column_break_zosx",
   "transport_sfg_costs",
+  "column_break_jusb",
   "sfg_grand_total_cost",
   "sub_assembly_items_section",
   "estimated_sub_assembly_items",
@@ -614,13 +626,73 @@
   {
    "fieldname": "section_break_enow",
    "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "section_break_zgys",
+   "fieldtype": "Section Break",
+   "label": "Transportation Rates"
+  },
+  {
+   "fieldname": "vehicle_type",
+   "fieldtype": "Link",
+   "label": "Vehicle Type",
+   "options": "Vehicle Type"
+  },
+  {
+   "fieldname": "from_location",
+   "fieldtype": "Link",
+   "label": "From Location",
+   "options": "Location"
+  },
+  {
+   "fieldname": "to_location",
+   "fieldtype": "Link",
+   "label": "To Location",
+   "options": "Location"
+  },
+  {
+   "fieldname": "column_break_kbpx",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "weight_in_tonnes",
+   "fieldtype": "Float",
+   "label": "Weight (In Tonnes)"
+  },
+  {
+   "fieldname": "vehicle_rate",
+   "fieldtype": "Float",
+   "label": "Vehicle Rate"
+  },
+  {
+   "fieldname": "holding_charge",
+   "fieldtype": "Float",
+   "label": "Holding Charge"
+  },
+  {
+   "fieldname": "final_vehicle_cost",
+   "fieldtype": "Float",
+   "label": "Final Vehicle Cost"
+  },
+  {
+   "fieldname": "total_kilometer",
+   "fieldtype": "Float",
+   "label": "Total Kilometer"
+  },
+  {
+   "fieldname": "column_break_zosx",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_jusb",
+   "fieldtype": "Column Break"
   }
  ],
  "icon": "fa fa-shopping-cart",
  "idx": 82,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-12-31 16:07:30.225270",
+ "modified": "2026-01-02 17:06:45.201715",
  "modified_by": "Administrator",
  "module": "ERP Custom",
  "name": "Estimate",

@@ -104,11 +104,6 @@ function fetch_bom_recursive(bom_name, opts, cb) {
 // ----------------------------------------------------
 frappe.ui.form.on("Estimate", {
 	 refresh(frm) {
-
-        // ----------------------------------------------------
-        // GROUPED CREATE BUTTONS (RFQ + QUOTATION)
-        // ----------------------------------------------------
-
         if (frm.doc.docstatus === 1) {
 
             // -------------------------------
@@ -156,6 +151,11 @@ frappe.ui.form.on("Estimate", {
                             tgt.custom_density = src.density;
                             tgt.custom_kilogramskgs = src.kilogramskgs;
                             tgt.custom_total_weight = src.total_weight;
+
+                            tgt.custom_scrap_margin_ = src.scrap_margin;
+                            tgt.custom_scrap_margin_kg = src.scrap_quantity;
+                            tgt.custom_transportation_cost___kg = src.transportation_rate;
+                            tgt.custom_transportation_cost_ = src.transportation_cost;
                         });
 
                         rfq.__run_link_triggers = false;
@@ -452,7 +452,36 @@ frappe.ui.form.on("Estimate", {
 
 		process_next_bom();
 	},
-});
+
+        // 🔢 TRANSPORT FG COST TRIGGERS (ONLY ADDITION)
+        vehicle_rate(frm) {
+            calculate_transport_costs(frm);
+    },
+
+        holding_charge(frm) {
+            calculate_transport_costs(frm);
+    }
+    });
+
+    // 🔁 COMMON SAFE CALCULATION FUNCTION
+    function calculate_transport_costs(frm) {
+
+    let vehicle_rate = flt(frm.doc.vehicle_rate);
+    let holding_charge = flt(frm.doc.holding_charge);
+
+    let final_vehicle_cost = vehicle_rate + holding_charge;
+
+    // ---------------- Parent Fields ----------------
+    frm.set_value("final_vehicle_cost", final_vehicle_cost);
+    frm.set_value("transport_fg_costs", final_vehicle_cost);
+
+    // ---------------- Child Table Sync ----------------
+    (frm.doc.items || []).forEach(row => {
+        frappe.model.set_value(row.doctype, row.name, "transport_cost", final_vehicle_cost);
+    });
+
+    frm.refresh_field("items");
+}
 
 
 // -------------------------------------------------
@@ -534,26 +563,24 @@ frappe.ui.form.on("Estimate Item", {
         });
     },
 
-    transport_cost(frm) {
-        compute_transport_fg_total(frm);
+    // If user manually edits transport_cost,
+    // keep parent value in sync with last edited value
+    transport_cost(frm, cdt, cdn) {
+        const row = locals[cdt][cdn];
+        if (!row) return;
+
+        frm.set_value("transport_fg_costs", flt(row.transport_cost));
+        frm.set_value("final_vehicle_cost", flt(row.transport_cost));
     },
 
     items_remove(frm) {
-        compute_transport_fg_total(frm);
+        // If all rows removed, reset transport cost
+        if (!frm.doc.items || frm.doc.items.length === 0) {
+            frm.set_value("transport_fg_costs", 0);
+            frm.set_value("final_vehicle_cost", 0);
+        }
     }
 });
-
-// -------------------------------------------------
-// FG TRANSPORT TOTAL
-// -------------------------------------------------
-function compute_transport_fg_total(frm) {
-    let total = 0;
-    (frm.doc.items || []).forEach(r => {
-        total += flt(r.transport_cost);
-    });
-
-    frm.set_value("transport_fg_costs", flt(total, 2));
-}
 
 // -------------------------------------------------
 // SAFE NUMBER
