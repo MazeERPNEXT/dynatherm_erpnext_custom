@@ -294,12 +294,20 @@ frappe.ui.form.on("Estimate", {
 
 				// Process each BOM item
 				const processItem = (idx) => {
-					if (idx >= bom.items.length) {
-						frm.refresh_field("estimated_bom_materials");
-						frappe.msgprint(__(`${added} item(s) added from BOM.`));
-						// After adding rows, you may want to fetch rates and compute amounts externally if needed
-						return;
-					}
+                    if (idx >= bom.items.length) {
+                    frm.refresh_field("estimated_bom_materials");
+
+                    // 🔁 FORCE TOTAL RECALCULATION
+                    setTimeout(() => {
+                        recompute_total(frm);
+                        compute_transport_sfg_total(frm);
+                        compute_sfg_grand_total_and_set_rate(frm);
+                    }, 100);
+
+                    frappe.msgprint(__(`${added} item(s) added from BOM.`));
+                    return;
+                }
+
 
 					const bi = bom.items[idx];
 
@@ -327,21 +335,29 @@ frappe.ui.form.on("Estimate", {
 					row.item_name = bi.item_name;
 					row.item_group = bi.custom_item_group;
 					row.qty = bi.qty || 1;
-					// row.uom = bi.uom || "Nos";
+					row.uom = bi.uom;
 					row.bom_no = bom_no || "";
 
-					row.length = bi.custom_length || 0;
+					row.material_type = bi.custom_material_type || "";
+                    row.length = bi.custom_length || 0;
 					row.width = bi.custom_width || 0;
 					row.thickness = bi.custom_thickness || 0;
 					row.density = bi.custom_density || 0;
-					row.kilogramskgs = bi.custom_kilogramskgs || 0;
-
-					row.material_type = bi.custom_material_type || "";
+					
 					row.outer_diameter = bi.custom_outer_diameter || 0;
 					row.inner_diameter = bi.custom_inner_diameter || 0;
 					row.wall_thickness = bi.custom_wall_thickness || 0;
-					row.base_weight = bi.custom_base_weight || 0;
+					// row.base_weight = bi.custom_base_weight || 0;
+                    row.kilogramskgs = bi.custom_kilogramskgs || 0;
                     row.total_weight = bi.custom_total_weight || 0;
+
+                    row.scrap_margin = bi.custom_scrap_margin_percentage || 0;
+					row.scrap_quantity = bi.custom_scrap_margin_kgs || 0;
+					row.transportation_rate = bi.custom_transportation_cost || 0;
+                    row.transportation_cost = bi.custom_transportation_cost_kgs || 0;
+
+                    row.rate = bi.rate || 0;
+                    row.amount = bi.custom_amount_inr || 0;
 
 					exist.add(bi.item_code);
 					added++;
@@ -393,10 +409,18 @@ frappe.ui.form.on("Estimate", {
 
 		// Recursive fetch for each BOM in sequence
 		function process_next_bom() {
-			if (processed >= total_boms) {
-				frm.refresh_field("estimated_sub_assembly_items");
-				return frappe.msgprint(__(`${added} Sub-Assembly item(s) added.`));
-			}
+            if (processed >= total_boms) {
+                frm.refresh_field("estimated_sub_assembly_items");
+
+                // 🔁 FORCE RM TOTAL RECALCULATION
+                setTimeout(() => {
+                    recompute_all_sub_assembly_totals(frm);
+                    compute_rm_grand_total(frm);
+                }, 100);
+
+                return frappe.msgprint(__(`${added} Sub-Assembly item(s) added.`));
+            }
+
 
 			let current_bom = bom_list[processed++];
 			fetch_bom_recursive(current_bom, { max_depth: 6 }, (err, items) => {
@@ -417,6 +441,7 @@ frappe.ui.form.on("Estimate", {
                 row.item_code = bi.item_code;
                 row.item_name = bi.item_name || bi.description || "";
                 row.item_group = bi.custom_item_group;
+                row.uom = bi.uom;
 
                 // Parent Assembly reference (important for traceability)
                 row.sub_assembly_item = bom_parent_map[current_bom] || bi.parent_item || "";
@@ -440,6 +465,14 @@ frappe.ui.form.on("Estimate", {
 
                 row.material_type = bi.custom_material_type || "";
                 row.last_purchase_price = bi.custom_last_purchase_price || bi.last_purchase_price || 0;
+
+                row.scrap_margin = bi.custom_scrap_margin_percentage || 0;
+                row.scrap_quantity = bi.custom_scrap_margin_kgs || 0;
+                row.transportation_rate = bi.custom_transportation_cost || 0;
+                row.transportation_cost = bi.custom_transportation_cost_kgs || 0;
+
+                row.rate = bi.rate || 0;
+                row.amount = bi.custom_amount_inr || 0;
 
                 row.qty = safeNumber(bi.qty) || 1;
                 // row.uom = bi.uom || "Nos";
@@ -510,46 +543,37 @@ frappe.ui.form.on("Estimate Item", {
             });
     },
 
-    rate(frm, cdt, cdn) {
+        rate(frm, cdt, cdn) {
         const row = locals[cdt][cdn];
         if (!row) return;
 
-        const qty = safeNumber(row.qty) || 1;
-        const entered_rate = safeNumber(row.rate);
-        const parent_total = safeNumber(frm.doc.total);
-        const min_rate = Number((parent_total / qty).toFixed(2));
+        const entered_rate = flt(row.rate);
+        const min_rate = flt(frm.doc.sfg_grand_total_cost);
 
         const is_first =
             frm.doc.items &&
-            frm.doc.items.length > 0 &&
+            frm.doc.items.length &&
             frm.doc.items[0].name === cdn;
 
+        // 🚫 BLOCK RATE DECREASE
         if (is_first && entered_rate < min_rate) {
             frappe.msgprint({
-                title: __("Invalid Rate"),
+                title: __("Rate Not Allowed"),
                 message: __(
-                    "Entered rate ({0}) is less than the minimum allowed rate ({1}). Reverting to minimum rate.",
-                    [entered_rate.toFixed(2), min_rate.toFixed(2)]
+                    "Rate cannot be less than SFG Grand Total Cost ({0}).",
+                    [format_currency(min_rate)]
                 ),
                 indicator: "red"
             });
 
-            frappe.model.set_value(cdt, cdn, "rate", min_rate, () => {
-                const updated_amount = Number((qty * min_rate).toFixed(2));
-                frappe.model.set_value(cdt, cdn, "amount", updated_amount, () => {
-                    recompute_total(frm);
-                    compute_transport_fg_total(frm);
-                });
-            });
+            frappe.model.set_value(cdt, cdn, "rate", min_rate);
             return;
         }
 
-        const amount = Number((qty * entered_rate).toFixed(2));
-        frappe.model.set_value(cdt, cdn, "amount", amount, () => {
-            recompute_total(frm);
-            compute_transport_fg_total(frm);
-        });
+        const qty = flt(row.qty) || 1;
+        frappe.model.set_value(cdt, cdn, "amount", flt(qty * entered_rate, 2));
     },
+
 
     qty(frm, cdt, cdn) {
         const row = locals[cdt][cdn];
@@ -764,8 +788,13 @@ function compute_sfg_grand_total_and_set_rate(frm) {
 
     frm.set_value("sfg_grand_total_cost", grand);
 
-    if (frm.doc.items && frm.doc.items.length > 0) {
-        const row = frm.doc.items[0];
+    if (!frm.doc.items || !frm.doc.items.length) return;
+
+    const row = frm.doc.items[0];
+    const current_rate = flt(row.rate);
+
+    // ✅ Auto-set ONLY if rate is empty or lower
+    if (!current_rate || current_rate < grand) {
         frappe.model.set_value(row.doctype, row.name, "rate", grand);
     }
 }
@@ -813,7 +842,6 @@ frappe.ui.form.on("Estimated Sub Assembly Items", {
             if (!row.bom_no && d.default_bom)
                 frappe.model.set_value(cdt, cdn, "bom_no", d.default_bom);
 
-            // ✅ IMPORTANT FIX (UOM)
             if (!row.uom && d.stock_uom)
                 frappe.model.set_value(cdt, cdn, "uom", d.stock_uom);
         }
@@ -827,10 +855,7 @@ frappe.ui.form.on("Estimated Sub Assembly Items", {
             limit: 1
         });
 
-        frappe.model.set_value(
-            cdt,
-            cdn,
-            "last_purchase_price",
+        frappe.model.set_value(cdt, cdn, "last_purchase_price",
             price?.length ? price[0].price_list_rate : 0
         );
 
@@ -984,12 +1009,7 @@ function calculate_sub_assembly_total_weight(frm, cdt, cdn) {
     const r = locals[cdt][cdn];
     if (!r) return;
 
-    frappe.model.set_value(
-        cdt,
-        cdn,
-        "total_weight",
-        flt(r.qty) * flt(r.kilogramskgs)
-    );
+    frappe.model.set_value(cdt, cdn, "total_weight", flt(r.qty) * flt(r.kilogramskgs));
 
     recalc_scrap_and_transport(frm, cdt, cdn);
 }
@@ -1001,20 +1021,10 @@ function recalc_scrap_and_transport(frm, cdt, cdn) {
     const r = locals[cdt][cdn];
     if (!r) return;
 
-    frappe.model.set_value(
-        cdt,
-        cdn,
-        "scrap_quantity",
-        flt(r.total_weight) * flt(r.scrap_margin) / 100
-    );
-
-    frappe.model.set_value(
-        cdt,
-        cdn,
-        "transportation_cost",
-        flt(r.total_weight) * flt(r.transportation_rate)
-    );
+    frappe.model.set_value(cdt, cdn, "scrap_quantity", flt(r.total_weight) * flt(r.scrap_margin) / 100);
+    frappe.model.set_value(cdt, cdn, "transportation_cost", flt(r.total_weight) * flt(r.transportation_rate));
 }
+
 
 // ---------------------------------------------------------
 // RM GRAND TOTAL (Parent) total_sub_assembly + transport_rm_costs
@@ -1023,10 +1033,7 @@ function compute_rm_grand_total(frm) {
     const total_sub = flt(frm.doc.total_sub_assembly);
     const transport_rm = flt(frm.doc.transport_rm_costs);
 
-    frm.set_value(
-        "rm_grand_total_cost",
-        flt(total_sub + transport_rm, 2)
-    );
+    frm.set_value("rm_grand_total_cost", flt(total_sub + transport_rm, 2));
 }
 
 

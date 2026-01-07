@@ -56,7 +56,7 @@ def make_work_order(bom_no, item, qty=0, project=None, variant_items=None, use_m
 				req_item.custom_scrap_margin_percentage = bi.custom_scrap_margin_percentage or 0
 				req_item.custom_scrap_margin_kg = bi.custom_scrap_margin_kgs or 0
 				req_item.custom_transportation_cost___kg = bi.custom_transportation_cost or 0
-				req_item.custom_transportation_cost_kgs = bi.custom_transportation_cost_kgs or 0
+				req_item.custom_transportation_cost_ = bi.custom_transportation_cost_kgs or 0
     
 
 	if variant_items and not wo_doc.use_multi_level_bom:

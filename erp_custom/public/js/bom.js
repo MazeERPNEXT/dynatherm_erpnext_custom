@@ -130,15 +130,9 @@ function calculate_kgs(frm, cdt, cdn) {
 function calculate_total_weight(frm, cdt, cdn) {
     const row = locals[cdt][cdn];
 
-    const total_weight =
-        flt(row.qty) * flt(row.custom_kilogramskgs);
+    const total_weight = flt(row.qty) * flt(row.custom_kilogramskgs);
 
-    frappe.model.set_value(
-        cdt,
-        cdn,
-        "custom_total_weight",
-        flt(total_weight, 4)
-    );
+    frappe.model.set_value(cdt, cdn, "custom_total_weight", flt(total_weight, 4));
 
     calculate_custom_amount(frm, cdt, cdn);
     calculate_scrap_and_transport(frm, cdt, cdn);
@@ -154,12 +148,7 @@ function calculate_custom_amount(frm, cdt, cdn) {
     const rate = flt(row.rate) || 0;
     const total_weight = flt(row.custom_total_weight) || 0;
 
-    frappe.model.set_value(
-        cdt,
-        cdn,
-        "custom_amount_inr",
-        flt(rate * total_weight, 2)
-    );
+    frappe.model.set_value(cdt, cdn, "custom_amount_inr", flt(rate * total_weight, 2));
 }
 
 
@@ -176,48 +165,37 @@ function calculate_scrap_and_transport(frm, cdt, cdn) {
     const scrap_kgs = total_weight * (scrap_pct / 100);
     const transport_cost = total_weight * transport_rate;
 
-    frappe.model.set_value(
-        cdt,
-        cdn,
-        "custom_scrap_margin_kgs",
-        flt(scrap_kgs, 4)
-    );
-
-    frappe.model.set_value(
-        cdt,
-        cdn,
-        "custom_transportation_cost_kgs",
-        flt(transport_cost, 2)
-    );
+    frappe.model.set_value(cdt, cdn, "custom_scrap_margin_kgs", flt(scrap_kgs, 4));
+    frappe.model.set_value(cdt, cdn, "custom_transportation_cost_kgs", flt(transport_cost, 2));
 }
 
 
 
 
 
-// =========================================================
-// FORCE RATE OVERRIDE (SERVER CONFIRMED)
-// =========================================================
-function force_rate_override(frm, cdt, cdn) {
-    const row = locals[cdt][cdn];
-    if (!row.item_code || !frm.doc.name) return;
+// // =========================================================
+// // FORCE RATE OVERRIDE (SERVER CONFIRMED)
+// // =========================================================
+// function force_rate_override(frm, cdt, cdn) {
+//     const row = locals[cdt][cdn];
+//     if (!row.item_code || !frm.doc.name) return;
 
-    frappe.call({
-        method: "erp_custom.erp_custom.overrides.bom.make_variant_bom",
-        args: {
-            bom: frm.doc.name,
-            item_code: row.item_code,
-            custom_total_weight: row.custom_total_weight
-        },
-        callback(r) {
-            if (r.message === undefined || r.message === null) return;
+//     frappe.call({
+//         method: "erp_custom.erp_custom.overrides.bom.make_variant_bom",
+//         args: {
+//             bom: frm.doc.name,
+//             item_code: row.item_code,
+//             custom_total_weight: row.custom_total_weight
+//         },
+//         callback(r) {
+//             if (r.message === undefined || r.message === null) return;
 
-            frappe.model.set_value(
-                cdt,
-                cdn,
-                "rate",
-                flt(r.message)
-            );
-        }
-    });
-}
+//             frappe.model.set_value(
+//                 cdt,
+//                 cdn,
+//                 "rate",
+//                 flt(r.message)
+//             );
+//         }
+//     });
+// }
