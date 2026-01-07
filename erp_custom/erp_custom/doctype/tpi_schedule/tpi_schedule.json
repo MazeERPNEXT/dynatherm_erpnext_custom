@@ -1,0 +1,116 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2026-01-07 17:27:26.581094",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "section_break_ny0v",
+  "tpi_request_reference",
+  "amended_from",
+  "project",
+  "inspection_agency",
+  "inspector_name",
+  "column_break_hids",
+  "inspection_date_andtime",
+  "location",
+  "scope_of_inspection",
+  "status"
+ ],
+ "fields": [
+  {
+   "fieldname": "section_break_ny0v",
+   "fieldtype": "Section Break",
+   "label": "TIP Details"
+  },
+  {
+   "fieldname": "tpi_request_reference",
+   "fieldtype": "Link",
+   "label": "TPI Request Reference",
+   "options": "TPI Request"
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "TPI Schedule",
+   "print_hide": 1,
+   "read_only": 1,
+   "search_index": 1
+  },
+  {
+   "fetch_from": "tpi_request_reference.project",
+   "fieldname": "project",
+   "fieldtype": "Link",
+   "label": "Project",
+   "options": "Project"
+  },
+  {
+   "fieldname": "inspection_agency",
+   "fieldtype": "Link",
+   "label": "Inspection Agency",
+   "options": "Supplier"
+  },
+  {
+   "fieldname": "inspector_name",
+   "fieldtype": "Data",
+   "label": "Inspector Name"
+  },
+  {
+   "fieldname": "column_break_hids",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "inspection_date_andtime",
+   "fieldtype": "Datetime",
+   "label": "Inspection Date & Time"
+  },
+  {
+   "fieldname": "location",
+   "fieldtype": "Link",
+   "label": "Location",
+   "options": "Address"
+  },
+  {
+   "fieldname": "scope_of_inspection",
+   "fieldtype": "Data",
+   "label": "Scope of Inspection"
+  },
+  {
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "label": "Status",
+   "options": "\nPlanned\nIn Progress\nCompleted\nAccepted"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "is_submittable": 1,
+ "links": [],
+ "modified": "2026-01-07 19:36:15.187192",
+ "modified_by": "Administrator",
+ "module": "ERP Custom",
+ "name": "TPI Schedule",
+ "owner": "kponsakthivel@gmail.com",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "submit": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "rows_threshold_for_grid_search": 20,
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}
