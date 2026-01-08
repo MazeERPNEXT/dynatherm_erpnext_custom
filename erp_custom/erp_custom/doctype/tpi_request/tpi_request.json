@@ -1,0 +1,159 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "prompt",
+ "creation": "2026-01-07 18:13:51.174572",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "section_break_pklq",
+  "applicable_standards__drawings_column",
+  "project",
+  "sales_order",
+  "customer",
+  "site_location",
+  "applicable_standards__drawings",
+  "work_description",
+  "amended_from",
+  "column_break_fhiu",
+  "requested_inspection_date",
+  "status",
+  "quantity",
+  "inspection_type",
+  "inspection_agency",
+  "drawings"
+ ],
+ "fields": [
+  {
+   "fieldname": "section_break_pklq",
+   "fieldtype": "Section Break",
+   "width": "100"
+  },
+  {
+   "columns": 11,
+   "fieldname": "applicable_standards__drawings_column",
+   "fieldtype": "Column Break",
+   "label": "Applicable Standards / Drawings"
+  },
+  {
+   "fieldname": "project",
+   "fieldtype": "Link",
+   "label": "Project",
+   "options": "Project"
+  },
+  {
+   "fieldname": "sales_order",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Sales Order",
+   "options": "Sales Order",
+   "reqd": 1
+  },
+  {
+   "fetch_from": "sales_order.customer",
+   "fieldname": "customer",
+   "fieldtype": "Autocomplete",
+   "label": "Customer"
+  },
+  {
+   "fieldname": "site_location",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Site Location",
+   "options": "Address",
+   "reqd": 1
+  },
+  {
+   "fieldname": "applicable_standards__drawings",
+   "fieldtype": "Data",
+   "label": "Applicable Standards / Drawings"
+  },
+  {
+   "fieldname": "work_description",
+   "fieldtype": "Small Text",
+   "label": "Work Description"
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "TPI Request",
+   "print_hide": 1,
+   "read_only": 1,
+   "search_index": 1
+  },
+  {
+   "fieldname": "column_break_fhiu",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "requested_inspection_date",
+   "fieldtype": "Datetime",
+   "in_list_view": 1,
+   "label": "Requested Inspection Date",
+   "reqd": 1
+  },
+  {
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Status",
+   "options": "Open\nPlanned\nPending For Approval\nInspection scheduled",
+   "reqd": 1
+  },
+  {
+   "fieldname": "quantity",
+   "fieldtype": "Data",
+   "label": "Quantity"
+  },
+  {
+   "fieldname": "inspection_type",
+   "fieldtype": "Select",
+   "label": "Inspection Type",
+   "options": "\nMaterial\nWork\nFinal",
+   "reqd": 1
+  },
+  {
+   "fieldname": "inspection_agency",
+   "fieldtype": "Link",
+   "label": "Inspection Agency",
+   "options": "Supplier"
+  },
+  {
+   "fieldname": "drawings",
+   "fieldtype": "Attach",
+   "label": "Drawings"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "is_submittable": 1,
+ "links": [],
+ "modified": "2026-01-07 19:35:54.361445",
+ "modified_by": "Administrator",
+ "module": "ERP Custom",
+ "name": "TPI Request",
+ "naming_rule": "Set by user",
+ "owner": "kponsakthivel@gmail.com",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "quick_entry": 1,
+ "row_format": "Dynamic",
+ "rows_threshold_for_grid_search": 20,
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}
