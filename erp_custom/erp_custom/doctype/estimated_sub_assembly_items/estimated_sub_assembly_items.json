@@ -108,6 +108,7 @@
    "fieldtype": "Float",
    "in_list_view": 1,
    "label": "Kgs Per Unit",
+   "precision": "2",
    "read_only": 1
   },
   {
@@ -160,7 +161,7 @@
   },
   {
    "fieldname": "last_purchase_price",
-   "fieldtype": "Float",
+   "fieldtype": "Currency",
    "label": "Last Purchase Rate",
    "read_only": 1
   },
@@ -179,16 +180,18 @@
    "fieldname": "total_weight",
    "fieldtype": "Float",
    "label": "Total Weight",
+   "precision": "2",
    "read_only": 1
   },
   {
    "fieldname": "scrap_margin",
    "fieldtype": "Percent",
-   "label": "Scrap Margin (%)"
+   "label": "Scrap Margin (%)",
+   "precision": "2"
   },
   {
    "fieldname": "transportation_rate",
-   "fieldtype": "Float",
+   "fieldtype": "Currency",
    "in_list_view": 1,
    "label": "Transportation Rate (\u20b9 / Kg)"
   },
@@ -196,11 +199,12 @@
    "fieldname": "scrap_quantity",
    "fieldtype": "Float",
    "label": "Scrap Quantity (Kg)",
+   "precision": "2",
    "read_only": 1
   },
   {
    "fieldname": "transportation_cost",
-   "fieldtype": "Float",
+   "fieldtype": "Currency",
    "label": "Transportation Cost (\u20b9)",
    "read_only": 1
   }
@@ -209,7 +213,7 @@
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2025-12-29 18:53:43.877301",
+ "modified": "2026-01-08 13:54:58.194093",
  "modified_by": "Administrator",
  "module": "ERP Custom",
  "name": "Estimated Sub Assembly Items",

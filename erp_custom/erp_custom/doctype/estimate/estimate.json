@@ -29,7 +29,10 @@
   "items",
   "bom",
   "get_items_from_bom",
+  "section_break_ytqc",
   "transport_fg_costs",
+  "column_break_epwj",
+  "total_estimate_cost",
   "section_break_zgys",
   "vehicle_type",
   "from_location",
@@ -552,7 +555,7 @@
   },
   {
    "fieldname": "total_sub_assembly",
-   "fieldtype": "Float",
+   "fieldtype": "Currency",
    "label": "RM Total Cost (\u20b9)"
   },
   {
@@ -562,18 +565,18 @@
   },
   {
    "fieldname": "transport_rm_costs",
-   "fieldtype": "Float",
+   "fieldtype": "Currency",
    "label": "RM Transport Cost (\u20b9)"
   },
   {
    "fieldname": "transport_fg_costs",
-   "fieldtype": "Float",
+   "fieldtype": "Currency",
    "label": "Transport FG Costs",
    "read_only": 1
   },
   {
    "fieldname": "transport_consumable_costs",
-   "fieldtype": "Float",
+   "fieldtype": "Currency",
    "label": "Transport Consumable Costs"
   },
   {
@@ -584,12 +587,12 @@
   },
   {
    "fieldname": "total_consumable_costs",
-   "fieldtype": "Float",
+   "fieldtype": "Currency",
    "label": "Total Consumable Costs"
   },
   {
    "fieldname": "total_operation_costs",
-   "fieldtype": "Float",
+   "fieldtype": "Currency",
    "label": "Total (Opertion)"
   },
   {
@@ -606,22 +609,22 @@
   },
   {
    "fieldname": "rm_grand_total_cost",
-   "fieldtype": "Float",
+   "fieldtype": "Currency",
    "label": "RM Grand Total Cost (\u20b9)"
   },
   {
    "fieldname": "total",
-   "fieldtype": "Float",
+   "fieldtype": "Currency",
    "label": "SFG Total Cost (\u20b9)"
   },
   {
    "fieldname": "transport_sfg_costs",
-   "fieldtype": "Float",
+   "fieldtype": "Currency",
    "label": "SFG Transport Cost (\u20b9)"
   },
   {
    "fieldname": "sfg_grand_total_cost",
-   "fieldtype": "Float",
+   "fieldtype": "Currency",
    "label": "SFG Grand Total Cost (\u20b9)"
   },
   {
@@ -662,17 +665,17 @@
   },
   {
    "fieldname": "vehicle_rate",
-   "fieldtype": "Float",
+   "fieldtype": "Currency",
    "label": "Vehicle Rate"
   },
   {
    "fieldname": "holding_charge",
-   "fieldtype": "Float",
+   "fieldtype": "Currency",
    "label": "Holding Charge"
   },
   {
    "fieldname": "final_vehicle_cost",
-   "fieldtype": "Float",
+   "fieldtype": "Currency",
    "label": "Final Vehicle Cost",
    "read_only": 1
   },
@@ -688,13 +691,27 @@
   {
    "fieldname": "column_break_jusb",
    "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "total_estimate_cost",
+   "fieldtype": "Currency",
+   "label": "Total Estimate Cost",
+   "read_only": 1
+  },
+  {
+   "fieldname": "section_break_ytqc",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "column_break_epwj",
+   "fieldtype": "Column Break"
   }
  ],
  "icon": "fa fa-shopping-cart",
  "idx": 82,
  "is_submittable": 1,
  "links": [],
- "modified": "2026-01-05 10:26:12.363547",
+ "modified": "2026-01-08 15:41:36.363884",
  "modified_by": "Administrator",
  "module": "ERP Custom",
  "name": "Estimate",

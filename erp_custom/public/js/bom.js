@@ -173,29 +173,24 @@ function calculate_scrap_and_transport(frm, cdt, cdn) {
 
 
 
-// // =========================================================
-// // FORCE RATE OVERRIDE (SERVER CONFIRMED)
-// // =========================================================
-// function force_rate_override(frm, cdt, cdn) {
-//     const row = locals[cdt][cdn];
-//     if (!row.item_code || !frm.doc.name) return;
+// =========================================================
+// FORCE RATE OVERRIDE (SERVER CONFIRMED)
+// =========================================================
+function force_rate_override(frm, cdt, cdn) {
+    const row = locals[cdt][cdn];
+    if (!row.item_code || !frm.doc.name) return;
 
-//     frappe.call({
-//         method: "erp_custom.erp_custom.overrides.bom.make_variant_bom",
-//         args: {
-//             bom: frm.doc.name,
-//             item_code: row.item_code,
-//             custom_total_weight: row.custom_total_weight
-//         },
-//         callback(r) {
-//             if (r.message === undefined || r.message === null) return;
+    frappe.call({
+        method: "erp_custom.erp_custom.overrides.bom.get_bom_material_detail",
+        args: {
+            bom: frm.doc.name,
+            item_code: row.item_code,
+            custom_total_weight: row.custom_total_weight
+        },
+        callback(r) {
+            if (r.message === undefined || r.message === null) return;
 
-//             frappe.model.set_value(
-//                 cdt,
-//                 cdn,
-//                 "rate",
-//                 flt(r.message)
-//             );
-//         }
-//     });
-// }
+            frappe.model.set_value(cdt, cdn, "rate", flt(r.message));
+        }
+    });
+}

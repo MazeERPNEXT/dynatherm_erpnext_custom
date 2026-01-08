@@ -114,6 +114,7 @@
    "fieldtype": "Float",
    "in_list_view": 1,
    "label": "Kgs Per Unit",
+   "precision": "2",
    "read_only": 1
   },
   {
@@ -166,6 +167,7 @@
    "label": "Material Type"
   },
   {
+   "default": "Make",
    "fieldname": "item_source",
    "fieldtype": "Select",
    "label": "Item Source",
@@ -176,23 +178,25 @@
    "fieldtype": "Float",
    "in_list_view": 1,
    "label": "Total Weight",
+   "precision": "2",
    "read_only": 1
   },
   {
    "fieldname": "scrap_margin",
    "fieldtype": "Percent",
    "in_list_view": 1,
-   "label": "Scrap Margin (%)"
+   "label": "Scrap Margin (%)",
+   "precision": "2"
   },
   {
    "fieldname": "transportation_rate",
-   "fieldtype": "Float",
+   "fieldtype": "Currency",
    "in_list_view": 1,
    "label": "Transportation Rate (\u20b9 / Kg)"
   },
   {
    "fieldname": "transportation_cost",
-   "fieldtype": "Float",
+   "fieldtype": "Currency",
    "in_list_view": 1,
    "label": "Transportation Cost (\u20b9)",
    "read_only": 1
@@ -202,6 +206,7 @@
    "fieldtype": "Float",
    "in_list_view": 1,
    "label": "Scrap Quantity (Kg)",
+   "precision": "2",
    "read_only": 1
   }
  ],
@@ -209,7 +214,7 @@
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2025-12-29 18:51:34.964732",
+ "modified": "2026-01-08 15:44:11.564273",
  "modified_by": "Administrator",
  "module": "ERP Custom",
  "name": "Estimated BOM Materials",
