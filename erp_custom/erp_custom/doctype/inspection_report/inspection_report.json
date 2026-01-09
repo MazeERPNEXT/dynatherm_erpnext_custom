@@ -1,6 +1,7 @@
 {
  "actions": [],
  "allow_rename": 1,
+ "autoname": "prompt",
  "creation": "2026-01-07 17:48:00.020498",
  "doctype": "DocType",
  "engine": "InnoDB",
@@ -77,10 +78,11 @@
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-01-08 18:49:06.236419",
+ "modified": "2026-01-09 16:36:08.132016",
  "modified_by": "Administrator",
  "module": "ERP Custom",
  "name": "Inspection Report",
+ "naming_rule": "Set by user",
  "owner": "kponsakthivel@gmail.com",
  "permissions": [
   {
