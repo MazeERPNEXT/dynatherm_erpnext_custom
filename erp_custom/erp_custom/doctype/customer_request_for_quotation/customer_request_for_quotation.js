@@ -161,13 +161,14 @@ function create_estimate_from_crfq(frm) {
     frappe.model.with_doctype('Estimate', function () {
         let new_doc = frappe.model.get_new_doc('Estimate');
 
-        // -------- Parent Field Mapping --------
+        // -------- Parent Field Mapping (left: Estimate | Right: CRFQ )--------
         new_doc.crfq__tender_id = frm.doc.crfq__tender_id;
         new_doc.tag = frm.doc.tag;
         new_doc.item_name = frm.doc.item_name;
         new_doc.parent_moc = frm.doc.parent_moc;
         new_doc.customer_name = frm.doc.customer_name;
         new_doc.valid_till = frm.doc.valid_till;
+        new_doc.to_location = frm.doc.location;
 
         // Link for traceability
         new_doc.customer_request_for_quotation = frm.doc.name;

@@ -593,7 +593,7 @@
   {
    "fieldname": "total_operation_costs",
    "fieldtype": "Currency",
-   "label": "Total (Opertion)"
+   "label": "Opertion Total Cost (\u20b9)"
   },
   {
    "fieldname": "section_break_zmut",
@@ -661,7 +661,8 @@
   {
    "fieldname": "weight_in_tonnes",
    "fieldtype": "Float",
-   "label": "Weight (In Tonnes)"
+   "label": "Weight (In Tonnes)",
+   "precision": "2"
   },
   {
    "fieldname": "vehicle_rate",
@@ -711,7 +712,7 @@
  "idx": 82,
  "is_submittable": 1,
  "links": [],
- "modified": "2026-01-08 15:41:36.363884",
+ "modified": "2026-01-09 17:41:03.630667",
  "modified_by": "Administrator",
  "module": "ERP Custom",
  "name": "Estimate",

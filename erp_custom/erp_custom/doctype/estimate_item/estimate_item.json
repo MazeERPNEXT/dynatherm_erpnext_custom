@@ -82,7 +82,9 @@
   "additional_notes",
   "section_break_61",
   "page_break",
-  "transport_cost"
+  "transport_cost",
+  "column_break_bvac",
+  "tpi_rate"
  ],
  "fields": [
   {
@@ -704,12 +706,23 @@
    "in_list_view": 1,
    "label": "Transport Cost",
    "read_only": 1
+  },
+  {
+   "fieldname": "column_break_bvac",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "tpi_rate",
+   "fieldtype": "Currency",
+   "in_list_view": 1,
+   "in_preview": 1,
+   "label": "TPI Rate (Per Day)"
   }
  ],
  "idx": 1,
  "istable": 1,
  "links": [],
- "modified": "2026-01-08 14:08:18.253576",
+ "modified": "2026-01-09 11:22:33.259579",
  "modified_by": "Administrator",
  "module": "ERP Custom",
  "name": "Estimate Item",

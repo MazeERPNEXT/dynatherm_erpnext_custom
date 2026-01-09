@@ -32,7 +32,8 @@
   "kilogramskgs",
   "total_weight",
   "scrap_quantity",
-  "transportation_cost"
+  "transportation_cost",
+  "tpi_rate"
  ],
  "fields": [
   {
@@ -208,13 +209,18 @@
    "label": "Scrap Quantity (Kg)",
    "precision": "2",
    "read_only": 1
+  },
+  {
+   "fieldname": "tpi_rate",
+   "fieldtype": "Currency",
+   "label": "TPI Rate (Per Day)"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2026-01-08 15:44:11.564273",
+ "modified": "2026-01-09 11:46:05.421140",
  "modified_by": "Administrator",
  "module": "ERP Custom",
  "name": "Estimated BOM Materials",
