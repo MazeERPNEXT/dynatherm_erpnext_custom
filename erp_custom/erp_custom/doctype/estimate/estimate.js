@@ -772,6 +772,8 @@ frappe.ui.form.on("Estimated BOM Materials", {
 });
 
 function handle_buy(frm, row) {
+
+    remove_related_raw_materials(frm, row.item_code);
     frappe.model.set_value(row.doctype, row.name, "amount", 0);
     frappe.model.set_value(row.doctype, row.name, "transportation_cost", 0);
     frappe.model.set_value(row.doctype, row.name, "total_weight", 0);
@@ -811,6 +813,28 @@ function handle_make(frm, row) {
     compute_transport_sfg_total(frm);
 }
 
+function remove_related_raw_materials(frm, parent_item_code) {
+
+    if (!parent_item_code) return;
+
+    (frm.doc.estimated_sub_assembly_items || []).forEach(row => {
+
+        // ❌ remove only RM rows linked to this SFG
+        if (
+            row.sub_assembly_item === parent_item_code &&
+            row.item_code !== parent_item_code
+        ) {
+            frappe.model.clear_doc(row.doctype, row.name);
+        }
+    });
+
+    frm.refresh_field("estimated_sub_assembly_items");
+
+    // 🔁 totals recalculation
+    recompute_all_sub_assembly_totals(frm);
+    compute_rm_grand_total(frm);
+    compute_weight_in_tonnes(frm);
+}
 
 function find_or_create_sub_assembly(frm, row) {
 

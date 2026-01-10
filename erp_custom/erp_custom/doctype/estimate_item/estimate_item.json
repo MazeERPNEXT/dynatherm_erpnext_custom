@@ -7,10 +7,12 @@
  "engine": "InnoDB",
  "field_order": [
   "item_code",
+  "item_name",
   "customer_item_code",
   "col_break1",
-  "item_name",
   "item_group",
+  "tag",
+  "parent_moc",
   "section_break_5",
   "description",
   "brand",
@@ -717,12 +719,22 @@
    "in_list_view": 1,
    "in_preview": 1,
    "label": "TPI Rate (Per Day)"
+  },
+  {
+   "fieldname": "tag",
+   "fieldtype": "Data",
+   "label": "Tag"
+  },
+  {
+   "fieldname": "parent_moc",
+   "fieldtype": "Data",
+   "label": "Parent MoC"
   }
  ],
  "idx": 1,
  "istable": 1,
  "links": [],
- "modified": "2026-01-09 11:22:33.259579",
+ "modified": "2026-01-10 18:20:23.095151",
  "modified_by": "Administrator",
  "module": "ERP Custom",
  "name": "Estimate Item",

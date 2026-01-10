@@ -34,7 +34,11 @@
   "total_weight",
   "scrap_quantity",
   "transportation_cost",
-  "tpi_rate"
+  "tpi_rate",
+  "section_break_jwdk",
+  "supplier_category",
+  "column_break_xkdi",
+  "supplier_type"
  ],
  "fields": [
   {
@@ -69,12 +73,12 @@
   },
   {
    "fieldname": "section_break_emju",
-   "fieldtype": "Section Break"
+   "fieldtype": "Section Break",
+   "label": "Dimension"
   },
   {
    "fieldname": "dimension_column",
-   "fieldtype": "Column Break",
-   "label": "Dimension"
+   "fieldtype": "Column Break"
   },
   {
    "depends_on": "eval: ['Plates','Tubes','Pipes','Forgings','Rods','Bars'].includes(doc.item_group)\n",
@@ -163,7 +167,7 @@
   {
    "fieldname": "last_purchase_price",
    "fieldtype": "Currency",
-   "label": "Last Purchase Rate",
+   "label": "Last Purchase Rate (\u20b9)",
    "read_only": 1
   },
   {
@@ -213,13 +217,34 @@
    "fieldname": "tpi_rate",
    "fieldtype": "Currency",
    "label": "TPI Rate (Per Day)"
+  },
+  {
+   "fieldname": "section_break_jwdk",
+   "fieldtype": "Section Break",
+   "label": "Supplier"
+  },
+  {
+   "fieldname": "supplier_category",
+   "fieldtype": "Link",
+   "label": "Supplier Category",
+   "options": "Supplier Group"
+  },
+  {
+   "fieldname": "supplier_type",
+   "fieldtype": "Link",
+   "label": "Supplier Type",
+   "options": "Supplier Type"
+  },
+  {
+   "fieldname": "column_break_xkdi",
+   "fieldtype": "Column Break"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2026-01-09 11:48:11.944280",
+ "modified": "2026-01-10 15:56:35.022655",
  "modified_by": "Administrator",
  "module": "ERP Custom",
  "name": "Estimated Sub Assembly Items",

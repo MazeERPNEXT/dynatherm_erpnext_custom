@@ -20,25 +20,17 @@
   "transaction_date",
   "closing_date",
   "time",
-  "item_code",
-  "item_name",
-  "item_group",
+  "location",
   "column_break_7",
   "order_type",
   "company",
   "has_unit_price_items",
   "valid_till",
+  "ra_yn",
   "amended_from",
   "section_break_rlge",
   "purpose",
   "type",
-  "location",
-  "tag",
-  "column_break_kwyw",
-  "parent_moc",
-  "moc_config",
-  "cdd_days",
-  "ra_yn",
   "section_break_ntzh",
   "pqc_commercial",
   "prebid_meeting",
@@ -58,7 +50,6 @@
   "ignore_pricing_rule",
   "customer_request_for_quotation_item_section",
   "items",
-  "unit_basic",
   "sec_break23",
   "total_qty",
   "total_net_weight",
@@ -253,7 +244,7 @@
    "fieldtype": "Date",
    "in_list_view": 1,
    "in_standard_filter": 1,
-   "label": "Date",
+   "label": "ERP Posting Date",
    "no_copy": 1,
    "oldfieldname": "transaction_date",
    "oldfieldtype": "Date",
@@ -262,14 +253,14 @@
    "width": "100px"
   },
   {
-   "default": "Sales",
+   "default": "Goods / Equipment",
    "fieldname": "order_type",
    "fieldtype": "Select",
    "in_standard_filter": 1,
    "label": "Order Type",
    "oldfieldname": "order_type",
    "oldfieldtype": "Select",
-   "options": "\nSales\nMaintenance\nShopping Cart",
+   "options": "\nGoods / Equipment\nService\nOthers",
    "print_hide": 1,
    "reqd": 1
   },
@@ -1100,57 +1091,28 @@
    "reqd": 1
   },
   {
+   "default": "Direct",
    "fieldname": "type",
    "fieldtype": "Select",
-   "label": "Type",
-   "options": "\nGeM\nNon-GeM\nE-Procure",
+   "label": "Tender Type",
+   "options": "\nDirect\nGeM\nNon-GeM\nE-Procure",
    "reqd": 1
   },
   {
    "fieldname": "location",
    "fieldtype": "Link",
-   "label": "Location",
+   "label": "Delivery Location",
    "options": "Location"
   },
   {
    "fieldname": "closing_date",
    "fieldtype": "Date",
-   "label": "Closing Date"
+   "label": "Bid Due Date"
   },
   {
    "fieldname": "time",
    "fieldtype": "Time",
-   "label": "Time"
-  },
-  {
-   "fieldname": "tag",
-   "fieldtype": "Data",
-   "label": "Tag"
-  },
-  {
-   "fieldname": "item_name",
-   "fieldtype": "Data",
-   "label": "Item Name"
-  },
-  {
-   "fieldname": "item_group",
-   "fieldtype": "Data",
-   "label": "Item Group"
-  },
-  {
-   "fieldname": "parent_moc",
-   "fieldtype": "Data",
-   "label": "Parent MoC"
-  },
-  {
-   "fieldname": "moc_config",
-   "fieldtype": "Data",
-   "label": "MoC Config"
-  },
-  {
-   "fieldname": "cdd_days",
-   "fieldtype": "Float",
-   "label": "CDD (Days)"
+   "label": "Bid Closing Time"
   },
   {
    "fieldname": "ra_yn",
@@ -1180,18 +1142,15 @@
   },
   {
    "fieldname": "pqc_shop_floor",
-   "fieldtype": "Data",
-   "label": "PQC Shop Floor"
+   "fieldtype": "Select",
+   "label": "PQC Shop Floor",
+   "options": "\nEIL\nIBR\nHIC / NACE\nU Stamp\nPESO\nHybrid",
+   "reqd": 1
   },
   {
    "fieldname": "dapl_pqc",
    "fieldtype": "Float",
-   "label": "DAPL PQC"
-  },
-  {
-   "fieldname": "unit_basic",
-   "fieldtype": "Data",
-   "label": "Unit Basic"
+   "label": "DAPL PQC (Job Reference)"
   },
   {
    "fieldname": "total_basic",
@@ -1206,11 +1165,7 @@
   {
    "fieldname": "valid_till",
    "fieldtype": "Date",
-   "label": "Valid Till"
-  },
-  {
-   "fieldname": "column_break_kwyw",
-   "fieldtype": "Column Break"
+   "label": "Quotation Valid Till"
   },
   {
    "fieldname": "section_break_ntzh",
@@ -1234,12 +1189,6 @@
    "label": "CRFQ / Tender ID"
   },
   {
-   "fieldname": "item_code",
-   "fieldtype": "Link",
-   "label": "Item Code",
-   "options": "Item"
-  },
-  {
    "fieldname": "customer_request_for_quotation_item_section",
    "fieldtype": "Section Break",
    "hide_border": 1,
@@ -1252,7 +1201,7 @@
  "idx": 82,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-12-06 15:32:33.871330",
+ "modified": "2026-01-10 18:12:26.897369",
  "modified_by": "Administrator",
  "module": "ERP Custom",
  "name": "Customer Request For Quotation",

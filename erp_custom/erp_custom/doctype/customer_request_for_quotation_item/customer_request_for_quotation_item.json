@@ -7,13 +7,20 @@
  "engine": "InnoDB",
  "field_order": [
   "item_code",
+  "item_name",
   "customer_item_code",
   "col_break1",
-  "item_name",
+  "item_group",
   "bom_no",
+  "section_break_cyld",
+  "parent_moc",
+  "tag",
+  "unit_basic",
+  "column_break_uyra",
+  "moc_configuration",
+  "cdd_days",
   "section_break_5",
   "description",
-  "item_group",
   "brand",
   "image_section",
   "image",
@@ -550,12 +557,10 @@
   },
   {
    "fieldname": "item_group",
-   "fieldtype": "Link",
-   "hidden": 1,
+   "fieldtype": "Data",
    "label": "Item Group",
    "oldfieldname": "item_group",
    "oldfieldtype": "Link",
-   "options": "Item Group",
    "print_hide": 1,
    "read_only": 1
   },
@@ -703,12 +708,45 @@
    "in_list_view": 1,
    "in_preview": 1,
    "label": "BOM No"
+  },
+  {
+   "fieldname": "section_break_cyld",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "parent_moc",
+   "fieldtype": "Data",
+   "label": "Parent MoC"
+  },
+  {
+   "fieldname": "moc_configuration",
+   "fieldtype": "Data",
+   "label": "MoC Configuration"
+  },
+  {
+   "fieldname": "tag",
+   "fieldtype": "Data",
+   "label": "Tag"
+  },
+  {
+   "fieldname": "column_break_uyra",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "unit_basic",
+   "fieldtype": "Data",
+   "label": "Unit Basic"
+  },
+  {
+   "fieldname": "cdd_days",
+   "fieldtype": "Int",
+   "label": "CDD (Days)"
   }
  ],
  "idx": 1,
  "istable": 1,
  "links": [],
- "modified": "2026-01-09 16:12:21.204434",
+ "modified": "2026-01-10 17:18:52.569833",
  "modified_by": "Administrator",
  "module": "ERP Custom",
  "name": "Customer Request For Quotation Item",

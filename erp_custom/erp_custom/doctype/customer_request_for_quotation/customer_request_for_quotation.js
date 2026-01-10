@@ -80,81 +80,118 @@ frappe.ui.form.on("Customer Request For Quotation", {
         frm.fields_dict.customer_address.set_label(__(frm.doc.quotation_to + " Address"));
     },
 
-	 item_code(frm) {
-        if (!frm.doc.item_code) return;
+	//  item_code(frm) {
+    //     if (!frm.doc.item_code) return;
 
-		frappe.db.get_doc("Item", frm.doc.item_code)
-            .then(item => {
-                if (!item || !item.attributes) return;
+	// 	frappe.db.get_doc("Item", frm.doc.item_code)
+    //         .then(item => {
+    //             if (!item || !item.attributes) return;
 
-                let moc = "";
-                let tag = "";
+    //             let moc = "";
+    //             let tag = "";
+    //             let grade = "";
 
-                item.attributes.forEach(a => {
-                    if (a.attribute === "MoC Type") {
-                        moc = a.attribute_value;
-                    }
-                    if (a.attribute === "Tag#") {
-                        tag = a.attribute_value;
-                    }
-                });
+    //             item.attributes.forEach(a => {
+    //                 if (a.attribute === "MoC Type") {
+    //                     moc = a.attribute_value;
+    //                 }
+    //                 if (a.attribute === "Tag#") {
+    //                     tag = a.attribute_value;
+    //                 }
+    //                 if (a.attribute === "Grade") {
+    //                     grade = a.attribute_value;
+    //                 }
+    //             });
 
-                if (moc) frm.set_value("parent_moc", moc);
-                if (tag) frm.set_value("tag", tag);
-            });
+    //             if (moc) frm.set_value("parent_moc", moc);
+    //             if (tag) frm.set_value("tag", tag);
+    //             if (grade) frm.set_value("moc_config", grade);
+    //         });
 
-        // Fetch name + group
-        frappe.db.get_value("Item", frm.doc.item_code,
-            ["item_name", "item_group"]
-        ).then(r => {
-            if (!r.message) return;
+    //     // Fetch name + group
+    //     frappe.db.get_value("Item", frm.doc.item_code,
+    //         ["item_name", "item_group"]
+    //     ).then(r => {
+    //         if (!r.message) return;
 
-            frm.set_value("item_name", r.message.item_name);
-            frm.set_value("item_group", r.message.item_group);
-        });
+    //         frm.set_value("item_name", r.message.item_name);
+    //         frm.set_value("item_group", r.message.item_group);
+    //     });
 
-        // Push parent selection → all child rows
-        (frm.doc.items || []).forEach(row => {
-            frappe.model.set_value(row.doctype, row.name, "item_code", frm.doc.item_code);
-            frappe.model.set_value(row.doctype, row.name, "item_name", frm.doc.item_name);
-            frappe.model.set_value(row.doctype, row.name, "item_group", frm.doc.item_group);
-        });
-    },
+    //     // Push parent selection → all child rows
+    //     (frm.doc.items || []).forEach(row => {
+    //         frappe.model.set_value(row.doctype, row.name, "item_code", frm.doc.item_code);
+    //         frappe.model.set_value(row.doctype, row.name, "item_name", frm.doc.item_name);
+    //         frappe.model.set_value(row.doctype, row.name, "item_group", frm.doc.item_group);
+    //     });
+    // },
 });
 
 // When creating a new child row, inherit parent item fields (if parent has them)
 frappe.ui.form.on("Customer Request For Quotation Item", {
-    items_add: function (frm, cdt, cdn) {
-    let row = locals[cdt][cdn];
-    if (!row.item_code) return;
 
-    frappe.db.get_value(
-        "Item",
-        row.item_code,
-        ["item_name", "item_group", "default_bom"]
-    ).then(r => {
-        if (!r.message) return;
-
-        frappe.model.set_value(cdt, cdn, "item_name", r.message.item_name);
-        frappe.model.set_value(cdt, cdn, "item_group", r.message.item_group);
-        frappe.model.set_value(cdt, cdn, "bom_no", r.message.default_bom || "");
-    });
-},
-
-	item_code(frm, cdt, cdn) {
+    item_code(frm, cdt, cdn) {
         let row = locals[cdt][cdn];
+
+        // --------------------------------------------------
+        // 1️⃣ Reset ALL dependent fields when item changes
+        // --------------------------------------------------
+        frappe.model.set_value(cdt, cdn, {
+            item_name: "",
+            item_group: "",
+            bom_no: "",
+            parent_moc: "",
+            tag: "",
+            moc_configuration: ""
+        });
+
         if (!row.item_code) return;
 
-        frappe.db.get_value("Item", row.item_code,
-            ["item_name", "item_group"]
+        // --------------------------------------------------
+        // 2️⃣ Fetch basic Item fields
+        // --------------------------------------------------
+        frappe.db.get_value(
+            "Item",
+            row.item_code,
+            ["item_name", "item_group", "default_bom"]
         ).then(r => {
             if (!r.message) return;
 
-            frappe.model.set_value(cdt, cdn, "item_name", r.message.item_name);
-            frappe.model.set_value(cdt, cdn, "item_group", r.message.item_group);
+            frappe.model.set_value(cdt, cdn, {
+                item_name: r.message.item_name,
+                item_group: r.message.item_group,
+                bom_no: r.message.default_bom || ""
+            });
+        });
+
+        // --------------------------------------------------
+        // 3️⃣ Fetch Item attributes (MoC, Tag, Grade)
+        // --------------------------------------------------
+        frappe.db.get_doc("Item", row.item_code).then(item => {
+            if (!item || !item.attributes) return;
+
+            let parent_moc = "";
+            let tag = "";
+            let moc_configuration = "";
+
+            item.attributes.forEach(attr => {
+                if (attr.attribute === "MoC Type") {
+                    parent_moc = attr.attribute_value;
+                } else if (attr.attribute === "Tag#") {
+                    tag = attr.attribute_value;
+                } else if (attr.attribute === "Grade") {
+                    moc_configuration = attr.attribute_value;
+                }
+            });
+
+            frappe.model.set_value(cdt, cdn, {
+                parent_moc, tag, moc_configuration
+            });
         });
     }
 });
+
+
 
 
 function create_estimate_from_crfq(frm) {
@@ -193,6 +230,9 @@ function create_estimate_from_crfq(frm) {
             child.bom_no = item_row.bom_no;
             child.qty = item_row.qty;
             child.uom = item_row.uom;
+
+            child.tag = item_row.tag;
+            child.parent_moc = item_row.parent_moc;
         });
 
         // -------- Redirect --------

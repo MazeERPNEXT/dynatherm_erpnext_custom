@@ -11,19 +11,11 @@
  "field_order": [
   "customer_section",
   "crfq__tender_id",
-  "tag",
   "customer_name",
   "column_break_7",
   "company",
   "transaction_date",
   "valid_till",
-  "supplier_section",
-  "column_break_zlvb",
-  "supplier_cat",
-  "column_break_fnpb",
-  "supplier_type",
-  "column_break_dklu",
-  "parent_moc",
   "amended_from",
   "items_section",
   "items",
@@ -76,7 +68,9 @@
   "total_taxes_and_charges",
   "consumable_tab",
   "estimated_consumable",
+  "section_break_poxs",
   "total_consumable_costs",
+  "column_break_mztc",
   "transport_consumable_costs",
   "address_and_contact_tab",
   "billing_address_section",
@@ -447,27 +441,10 @@
    "unique": 1
   },
   {
-   "fieldname": "tag",
-   "fieldtype": "Data",
-   "label": "Tag"
-  },
-  {
-   "fieldname": "supplier_type",
-   "fieldtype": "Link",
-   "label": "Supplier Type",
-   "options": "Supplier Type"
-  },
-  {
-   "fieldname": "supplier_cat",
-   "fieldtype": "Link",
-   "label": "Supplier Category",
-   "options": "Supplier Group"
-  },
-  {
    "depends_on": "eval: doc.items && doc.items.length > 0 && doc.items.some(d => d.item_code && d.item_code.trim() !== \"\")",
    "fieldname": "section_break_sixs",
    "fieldtype": "Section Break",
-   "label": "Sub Assembly Items"
+   "label": "Components List"
   },
   {
    "fieldname": "estimated_bom_materials",
@@ -480,33 +457,9 @@
    "fieldtype": "Column Break"
   },
   {
-   "fieldname": "column_break_zlvb",
-   "fieldtype": "Column Break"
-  },
-  {
    "fieldname": "valid_till",
    "fieldtype": "Date",
    "label": "Valid Till"
-  },
-  {
-   "fieldname": "column_break_fnpb",
-   "fieldtype": "Column Break"
-  },
-  {
-   "fieldname": "column_break_dklu",
-   "fieldtype": "Column Break"
-  },
-  {
-   "fieldname": "parent_moc",
-   "fieldtype": "Data",
-   "label": "Parent MoC"
-  },
-  {
-   "fieldname": "supplier_section",
-   "fieldtype": "Section Break",
-   "hide_border": 1,
-   "label": "Supplier",
-   "options": "fa fa-shopping-cart"
   },
   {
    "fieldname": "get_items_from_bom",
@@ -571,13 +524,13 @@
   {
    "fieldname": "transport_fg_costs",
    "fieldtype": "Currency",
-   "label": "Transport FG Costs",
+   "label": "Transport FG Cost (\u20b9)",
    "read_only": 1
   },
   {
    "fieldname": "transport_consumable_costs",
    "fieldtype": "Currency",
-   "label": "Transport Consumable Costs"
+   "label": "Transport Consumable Costs (\u20b9)"
   },
   {
    "fieldname": "estimated_consumable",
@@ -588,7 +541,7 @@
   {
    "fieldname": "total_consumable_costs",
    "fieldtype": "Currency",
-   "label": "Total Consumable Costs"
+   "label": "Total Consumable Costs (\u20b9)"
   },
   {
    "fieldname": "total_operation_costs",
@@ -634,7 +587,7 @@
   {
    "fieldname": "section_break_zgys",
    "fieldtype": "Section Break",
-   "label": "Transportation Rates"
+   "label": "FG Transport Cost"
   },
   {
    "fieldname": "vehicle_type",
@@ -667,17 +620,17 @@
   {
    "fieldname": "vehicle_rate",
    "fieldtype": "Currency",
-   "label": "Vehicle Rate"
+   "label": "Vehicle Rate (\u20b9)"
   },
   {
    "fieldname": "holding_charge",
    "fieldtype": "Currency",
-   "label": "Holding Charge"
+   "label": "Holding Charge (\u20b9)"
   },
   {
    "fieldname": "final_vehicle_cost",
    "fieldtype": "Currency",
-   "label": "Final Vehicle Cost",
+   "label": "Final Vehicle Cost (\u20b9)",
    "read_only": 1
   },
   {
@@ -696,7 +649,7 @@
   {
    "fieldname": "total_estimate_cost",
    "fieldtype": "Currency",
-   "label": "Total Estimate Cost",
+   "label": "Total Estimate Cost (\u20b9)",
    "read_only": 1
   },
   {
@@ -706,13 +659,21 @@
   {
    "fieldname": "column_break_epwj",
    "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "section_break_poxs",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "column_break_mztc",
+   "fieldtype": "Column Break"
   }
  ],
  "icon": "fa fa-shopping-cart",
  "idx": 82,
  "is_submittable": 1,
  "links": [],
- "modified": "2026-01-09 17:41:03.630667",
+ "modified": "2026-01-10 18:32:47.017787",
  "modified_by": "Administrator",
  "module": "ERP Custom",
  "name": "Estimate",
