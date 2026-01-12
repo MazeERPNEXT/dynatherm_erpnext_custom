@@ -211,12 +211,12 @@ function create_estimate_from_crfq(frm) {
         new_doc.customer_request_for_quotation = frm.doc.name;
 
         // -------- BOM Mapping (IMPORTANT) --------
-        if (frm.doc.items && frm.doc.items.length > 0) {
-            // take BOM from first item
-            new_doc.bom = frm.doc.items[0].bom_no || "";
-        }
+        // if (frm.doc.items && frm.doc.items.length > 0) {
+        //     // take BOM from first item
+        //     new_doc.bom = frm.doc.items[0].bom_no || "";
+        // }
 
-        // -------- Child Table Mapping --------
+        // -------- Child Table Mapping (left: Estimate | Right: CRFQ )---------
         frm.doc.items.forEach((item_row) => {
             let child = frappe.model.add_child(
                 new_doc,
@@ -227,7 +227,7 @@ function create_estimate_from_crfq(frm) {
             child.item_code = item_row.item_code;
             child.item_name = item_row.item_name;
             child.item_group = item_row.item_group;
-            child.bom_no = item_row.bom_no;
+            child.bom = item_row.bom_no;
             child.qty = item_row.qty;
             child.uom = item_row.uom;
 

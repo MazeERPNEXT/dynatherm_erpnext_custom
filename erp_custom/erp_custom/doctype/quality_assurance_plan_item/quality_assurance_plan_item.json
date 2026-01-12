@@ -1,0 +1,80 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2026-01-12 18:54:05.554621",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "characteristics",
+  "type_of_check",
+  "quantum_of_inspection",
+  "applicable_documents",
+  "record__documents",
+  "inspection_by",
+  "remarks"
+ ],
+ "fields": [
+  {
+   "fieldname": "characteristics",
+   "fieldtype": "Data",
+   "label": "Characteristics"
+  },
+  {
+   "fieldname": "type_of_check",
+   "fieldtype": "Data",
+   "label": "Type Of Check"
+  },
+  {
+   "fieldname": "quantum_of_inspection",
+   "fieldtype": "Data",
+   "label": "Quantum Of Inspection"
+  },
+  {
+   "fieldname": "applicable_documents",
+   "fieldtype": "Data",
+   "label": "Applicable Documents"
+  },
+  {
+   "fieldname": "record__documents",
+   "fieldtype": "Data",
+   "label": "Record / Documents"
+  },
+  {
+   "fieldname": "inspection_by",
+   "fieldtype": "Data",
+   "label": "Inspection By"
+  },
+  {
+   "fieldname": "remarks",
+   "fieldtype": "Small Text",
+   "label": "Remarks"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2026-01-12 18:56:42.964825",
+ "modified_by": "Administrator",
+ "module": "ERP Custom",
+ "name": "Quality Assurance Plan Item",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "rows_threshold_for_grid_search": 20,
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

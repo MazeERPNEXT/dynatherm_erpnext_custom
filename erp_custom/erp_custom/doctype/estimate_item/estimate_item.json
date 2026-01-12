@@ -13,6 +13,7 @@
   "item_group",
   "tag",
   "parent_moc",
+  "bom",
   "section_break_5",
   "description",
   "brand",
@@ -86,7 +87,8 @@
   "page_break",
   "transport_cost",
   "column_break_bvac",
-  "tpi_rate"
+  "tpi_rate",
+  "get_items_from_bom"
  ],
  "fields": [
   {
@@ -729,12 +731,23 @@
    "fieldname": "parent_moc",
    "fieldtype": "Data",
    "label": "Parent MoC"
+  },
+  {
+   "fieldname": "bom",
+   "fieldtype": "Link",
+   "label": "BOM",
+   "options": "BOM"
+  },
+  {
+   "fieldname": "get_items_from_bom",
+   "fieldtype": "Button",
+   "label": "Fetch Components from FG BOM"
   }
  ],
  "idx": 1,
  "istable": 1,
  "links": [],
- "modified": "2026-01-10 18:20:23.095151",
+ "modified": "2026-01-12 12:29:13.090930",
  "modified_by": "Administrator",
  "module": "ERP Custom",
  "name": "Estimate Item",

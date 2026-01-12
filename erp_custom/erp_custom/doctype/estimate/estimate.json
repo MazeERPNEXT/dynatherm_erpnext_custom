@@ -19,8 +19,6 @@
   "amended_from",
   "items_section",
   "items",
-  "bom",
-  "get_items_from_bom",
   "section_break_ytqc",
   "transport_fg_costs",
   "column_break_epwj",
@@ -462,18 +460,6 @@
    "label": "Valid Till"
   },
   {
-   "fieldname": "get_items_from_bom",
-   "fieldtype": "Button",
-   "label": "Get SFG Items From FG"
-  },
-  {
-   "fetch_from": "finished_goods.default_bom",
-   "fieldname": "bom",
-   "fieldtype": "Link",
-   "label": "BOM",
-   "options": "BOM"
-  },
-  {
    "fieldname": "customer_name",
    "fieldtype": "Link",
    "label": "Customer",
@@ -673,7 +659,7 @@
  "idx": 82,
  "is_submittable": 1,
  "links": [],
- "modified": "2026-01-10 18:32:47.017787",
+ "modified": "2026-01-12 13:20:08.727184",
  "modified_by": "Administrator",
  "module": "ERP Custom",
  "name": "Estimate",
