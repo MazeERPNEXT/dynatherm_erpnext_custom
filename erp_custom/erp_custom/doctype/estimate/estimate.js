@@ -22,15 +22,15 @@ function safeNumber(v) {
 }
 
 // -------------------- Totals --------------------
-function recompute_total(frm) {
-	let bom_total = 0.0;
-	if (frm.doc.estimated_bom_materials) {
-		frm.doc.estimated_bom_materials.forEach(r => bom_total += safeNumber(r.amount));
-	}
-	const total = Number(bom_total.toFixed(2));
-	if (frm.doc.total !== total) frm.set_value("total", total);
-	// update_first_item_rate_only(frm, total);
-}
+// function recompute_total(frm) {
+// 	let bom_total = 0.0;
+// 	if (frm.doc.estimated_bom_materials) {
+// 		frm.doc.estimated_bom_materials.forEach(r => bom_total += safeNumber(r.amount));
+// 	}
+// 	const total = Number(bom_total.toFixed(2));
+// 	if (frm.doc.total !== total) frm.set_value("total", total);
+// 	// update_first_item_rate_only(frm, total);
+// }
 
 // -------------------- Sync BOM Total to First Item Rate Only (fixed with callbacks) --------------------
 function update_first_item_rate_only(frm, total) {
@@ -332,6 +332,7 @@ frappe.ui.form.on("Estimate", {
                     }, 50);
 
                     compute_weight_in_tonnes(frm);
+                    compute_total_estimate_cost(frm);
 
                 }, 150);
 
@@ -573,6 +574,7 @@ frappe.ui.form.on("Estimate Item", {
                 compute_weight_in_tonnes(frm);
 
                 calculate_fg_rate_from_sfg_and_rm(frm);
+                compute_total_estimate_cost(frm);
             }, 100);
 
             frappe.msgprint(__(`${added} item(s) added from BOM.`));
@@ -637,11 +639,7 @@ frappe.ui.form.on("Estimate Item", {
     const data = fg_totals[fg];
     if (!data) return;
 
-    const min_rate =
-        flt(data.sfg_amount) +
-        flt(data.sfg_transport) +
-        flt(data.rm_amount) +
-        flt(data.rm_transport);
+    const min_rate = flt(data.sfg_amount) + flt(data.sfg_transport) + flt(data.rm_amount) + flt(data.rm_transport);
 
     const entered_rate = flt(row.rate);
     const qty = flt(row.qty) || 1;
@@ -662,9 +660,8 @@ frappe.ui.form.on("Estimate Item", {
     }
 
     frappe.model.set_value(cdt, cdn, "amount", flt(entered_rate * qty, 2));
+    compute_sfg_grand_total_and_set_rate
 },
-
-
 
     qty(frm, cdt, cdn) {
         const row = locals[cdt][cdn];
@@ -746,8 +743,7 @@ frappe.ui.form.on("Estimated BOM Materials", {
 
 
     before_item_source(frm, cdt, cdn) {
-        locals[cdt][cdn].__old_item_source =
-            locals[cdt][cdn].item_source;
+        locals[cdt][cdn].__old_item_source = locals[cdt][cdn].item_source;
     },
 
     item_source(frm, cdt, cdn) {
@@ -803,6 +799,7 @@ frappe.ui.form.on("Estimated BOM Materials", {
 
           // ✅ REQUIRED
         sync_estimate_items_per_fg(frm);
+        compute_total_estimate_cost(frm);
 
         compute_weight_in_tonnes(frm);
 
@@ -959,6 +956,9 @@ function recalc_estimate_totals(frm) {
     frm.set_value("total_sub_assembly", rm_total);
     frm.set_value("transport_rm_costs", rm_transport);
     frm.set_value("rm_grand_total_cost", rm_total + rm_transport);
+
+    // ✅ REQUIRED FINAL SYNC
+    compute_total_estimate_cost(frm);
 }
 
 
@@ -1384,6 +1384,8 @@ function compute_rm_grand_total(frm) {
     frm.set_value("rm_grand_total_cost", flt(total_sub + transport_rm, 2));
 
     sync_estimate_items_per_fg(frm);
+    // ✅ REQUIRED: keep estimate total in sync with RM changes
+    compute_total_estimate_cost(frm);
 }
 
 

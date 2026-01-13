@@ -5,16 +5,22 @@
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
+  "project",
+  "customer",
+  "fg_name",
   "item_code",
   "item_name",
-  "customer",
-  "vendor",
   "qap_id",
+  "date",
   "column_break_dkiq",
   "tag_no",
   "purchase_order_no",
+  "po_date",
   "qty",
-  "drg_no"
+  "drg_no",
+  "status",
+  "section_break_nicf",
+  "quality_assurance_plan_item"
  ],
  "fields": [
   {
@@ -25,13 +31,9 @@
   },
   {
    "fieldname": "customer",
-   "fieldtype": "Data",
-   "label": "Customer"
-  },
-  {
-   "fieldname": "vendor",
-   "fieldtype": "Data",
-   "label": "Vendor"
+   "fieldtype": "Link",
+   "label": "Customer",
+   "options": "Customer"
   },
   {
    "fieldname": "qap_id",
@@ -66,12 +68,47 @@
    "fieldname": "drg_no",
    "fieldtype": "Data",
    "label": "DRG No"
+  },
+  {
+   "fieldname": "section_break_nicf",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "quality_assurance_plan_item",
+   "fieldtype": "Table",
+   "label": "Quality Assurance Plan Item",
+   "options": "Quality Assurance Plan Item"
+  },
+  {
+   "fieldname": "date",
+   "fieldtype": "Date",
+   "label": "QAP Date"
+  },
+  {
+   "fieldname": "po_date",
+   "fieldtype": "Date",
+   "label": "PO Date"
+  },
+  {
+   "fieldname": "status",
+   "fieldtype": "Data",
+   "label": "Status"
+  },
+  {
+   "fieldname": "fg_name",
+   "fieldtype": "Data",
+   "label": "FG Name"
+  },
+  {
+   "fieldname": "project",
+   "fieldtype": "Data",
+   "label": "Project"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-01-12 18:53:19.666725",
+ "modified": "2026-01-13 12:26:08.788443",
  "modified_by": "Administrator",
  "module": "ERP Custom",
  "name": "Quality Assurance Plan",
