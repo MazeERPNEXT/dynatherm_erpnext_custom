@@ -1,0 +1,117 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2026-01-19 18:52:49.822088",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "cutting_no",
+  "item_no",
+  "qty",
+  "moc",
+  "job_no",
+  "column_break_wwxj",
+  "date",
+  "purchase_no",
+  "thickness",
+  "item_to_manufacture",
+  "material_availability",
+  "section_break_esfk",
+  "cutting_plan_item"
+ ],
+ "fields": [
+  {
+   "fieldname": "item_no",
+   "fieldtype": "Data",
+   "label": "Item No"
+  },
+  {
+   "fieldname": "qty",
+   "fieldtype": "Float",
+   "label": "Qty"
+  },
+  {
+   "fieldname": "moc",
+   "fieldtype": "Data",
+   "label": "MOC"
+  },
+  {
+   "fieldname": "purchase_no",
+   "fieldtype": "Float",
+   "label": "Purchase No"
+  },
+  {
+   "fieldname": "cutting_no",
+   "fieldtype": "Data",
+   "label": "Cutting No"
+  },
+  {
+   "fieldname": "column_break_wwxj",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "date",
+   "fieldtype": "Date",
+   "label": "Date"
+  },
+  {
+   "fieldname": "thickness",
+   "fieldtype": "Float",
+   "label": "Thickness"
+  },
+  {
+   "fieldname": "section_break_esfk",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "cutting_plan_item",
+   "fieldtype": "Table",
+   "label": "Cutting Plan Item",
+   "options": "Cutting Plan Item"
+  },
+  {
+   "fieldname": "item_to_manufacture",
+   "fieldtype": "Link",
+   "label": "Item to Manufacture",
+   "options": "Item"
+  },
+  {
+   "fieldname": "material_availability",
+   "fieldtype": "Select",
+   "label": "Material Availability",
+   "options": "\nAvailable\nNot Available"
+  },
+  {
+   "fieldname": "job_no",
+   "fieldtype": "Data",
+   "label": "Job No"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2026-01-21 18:29:42.919421",
+ "modified_by": "Administrator",
+ "module": "ERP Custom",
+ "name": "Cutting Plan",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "rows_threshold_for_grid_search": 20,
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

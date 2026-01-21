@@ -39,7 +39,7 @@
   "pqc_shop_floor",
   "column_break_vjkr",
   "pqc_financial",
-  "dapl_pqc",
+  "dapl_pqc_job_reference",
   "currency_and_price_list",
   "currency",
   "conversion_rate",
@@ -1148,11 +1148,6 @@
    "reqd": 1
   },
   {
-   "fieldname": "dapl_pqc",
-   "fieldtype": "Float",
-   "label": "DAPL PQC (Job Reference)"
-  },
-  {
    "fieldname": "total_basic",
    "fieldtype": "Data",
    "label": "Total Basic"
@@ -1195,13 +1190,18 @@
    "label": "Customer Request For Quotation Item",
    "oldfieldtype": "Section Break",
    "options": "fa fa-shopping-cart"
+  },
+  {
+   "fieldname": "dapl_pqc_job_reference",
+   "fieldtype": "Float",
+   "label": "DAPL PQC (Job Reference)"
   }
  ],
  "icon": "fa fa-shopping-cart",
  "idx": 82,
  "is_submittable": 1,
  "links": [],
- "modified": "2026-01-13 15:12:04.936420",
+ "modified": "2026-01-21 12:14:55.135648",
  "modified_by": "Administrator",
  "module": "ERP Custom",
  "name": "Customer Request For Quotation",

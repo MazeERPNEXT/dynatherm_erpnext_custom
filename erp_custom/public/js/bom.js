@@ -1,3 +1,18 @@
+frappe.ui.form.on("BOM", {
+    refresh(frm) {
+        // Show button only after submit
+        if (frm.doc.docstatus === 1) {
+            frm.add_custom_button(__("Cutting Plan"), () => {
+                frappe.new_doc("Cutting Plan", {
+                    project: frm.doc.project,  
+                    item_to_manufacture: frm.doc.item,   // (Left: Cutting Plan | Right: Bom) 
+                });
+            }, __("Create"));
+        }
+    }
+});
+
+
 frappe.ui.form.on("BOM Item", {
 
     // =========================================================
@@ -26,7 +41,7 @@ frappe.ui.form.on("BOM Item", {
             calculate_kgs(frm, cdt, cdn);
         });
 
-        // ---- Last Purchase Price
+        // // ---- Last Purchase Price
         frappe.db.get_list("Item Price", {
             filters: { item_code: row.item_code, buying: 1 },
             fields: ["price_list_rate"],
@@ -145,10 +160,12 @@ function calculate_total_weight(frm, cdt, cdn) {
 function calculate_custom_amount(frm, cdt, cdn) {
     const row = locals[cdt][cdn];
 
+    const qty = flt(row.qty) || 0;
     const rate = flt(row.rate) || 0;
     const total_weight = flt(row.custom_total_weight) || 0;
 
     frappe.model.set_value(cdt, cdn, "custom_amount_inr", flt(rate * total_weight, 2));
+    // frappe.model.set_value(cdt, cdn, "amount", flt(qty * rate * total_weight, 2));
 }
 
 
@@ -171,26 +188,84 @@ function calculate_scrap_and_transport(frm, cdt, cdn) {
 
 
 
-
-
 // =========================================================
 // FORCE RATE OVERRIDE (SERVER CONFIRMED)
 // =========================================================
-function force_rate_override(frm, cdt, cdn) {
-    const row = locals[cdt][cdn];
-    if (!row.item_code || !frm.doc.name) return;
+// function force_rate_override(frm, cdt, cdn) {
+//     const row = locals[cdt][cdn];
+//     if (!row.item_code || !frm.doc.name) return;
 
-    frappe.call({
-        method: "erp_custom.erp_custom.overrides.bom.get_bom_material_detail",
-        args: {
-            bom: frm.doc.name,
-            item_code: row.item_code,
-            custom_total_weight: row.custom_total_weight
-        },
-        callback(r) {
-            if (r.message === undefined || r.message === null) return;
+//     frappe.call({
+//         method: "erp_custom.erp_custom.overrides.bom.get_bom_material_detail",
+//         args: {
+//             bom: frm.doc.name,
+//             item_code: row.item_code,
+//             custom_total_weight: row.custom_total_weight
+//         },
+//         callback(r) {
+//             if (r.message === undefined || r.message === null) return;
 
-            frappe.model.set_value(cdt, cdn, "rate", flt(r.message));
-        }
-    });
-}
+//             frappe.model.set_value(cdt, cdn, "rate", flt(r.message));
+//         }
+//     });
+// }
+
+// frappe.ui.form.on("BOM Item", {
+//     item_code: call_bom_backend,
+//     qty: update_amount,
+//     rate: update_amount,
+//     custom_length: call_bom_backend,
+//     custom_width: call_bom_backend,
+//     custom_thickness: call_bom_backend,
+//     custom_outer_diameter: call_bom_backend,
+//     custom_inner_diameter: call_bom_backend,
+//     custom_wall_thickness: call_bom_backend,
+//     custom_density: call_bom_backend,
+//     custom_total_weight: update_amount,
+//     custom_scrap_margin_percentage: call_bom_backend,
+//     custom_transportation_cost: call_bom_backend
+// });
+
+// function call_bom_backend(frm, cdt, cdn) {
+//     const row = locals[cdt][cdn];
+//     if (!row.item_code) return;
+
+//     frappe.call({
+//         method: "erp_custom.erp_custom.overrides.bom.calculate_bom_item",
+//         args: { row },
+//         callback(r) {
+//             if (!r.message) return;
+
+//             Object.entries(r.message).forEach(([field, value]) => {
+//                 if (row[field] !== value) {
+//                     frappe.model.set_value(cdt, cdn, field, value);
+//                 }
+//             });
+
+//             // Recalculate amount after backend values
+//             update_amount(frm, cdt, cdn);
+//         }
+//     });
+// }
+
+// function update_amount(frm, cdt, cdn) {
+//     const row = locals[cdt][cdn];
+//     const qty = flt(row.qty);
+//     const rate = flt(row.rate);
+//     const total_weight = flt(row.custom_total_weight);
+
+//     // Amount calculation
+//     const amount = flt(qty * rate * total_weight, 2);
+//     frappe.model.set_value(cdt, cdn, 'amount', amount);
+//     frappe.model.set_value(cdt, cdn, 'base_amount', flt(amount * frm.doc.conversion_rate, 2));
+
+//     // Update BOM totals live
+//     let total_rm = 0;
+//     (frm.doc.items || []).forEach(d => total_rm += flt(d.amount));
+//     frm.set_value('raw_material_cost', total_rm);
+//     frm.set_value('base_raw_material_cost', flt(total_rm * frm.doc.conversion_rate, 2));
+
+//     const total_cost = flt(frm.doc.operating_cost) + total_rm - flt(frm.doc.scrap_material_cost || 0);
+//     frm.set_value('total_cost', total_cost);
+//     frm.set_value('base_total_cost', flt(total_cost * frm.doc.conversion_rate, 2));
+// }

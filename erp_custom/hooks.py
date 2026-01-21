@@ -352,8 +352,8 @@ override_whitelisted_methods = {
     "erpnext.manufacturing.doctype.work_order.work_order.make_work_order":
         "erp_custom.erp_custom.overrides.work_order.make_work_order",
         
-    "erpnext.manufacturing.doctype.bom.bom.make_variant_bom":
-        "erp_custom.erp_custom.overrides.bom.make_variant_bom",
+    # "erpnext.manufacturing.doctype.bom.bom.make_variant_bom":
+    #     "erp_custom.erp_custom.overrides.bom.make_variant_bom",
         
     # Purchase Receipt override
     # "erpnext.stock.doctype.purchase_receipt.purchase_receipt.make_purchase_invoice":
@@ -362,9 +362,12 @@ override_whitelisted_methods = {
     # "erpnext.stock.doctype.stock_entry.stock_entry.make_stock_in_entry":
     #     "erp_custom.erp_custom.overrides.stock_entry.make_stock_in_entry"
     
-
 }
 
+
+override_doctype_class = {
+    "BOM": "erp_custom.erp_custom.overrides.bom.CustomBOM"
+}
 
 # doc_events = {
 #     "Stock Entry": {

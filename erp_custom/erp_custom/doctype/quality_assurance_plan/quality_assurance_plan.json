@@ -1,6 +1,7 @@
 {
  "actions": [],
  "allow_rename": 1,
+ "autoname": "field:fg_name",
  "creation": "2026-01-12 18:49:03.502905",
  "doctype": "DocType",
  "engine": "InnoDB",
@@ -15,7 +16,7 @@
   "column_break_dkiq",
   "tag_no",
   "purchase_order_no",
-  "po_date",
+  "purchase_order_date",
   "qty",
   "drg_no",
   "status",
@@ -85,33 +86,37 @@
    "label": "QAP Date"
   },
   {
-   "fieldname": "po_date",
-   "fieldtype": "Date",
-   "label": "PO Date"
-  },
-  {
    "fieldname": "status",
    "fieldtype": "Data",
    "label": "Status"
   },
   {
    "fieldname": "fg_name",
-   "fieldtype": "Data",
-   "label": "FG Name"
+   "fieldtype": "Link",
+   "label": "FG Name",
+   "options": "Item",
+   "unique": 1
   },
   {
    "fieldname": "project",
-   "fieldtype": "Data",
-   "label": "Project"
+   "fieldtype": "Link",
+   "label": "Project",
+   "options": "Project"
+  },
+  {
+   "fieldname": "purchase_order_date",
+   "fieldtype": "Date",
+   "label": "Purchase Order Date"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-01-13 12:26:08.788443",
+ "modified": "2026-01-21 17:47:41.226514",
  "modified_by": "Administrator",
  "module": "ERP Custom",
  "name": "Quality Assurance Plan",
+ "naming_rule": "By fieldname",
  "owner": "Administrator",
  "permissions": [
   {

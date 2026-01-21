@@ -3,6 +3,8 @@
 //   (1) get_items_from_bom → Estimated BOM Materials
 //   (2) get_subassembly_items → Estimated Sub Assembly Items
 
+let __auto_fg_rate_update = false;
+
 // -------------------- ERPNext Controller Setup --------------------
 if (typeof erpnext !== "undefined" && erpnext) {
 	try {
@@ -582,54 +584,6 @@ frappe.ui.form.on("Estimate Item", {
     });
 },
 
-
-    // rate(frm, cdt, cdn) {
-    // const row = locals[cdt][cdn];
-    // if (!row) return;
-
-    // // ---------------------------------
-    // // 1️⃣ Recalculate dependencies FIRST
-    // // ---------------------------------
-    // recompute_total(frm);
-    // compute_transport_sfg_total(frm);
-
-    // // Ensure parent totals are updated
-    // const sfg = flt(frm.doc.sfg_grand_total_cost);
-    // const rm = flt(frm.doc.rm_grand_total_cost);
-    // const min_rate = flt(sfg + rm, 2);
-
-    // frm.refresh_field("sfg_grand_total_cost");
-    // frm.refresh_field("rm_grand_total_cost");
-
-    // // 2️⃣ Only validate FIRST item row
-    // const is_first =
-    //     frm.doc.items &&
-    //     frm.doc.items.length &&
-    //     frm.doc.items[0].name === cdn;
-
-    // const entered_rate = flt(row.rate);
-
-    // // 3️⃣ BLOCK rate below SFG + RM
-    // if (is_first && entered_rate < min_rate) {
-    //     frappe.msgprint({
-    //         title: __("Rate Not Allowed"),
-    //         message: __(
-    //             "Rate cannot be less than SFG + RM Grand Total ({0}).",
-    //             [format_currency(min_rate)]
-    //         ),
-    //         indicator: "red"
-    //     });
-
-    //     frappe.model.set_value(cdt, cdn, "rate", min_rate);
-    //     return;
-    // }
-
-    // const qty = flt(row.qty) || 1;
-    // frappe.model.set_value(cdt, cdn, "amount", flt(qty * entered_rate, 2));
-
-    // compute_sfg_grand_total_and_set_rate(frm);
-    // },
-
     rate(frm, cdt, cdn) {
     const row = locals[cdt][cdn];
     if (!row) return;
@@ -645,6 +599,7 @@ frappe.ui.form.on("Estimate Item", {
     const qty = flt(row.qty) || 1;
 
     if (entered_rate < min_rate) {
+        if (!__auto_fg_rate_update) {
         frappe.msgprint({
             title: __("Rate Not Allowed"),
             message: __(
@@ -653,6 +608,7 @@ frappe.ui.form.on("Estimate Item", {
             ),
             indicator: "red"
         });
+    }
 
         frappe.model.set_value(cdt, cdn, "rate", min_rate);
         frappe.model.set_value(cdt, cdn, "amount", flt(min_rate * qty, 2));
@@ -1026,10 +982,10 @@ function compute_bom_amount(frm, cdt, cdn) {
     const r = locals[cdt][cdn];
 
     // ✅ DO NOT overwrite BOM-derived amount
-    if (flt(r.amount) > 0 && flt(r.rate) > 0) {
-        recompute_total(frm);
-        return;
-    }
+    // if (flt(r.amount) > 0 && flt(r.rate) > 0) {
+    //     recompute_total(frm);
+    //     return;
+    // }
 
     const base = flt(r.qty) * flt(r.rate) * flt(r.total_weight);
     const marginAmt = base * (flt(r.margin) / 100);
@@ -1070,6 +1026,12 @@ function compute_sfg_grand_total_and_set_rate(frm) {
     const sfg = flt(frm.doc.total) + flt(frm.doc.transport_sfg_costs);
     frm.set_value("sfg_grand_total_cost", flt(sfg, 2));
     frm.refresh_field("sfg_grand_total_cost");
+
+
+    __auto_fg_rate_update = true;   // 🔕 silent
+    sync_estimate_items_per_fg(frm);
+    __auto_fg_rate_update = false;  // 🔔 restore
+    
     compute_total_estimate_cost(frm);
 }
 
@@ -1111,9 +1073,7 @@ function set_estimate_item_rate(frm, mode) {
 // }
 
 function compute_total_estimate_cost(frm) {
-    const total =
-        flt(frm.doc.sfg_grand_total_cost) +
-        flt(frm.doc.rm_grand_total_cost) + flt(frm.doc.final_vehicle_cost);
+    const total = flt(frm.doc.sfg_grand_total_cost) + flt(frm.doc.rm_grand_total_cost) + flt(frm.doc.final_vehicle_cost);
 
     frm.set_value("total_estimate_cost", flt(total, 2));
 }
@@ -1368,23 +1328,16 @@ function recalc_scrap_and_transport(frm, cdt, cdn) {
 // ---------------------------------------------------------
 // RM GRAND TOTAL (Parent) total_sub_assembly + transport_rm_costs
 // ---------------------------------------------------------
-// function compute_rm_grand_total(frm) {
-//     const total_sub = flt(frm.doc.total_sub_assembly);
-//     const transport_rm = flt(frm.doc.transport_rm_costs);
-
-//     frm.set_value("rm_grand_total_cost", flt(total_sub + transport_rm, 2));
-//     // ✅ ADD THIS LINE
-//     sync_estimate_item_rate(frm);
-// }
-
 function compute_rm_grand_total(frm) {
     const total_sub = flt(frm.doc.total_sub_assembly);
     const transport_rm = flt(frm.doc.transport_rm_costs);
 
     frm.set_value("rm_grand_total_cost", flt(total_sub + transport_rm, 2));
 
+    __auto_fg_rate_update = true;   // 🔕 silent
     sync_estimate_items_per_fg(frm);
-    // ✅ REQUIRED: keep estimate total in sync with RM changes
+    __auto_fg_rate_update = false;  // 🔔 restore
+
     compute_total_estimate_cost(frm);
 }
 
