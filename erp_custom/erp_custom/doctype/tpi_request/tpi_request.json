@@ -21,7 +21,10 @@
   "quantity",
   "inspection_type",
   "inspection_agency",
-  "drawings"
+  "drawings",
+  "section_break_vwul",
+  "fetch_item_from_quality_inspection",
+  "inspection_item"
  ],
  "fields": [
   {
@@ -46,22 +49,21 @@
    "fieldtype": "Link",
    "in_list_view": 1,
    "label": "Sales Order",
-   "options": "Sales Order",
-   "reqd": 1
+   "options": "Sales Order"
   },
   {
    "fetch_from": "sales_order.customer",
    "fieldname": "customer",
-   "fieldtype": "Autocomplete",
-   "label": "Customer"
+   "fieldtype": "Link",
+   "label": "Customer",
+   "options": "Customer"
   },
   {
    "fieldname": "site_location",
    "fieldtype": "Link",
    "in_list_view": 1,
    "label": "Site Location",
-   "options": "Address",
-   "reqd": 1
+   "options": "Address"
   },
   {
    "fieldname": "applicable_standards__drawings",
@@ -111,7 +113,7 @@
    "fieldname": "inspection_type",
    "fieldtype": "Select",
    "label": "Inspection Type",
-   "options": "\nMaterial\nWork\nFinal",
+   "options": "\nIncoming\nOutgoing\nIn Process",
    "reqd": 1
   },
   {
@@ -124,13 +126,28 @@
    "fieldname": "drawings",
    "fieldtype": "Attach",
    "label": "Drawings"
+  },
+  {
+   "fieldname": "section_break_vwul",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "inspection_item",
+   "fieldtype": "Table",
+   "label": "Inspection Item",
+   "options": "Inspection Items"
+  },
+  {
+   "fieldname": "fetch_item_from_quality_inspection",
+   "fieldtype": "Button",
+   "label": "Fetch Item From Quality Inspection"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2026-01-07 19:35:54.361445",
+ "modified": "2026-01-08 20:01:54.265248",
  "modified_by": "Administrator",
  "module": "ERP Custom",
  "name": "TPI Request",
