@@ -1,7 +1,7 @@
 {
  "actions": [],
  "allow_rename": 1,
- "creation": "2026-01-23 13:34:38.389098",
+ "creation": "2026-01-23 13:57:43.630369",
  "doctype": "DocType",
  "editable_grid": 1,
  "engine": "InnoDB",
@@ -11,13 +11,13 @@
   "quantum_of_inspection",
   "applicable_documents",
   "record__documents",
-  "column_break_vhdw",
+  "column_break_szfa",
   "inspection_by",
   "dapl",
   "tpi",
   "bcpl",
   "attachment",
-  "section_break_lsly",
+  "section_break_qsfp",
   "remarks"
  ],
  "fields": [
@@ -50,6 +50,17 @@
    "label": "Applicable Documents"
   },
   {
+   "fieldname": "section_break_qsfp",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "remarks",
+   "fieldtype": "Small Text",
+   "in_list_view": 1,
+   "in_preview": 1,
+   "label": "Remarks"
+  },
+  {
    "fieldname": "record__documents",
    "fieldtype": "Data",
    "in_list_view": 1,
@@ -57,7 +68,7 @@
    "label": "Record / Documents"
   },
   {
-   "fieldname": "column_break_vhdw",
+   "fieldname": "column_break_szfa",
    "fieldtype": "Column Break"
   },
   {
@@ -97,27 +108,16 @@
    "in_list_view": 1,
    "in_preview": 1,
    "label": "Attachment"
-  },
-  {
-   "fieldname": "section_break_lsly",
-   "fieldtype": "Section Break"
-  },
-  {
-   "fieldname": "remarks",
-   "fieldtype": "Small Text",
-   "in_list_view": 1,
-   "in_preview": 1,
-   "label": "Remarks"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2026-01-23 13:39:58.965765",
+ "modified": "2026-01-23 14:03:54.843195",
  "modified_by": "Administrator",
  "module": "ERP Custom",
- "name": "Quality Assurance Plan Item",
+ "name": "QAP Item",
  "owner": "Administrator",
  "permissions": [],
  "row_format": "Dynamic",

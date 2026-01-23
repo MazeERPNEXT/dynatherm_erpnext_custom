@@ -21,8 +21,8 @@
   "qty",
   "drg_no",
   "status",
-  "section_break_imlh",
-  "quality_assurance_plan_item"
+  "section_break_llfa",
+  "table_fkgp"
  ],
  "fields": [
   {
@@ -100,20 +100,20 @@
    "label": "Purchase Order Date"
   },
   {
-   "fieldname": "section_break_imlh",
+   "fieldname": "section_break_llfa",
    "fieldtype": "Section Break"
   },
   {
-   "fieldname": "quality_assurance_plan_item",
+   "fieldname": "table_fkgp",
    "fieldtype": "Table",
-   "label": "Quality Assurance Plan Item",
-   "options": "Quality Assurance Plan Item"
+   "label": "QAP Item",
+   "options": "QAP Item"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-01-23 13:40:25.501619",
+ "modified": "2026-01-23 14:05:13.629810",
  "modified_by": "Administrator",
  "module": "ERP Custom",
  "name": "Quality Assurance Plan",
