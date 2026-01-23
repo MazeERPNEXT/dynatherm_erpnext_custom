@@ -1,5 +1,6 @@
 {
  "actions": [],
+ "allow_import": 1,
  "allow_rename": 1,
  "autoname": "field:fg_name",
  "creation": "2026-01-12 18:49:03.502905",
@@ -21,7 +22,8 @@
   "drg_no",
   "status",
   "section_break_nicf",
-  "quality_assurance_plan_item"
+  "quality_assurance_plan_item",
+  "amended_from"
  ],
  "fields": [
   {
@@ -107,12 +109,22 @@
    "fieldname": "purchase_order_date",
    "fieldtype": "Date",
    "label": "Purchase Order Date"
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "Quality Assurance Plan",
+   "print_hide": 1,
+   "read_only": 1,
+   "search_index": 1
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-01-21 17:47:41.226514",
+ "modified": "2026-01-22 17:52:07.389667",
  "modified_by": "Administrator",
  "module": "ERP Custom",
  "name": "Quality Assurance Plan",
@@ -128,6 +140,18 @@
    "read": 1,
    "report": 1,
    "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Quality Manager",
    "share": 1,
    "write": 1
   }

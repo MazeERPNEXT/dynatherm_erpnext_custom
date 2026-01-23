@@ -13,9 +13,12 @@
   "column_break_wwxj",
   "date",
   "purchase_no",
-  "thickness",
   "item_to_manufacture",
   "material_availability",
+  "section_break_geex",
+  "length",
+  "width",
+  "thickness",
   "section_break_esfk",
   "cutting_plan_item"
  ],
@@ -85,12 +88,26 @@
    "fieldname": "job_no",
    "fieldtype": "Data",
    "label": "Job No"
+  },
+  {
+   "fieldname": "length",
+   "fieldtype": "Float",
+   "label": "Length"
+  },
+  {
+   "fieldname": "width",
+   "fieldtype": "Float",
+   "label": "Width"
+  },
+  {
+   "fieldname": "section_break_geex",
+   "fieldtype": "Section Break"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-01-21 18:29:42.919421",
+ "modified": "2026-01-21 19:12:00.399376",
  "modified_by": "Administrator",
  "module": "ERP Custom",
  "name": "Cutting Plan",
