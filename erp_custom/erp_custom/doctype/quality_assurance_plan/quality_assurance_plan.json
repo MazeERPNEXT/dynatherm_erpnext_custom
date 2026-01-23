@@ -21,9 +21,8 @@
   "qty",
   "drg_no",
   "status",
-  "section_break_nicf",
-  "quality_assurance_plan_item",
-  "amended_from"
+  "section_break_imlh",
+  "quality_assurance_plan_item"
  ],
  "fields": [
   {
@@ -73,16 +72,6 @@
    "label": "DRG No"
   },
   {
-   "fieldname": "section_break_nicf",
-   "fieldtype": "Section Break"
-  },
-  {
-   "fieldname": "quality_assurance_plan_item",
-   "fieldtype": "Table",
-   "label": "Quality Assurance Plan Item",
-   "options": "Quality Assurance Plan Item"
-  },
-  {
    "fieldname": "date",
    "fieldtype": "Date",
    "label": "QAP Date"
@@ -111,20 +100,20 @@
    "label": "Purchase Order Date"
   },
   {
-   "fieldname": "amended_from",
-   "fieldtype": "Link",
-   "label": "Amended From",
-   "no_copy": 1,
-   "options": "Quality Assurance Plan",
-   "print_hide": 1,
-   "read_only": 1,
-   "search_index": 1
+   "fieldname": "section_break_imlh",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "quality_assurance_plan_item",
+   "fieldtype": "Table",
+   "label": "Quality Assurance Plan Item",
+   "options": "Quality Assurance Plan Item"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-01-23 13:00:01.969504",
+ "modified": "2026-01-23 13:40:25.501619",
  "modified_by": "Administrator",
  "module": "ERP Custom",
  "name": "Quality Assurance Plan",

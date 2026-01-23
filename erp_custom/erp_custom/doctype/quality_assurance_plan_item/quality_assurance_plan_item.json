@@ -1,8 +1,9 @@
 {
  "actions": [],
  "allow_rename": 1,
- "creation": "2026-01-12 18:54:05.554621",
+ "creation": "2026-01-23 13:34:38.389098",
  "doctype": "DocType",
+ "editable_grid": 1,
  "engine": "InnoDB",
  "field_order": [
   "characteristics",
@@ -10,13 +11,13 @@
   "quantum_of_inspection",
   "applicable_documents",
   "record__documents",
-  "column_break_qmau",
+  "column_break_vhdw",
   "inspection_by",
   "dapl",
   "tpi",
   "bcpl",
   "attachment",
-  "section_break_btam",
+  "section_break_lsly",
   "remarks"
  ],
  "fields": [
@@ -56,6 +57,10 @@
    "label": "Record / Documents"
   },
   {
+   "fieldname": "column_break_vhdw",
+   "fieldtype": "Column Break"
+  },
+  {
    "fieldname": "inspection_by",
    "fieldtype": "Data",
    "in_list_view": 1,
@@ -63,11 +68,28 @@
    "label": "Inspection By"
   },
   {
-   "fieldname": "remarks",
-   "fieldtype": "Small Text",
+   "fieldname": "dapl",
+   "fieldtype": "Select",
    "in_list_view": 1,
    "in_preview": 1,
-   "label": "Remarks"
+   "label": "DAPL",
+   "options": "\nPerform\nProcurement"
+  },
+  {
+   "fieldname": "tpi",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "in_preview": 1,
+   "label": "TPI",
+   "options": "\nWitness\nReview\nRandom Witness"
+  },
+  {
+   "fieldname": "bcpl",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "in_preview": 1,
+   "label": "BCPL",
+   "options": "\nApproval\nReview"
   },
   {
    "fieldname": "attachment",
@@ -77,37 +99,22 @@
    "label": "Attachment"
   },
   {
-   "fieldname": "column_break_qmau",
-   "fieldtype": "Column Break"
-  },
-  {
-   "fieldname": "section_break_btam",
+   "fieldname": "section_break_lsly",
    "fieldtype": "Section Break"
   },
   {
-   "fieldname": "dapl",
-   "fieldtype": "Select",
-   "label": "DAPL",
-   "options": "\nPerform\nProcurement"
-  },
-  {
-   "fieldname": "tpi",
-   "fieldtype": "Select",
-   "label": "TPI",
-   "options": "\nWitness\nReview\nRandom Witness"
-  },
-  {
-   "fieldname": "bcpl",
-   "fieldtype": "Select",
-   "label": "BCPL",
-   "options": "\nApproval\nReview"
+   "fieldname": "remarks",
+   "fieldtype": "Small Text",
+   "in_list_view": 1,
+   "in_preview": 1,
+   "label": "Remarks"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2026-01-23 12:59:04.797996",
+ "modified": "2026-01-23 13:39:58.965765",
  "modified_by": "Administrator",
  "module": "ERP Custom",
  "name": "Quality Assurance Plan Item",
