@@ -1,7 +1,11 @@
 {
  "actions": [],
  "allow_rename": 1,
+<<<<<<< Updated upstream
  "autoname": "TPI-.MM.-.YYYY.-.#####",
+=======
+ "autoname": "TPI.-.MM.-.YYYY.-.#####",
+>>>>>>> Stashed changes
  "creation": "2026-01-07 17:48:00.020498",
  "doctype": "DocType",
  "engine": "InnoDB",
@@ -78,7 +82,11 @@
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
+<<<<<<< Updated upstream
  "modified": "2026-01-23 12:51:43.484385",
+=======
+ "modified": "2026-01-27 15:43:11.096531",
+>>>>>>> Stashed changes
  "modified_by": "Administrator",
  "module": "ERP Custom",
  "name": "Inspection Report",

@@ -1,7 +1,11 @@
 {
  "actions": [],
  "allow_rename": 1,
+<<<<<<< Updated upstream
  "autoname": "TPIS-.MM.-.YYYY.-.#####",
+=======
+ "autoname": "TPIS.-.MM.-.YYYY.-.#####",
+>>>>>>> Stashed changes
  "creation": "2026-01-07 17:27:26.581094",
  "doctype": "DocType",
  "engine": "InnoDB",
@@ -93,7 +97,11 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
+<<<<<<< Updated upstream
  "modified": "2026-01-23 12:49:26.135915",
+=======
+ "modified": "2026-01-27 15:39:28.270590",
+>>>>>>> Stashed changes
  "modified_by": "Administrator",
  "module": "ERP Custom",
  "name": "TPI Schedule",
