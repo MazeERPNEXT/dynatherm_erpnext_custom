@@ -1,6 +1,7 @@
 {
  "actions": [],
  "allow_rename": 1,
+ "autoname": "CP-.YYYY.-.#### ",
  "creation": "2026-01-19 18:52:49.822088",
  "doctype": "DocType",
  "engine": "InnoDB",
@@ -17,7 +18,9 @@
   "material_availability",
   "section_break_geex",
   "length",
+  "column_break_ygok",
   "width",
+  "column_break_hkei",
   "thickness",
   "section_break_esfk",
   "cutting_plan_item"
@@ -46,7 +49,8 @@
   {
    "fieldname": "cutting_no",
    "fieldtype": "Data",
-   "label": "Cutting No"
+   "label": "Cutting No",
+   "unique": 1
   },
   {
    "fieldname": "column_break_wwxj",
@@ -102,15 +106,24 @@
   {
    "fieldname": "section_break_geex",
    "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "column_break_ygok",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_hkei",
+   "fieldtype": "Column Break"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-01-21 19:12:00.399376",
+ "modified": "2026-01-28 18:48:55.535862",
  "modified_by": "Administrator",
  "module": "ERP Custom",
  "name": "Cutting Plan",
+ "naming_rule": "Expression (old style)",
  "owner": "Administrator",
  "permissions": [
   {

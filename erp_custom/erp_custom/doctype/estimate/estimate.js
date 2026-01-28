@@ -713,6 +713,10 @@ frappe.ui.form.on("Estimated BOM Materials", {
         }
 
         recalc_estimate_totals(frm);
+        // ✅ ENSURE FG ALWAYS UPDATES
+    recompute_all_sub_assembly_totals(frm);
+    compute_rm_grand_total(frm);
+    sync_estimate_items_per_fg(frm);
     },
 
     rate: compute_bom_amount,
@@ -781,6 +785,11 @@ function handle_buy(frm, row) {
 
     let sa = find_or_create_sub_assembly(frm, row);
 
+    // FIX: LINK RM → SFG (REQUIRED FOR FG CALC)
+    frappe.model.set_value(sa.doctype, sa.name, "sub_assembly_item", row.item_code);
+    // frappe.model.set_value(sa.doctype, sa.name, "sub_assembly_item", row.finished_good_item);
+    
+
     frappe.model.set_value(sa.doctype, sa.name, "qty", row.qty);
     frappe.model.set_value(sa.doctype, sa.name, "rate", row.purchase_rate || row.rate || 0);
 
@@ -791,6 +800,11 @@ function handle_buy(frm, row) {
 
     frm.refresh_field("estimated_bom_materials");
     frm.refresh_field("estimated_sub_assembly_items");
+
+        // 🔁 FORCE FINAL SYNC
+    recompute_all_sub_assembly_totals(frm);
+    compute_rm_grand_total(frm);
+    sync_estimate_items_per_fg(frm);
 }
 
 function handle_make(frm, row) {
@@ -847,6 +861,7 @@ function find_or_create_sub_assembly(frm, row) {
         sa = frm.add_child("estimated_sub_assembly_items");
 
         Object.assign(sa, {
+            sub_assembly_item: row.finished_good_item,
             item_code: row.item_code,
             item_name: row.item_name,
             item_group: row.item_group,
@@ -1463,9 +1478,11 @@ function sync_estimate_items_per_fg(frm) {
         // 🟢 CASE-2: FG HAS DATA → NORMAL CALCULATION
         const fg_rate = flt(data.sfg_amount) + flt(data.sfg_transport) + flt(data.rm_amount) + flt(data.rm_transport);
 
+        if (!__auto_fg_rate_update) {
         frappe.model.set_value(row.doctype, row.name, "rate", flt(fg_rate, 2));
         frappe.model.set_value(row.doctype, row.name, "amount", flt(fg_rate * qty, 2));
         frappe.model.set_value(row.doctype, row.name, "transport_cost", flt(frm.doc.final_vehicle_cost));
+        }
     });
 
     frm.refresh_field("items");

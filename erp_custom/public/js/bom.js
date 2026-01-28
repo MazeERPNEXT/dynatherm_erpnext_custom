@@ -1,12 +1,74 @@
+// frappe.ui.form.on("BOM", {
+//     refresh(frm) {
+//         // Show button only after submit
+//         if (frm.doc.docstatus === 1) {
+//             frm.add_custom_button(__("Cutting Plan"), () => {
+//                 frappe.new_doc("Cutting Plan", {
+//                     project: frm.doc.project,  
+//                     item_to_manufacture: frm.doc.item,   // (Left: Cutting Plan | Right: Bom) 
+//                 });
+//             }, __("Create"));
+//         }
+//     }
+// });
+
+// frappe.ui.form.on("BOM", {
+//     refresh(frm) {
+//         if (frm.doc.docstatus === 1) {
+//             frm.add_custom_button(__("Cutting Plan"), () => {
+
+//                 // Prepare child table rows
+//                 const cutting_plan_items = [];
+
+//                 (frm.doc.items || []).forEach(bom_row => {
+//                     cutting_plan_items.push({
+//                         project: frm.doc.project,
+//                         item_code: bom_row.item_code,
+//                         uom: bom_row.uom,
+//                         qty: bom_row.qty,
+
+//                         length: bom_row.custom_length,
+//                         width: bom_row.custom_width,
+//                         thickness: bom_row.custom_thickness,
+
+//                         // custom_density: bom_row.custom_density,
+//                         // custom_outer_diameter: bom_row.custom_outer_diameter,
+//                         // custom_inner_diameter: bom_row.custom_inner_diameter,
+//                         // custom_wall_thickness: bom_row.custom_wall_thickness
+//                     });
+//                 });
+
+//                 // Pass data safely before opening form
+//                 frappe.route_options = {
+//                     project: frm.doc.project,
+//                     item_to_manufacture: frm.doc.item,
+//                     cutting_plan_item: cutting_plan_items
+//                 };
+
+//                 frappe.new_doc("Cutting Plan");
+
+//             }, __("Create"));
+//         }
+//     }
+// });
+
 frappe.ui.form.on("BOM", {
     refresh(frm) {
-        // Show button only after submit
         if (frm.doc.docstatus === 1) {
             frm.add_custom_button(__("Cutting Plan"), () => {
-                frappe.new_doc("Cutting Plan", {
-                    project: frm.doc.project,  
-                    item_to_manufacture: frm.doc.item,   // (Left: Cutting Plan | Right: Bom) 
+
+                frappe.call({
+                    method: "erp_custom.erp_custom.overrides.cutting_plan.create_cutting_plan_from_bom",
+                    args: {
+                        bom_name: frm.doc.name
+                    },
+                    callback(r) {
+                        if (r.message) {
+                            frappe.set_route("Form", "Cutting Plan", r.message);
+                        }
+                    }
                 });
+
             }, __("Create"));
         }
     }

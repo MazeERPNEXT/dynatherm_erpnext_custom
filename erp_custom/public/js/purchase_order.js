@@ -54,6 +54,41 @@ frappe.ui.form.on("Purchase Order", {
 // ----------------------------------------------------
 frappe.ui.form.on("Purchase Order Item", {
 
+        item_code(frm, cdt, cdn) {
+        const row = locals[cdt][cdn];
+        if (!row.item_code) return;
+
+        // ---- Fetch from Item Master
+        frappe.db.get_value(
+            "Item",
+            row.item_code,
+            ["item_group", "default_bom", "custom_material_type", "custom_density","custom_thickness"]
+        ).then(r => {
+            if (!r || !r.message) return;
+
+            const item = r.message;
+
+            frappe.model.set_value(cdt, cdn, "custom_item_group", item.item_group || "");
+            frappe.model.set_value(cdt, cdn, "bom_no", item.default_bom || "");
+            frappe.model.set_value(cdt, cdn, "custom_material_type", item.custom_material_type || "");
+            frappe.model.set_value(cdt, cdn, "custom_density", item.custom_density || 0);
+            frappe.model.set_value(cdt, cdn, "custom_thickness", item.custom_thickness || 0);
+
+            calculate_kgs(frm, cdt, cdn);
+        });
+
+        // // ---- Last Purchase Price
+        // frappe.db.get_list("Item Price", {
+        //     filters: { item_code: row.item_code, buying: 1 },
+        //     fields: ["price_list_rate"],
+        //     order_by: "modified desc",
+        //     limit: 1
+        // }).then(res => {
+        //     const rate = res?.length ? res[0].price_list_rate : 0;
+        //     frappe.model.set_value(cdt, cdn, "custom_last_purchase_price", rate);
+        // });
+    },
+
     qty: calculate_total_weight,
     rate: calculate_custom_amount,
 
@@ -67,7 +102,7 @@ frappe.ui.form.on("Purchase Order Item", {
     custom_density: calculate_kgs,
 
     custom_scrap_margin_percentage: calculate_scrap_and_transport,
-    custom_transportation_cost_per_kg: calculate_scrap_and_transport
+    custom_transportation_cost: calculate_scrap_and_transport
 });
 
 // ====================================================
@@ -83,7 +118,7 @@ function calculate_kgs(frm, cdt, cdn) {
 
     if (!density) {
         frappe.model.set_value(cdt, cdn, "custom_kilogramskgs", 0);
-        frappe.model.set_value(cdt, cdn, "custom_custom_total_weight", 0);
+        frappe.model.set_value(cdt, cdn, "custom_total_weights", 0);
         frappe.model.set_value(cdt, cdn, "custom_amount_inr", 0);
         return;
     }
@@ -136,12 +171,7 @@ function calculate_kgs(frm, cdt, cdn) {
              density) / 1_000_000;
     }
 
-    frappe.model.set_value(
-        cdt,
-        cdn,
-        "custom_kilogramskgs",
-        flt(base_weight, 4)
-    );
+    frappe.model.set_value(cdt, cdn, "custom_kilogramskgs", flt(base_weight, 4));
 
     calculate_total_weight(frm, cdt, cdn);
 }
@@ -152,15 +182,9 @@ function calculate_kgs(frm, cdt, cdn) {
 function calculate_total_weight(frm, cdt, cdn) {
     const row = locals[cdt][cdn];
 
-    const total_weight =
-        flt(row.qty) * flt(row.custom_kilogramskgs);
+    const total_weight = flt(row.qty) * flt(row.custom_kilogramskgs);
 
-    frappe.model.set_value(
-        cdt,
-        cdn,
-        "custom_custom_total_weight",
-        flt(total_weight, 4)
-    );
+    frappe.model.set_value(cdt, cdn, "custom_total_weights", flt(total_weight, 4));
 
     calculate_custom_amount(frm, cdt, cdn);
     calculate_scrap_and_transport(frm, cdt, cdn);
@@ -173,14 +197,9 @@ function calculate_custom_amount(frm, cdt, cdn) {
     const row = locals[cdt][cdn];
 
     const rate = flt(row.rate) || 0;
-    const total_weight = flt(row.custom_custom_total_weight) || 0;
+    const total_weight = flt(row.custom_total_weights) || 0;
 
-    frappe.model.set_value(
-        cdt,
-        cdn,
-        "custom_amount_inr",
-        flt(rate * total_weight, 2)
-    );
+    frappe.model.set_value(cdt, cdn, "custom_amount_inr", flt(rate * total_weight, 2));
 }
 
 // ====================================================
@@ -189,24 +208,14 @@ function calculate_custom_amount(frm, cdt, cdn) {
 function calculate_scrap_and_transport(frm, cdt, cdn) {
     const row = locals[cdt][cdn];
 
-    const total_weight = flt(row.custom_custom_total_weight) || 0;
+    const total_weight = flt(row.custom_total_weights) || 0;
     const scrap_pct = flt(row.custom_scrap_margin_percentage) || 0;
-    const transport_rate = flt(row.custom_transportation_cost_per_kg) || 0;
+    const transport_rate = flt(row.custom_transportation_cost) || 0;
 
     const scrap_kgs = total_weight * (scrap_pct / 100);
     const transport_cost = total_weight * transport_rate;
 
-    frappe.model.set_value(
-        cdt,
-        cdn,
-        "custom_scrap_margin_kgs",
-        flt(scrap_kgs, 4)
-    );
+    frappe.model.set_value(cdt, cdn, "custom_scrap_margin_kg", flt(scrap_kgs, 4));
 
-    frappe.model.set_value(
-        cdt,
-        cdn,
-        "custom_transportation_cost_kgs",
-        flt(transport_cost, 2)
-    );
+    frappe.model.set_value(cdt, cdn, "custom_transportation_cost_", flt(transport_cost, 2));
 }
