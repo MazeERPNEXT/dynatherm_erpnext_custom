@@ -1,27 +1,20 @@
 {
  "actions": [],
  "allow_rename": 1,
- "autoname": "prompt",
+ "autoname": "TPIR-.MM.-.YYYY.-.#####",
  "creation": "2026-01-07 18:13:51.174572",
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
   "section_break_pklq",
   "applicable_standards__drawings_column",
-  "project",
-  "sales_order",
-  "customer",
   "site_location",
-  "applicable_standards__drawings",
-  "work_description",
   "amended_from",
   "column_break_fhiu",
   "requested_inspection_date",
   "status",
-  "quantity",
   "inspection_type",
   "inspection_agency",
-  "drawings",
   "section_break_vwul",
   "fetch_item_from_quality_inspection",
   "inspection_item"
@@ -39,41 +32,11 @@
    "label": "Applicable Standards / Drawings"
   },
   {
-   "fieldname": "project",
-   "fieldtype": "Link",
-   "label": "Project",
-   "options": "Project"
-  },
-  {
-   "fieldname": "sales_order",
-   "fieldtype": "Link",
-   "in_list_view": 1,
-   "label": "Sales Order",
-   "options": "Sales Order"
-  },
-  {
-   "fetch_from": "sales_order.customer",
-   "fieldname": "customer",
-   "fieldtype": "Link",
-   "label": "Customer",
-   "options": "Customer"
-  },
-  {
    "fieldname": "site_location",
    "fieldtype": "Link",
    "in_list_view": 1,
    "label": "Site Location",
    "options": "Address"
-  },
-  {
-   "fieldname": "applicable_standards__drawings",
-   "fieldtype": "Data",
-   "label": "Applicable Standards / Drawings"
-  },
-  {
-   "fieldname": "work_description",
-   "fieldtype": "Small Text",
-   "label": "Work Description"
   },
   {
    "fieldname": "amended_from",
@@ -105,11 +68,6 @@
    "reqd": 1
   },
   {
-   "fieldname": "quantity",
-   "fieldtype": "Data",
-   "label": "Quantity"
-  },
-  {
    "fieldname": "inspection_type",
    "fieldtype": "Select",
    "label": "Inspection Type",
@@ -121,11 +79,6 @@
    "fieldtype": "Link",
    "label": "Inspection Agency",
    "options": "Supplier"
-  },
-  {
-   "fieldname": "drawings",
-   "fieldtype": "Attach",
-   "label": "Drawings"
   },
   {
    "fieldname": "section_break_vwul",
@@ -147,11 +100,11 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2026-01-08 20:01:54.265248",
+ "modified": "2026-01-29 17:15:01.105034",
  "modified_by": "Administrator",
  "module": "ERP Custom",
  "name": "TPI Request",
- "naming_rule": "Set by user",
+ "naming_rule": "Expression (old style)",
  "owner": "kponsakthivel@gmail.com",
  "permissions": [
   {

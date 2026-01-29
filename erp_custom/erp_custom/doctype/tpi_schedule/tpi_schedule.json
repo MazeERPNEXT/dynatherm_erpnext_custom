@@ -1,15 +1,13 @@
 {
  "actions": [],
  "allow_rename": 1,
- "autoname": "prompt",
+ "autoname": "TPIS._.MM._.YYYY._.#####",
  "creation": "2026-01-07 17:27:26.581094",
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
   "section_break_ny0v",
-  "tpi_request_reference",
   "amended_from",
-  "project",
   "inspection_agency",
   "inspector_name",
   "column_break_hids",
@@ -27,12 +25,6 @@
    "label": "TIP Details"
   },
   {
-   "fieldname": "tpi_request_reference",
-   "fieldtype": "Link",
-   "label": "TPI Request Reference",
-   "options": "TPI Request"
-  },
-  {
    "fieldname": "amended_from",
    "fieldtype": "Link",
    "label": "Amended From",
@@ -41,13 +33,6 @@
    "print_hide": 1,
    "read_only": 1,
    "search_index": 1
-  },
-  {
-   "fetch_from": "tpi_request_reference.project",
-   "fieldname": "project",
-   "fieldtype": "Link",
-   "label": "Project",
-   "options": "Project"
   },
   {
    "fieldname": "inspection_agency",
@@ -101,11 +86,11 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2026-01-09 16:27:19.624529",
+ "modified": "2026-01-30 10:48:59.974000",
  "modified_by": "Administrator",
  "module": "ERP Custom",
  "name": "TPI Schedule",
- "naming_rule": "Set by user",
+ "naming_rule": "Expression (old style)",
  "owner": "kponsakthivel@gmail.com",
  "permissions": [
   {

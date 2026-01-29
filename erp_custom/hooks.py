@@ -349,7 +349,9 @@ doctype_js = {
     "Delivery Note": "public/js/delivery_note.js",
     
     "Stock Order": "public/js/stock_order.js",
-    "Travel Request": "public/js/travel_request.js"
+    "Travel Request": "public/js/travel_request.js",
+    "TPI Schedule": "erp_custom/erp_custom/doctype/tpi_schedule/tpi_schedule.js"
+
 }
 
 

@@ -12,7 +12,12 @@
   "inspection_status",
   "batch_no",
   "bom",
-  "quality_inspection"
+  "quality_inspection",
+  "project",
+  "sales_order",
+  "customer",
+  "applicable_drawing",
+  "tpir_reference_id"
  ],
  "fields": [
   {
@@ -37,6 +42,8 @@
    "columns": 1,
    "fieldname": "batch_no",
    "fieldtype": "Link",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
    "label": "Batch No",
    "options": "Batch"
   },
@@ -50,6 +57,8 @@
   {
    "fieldname": "bom",
    "fieldtype": "Link",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
    "label": "Bom",
    "options": "BOM"
   },
@@ -64,15 +73,56 @@
   {
    "fieldname": "quality_inspection",
    "fieldtype": "Link",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
    "label": "Quality Inspection ",
    "options": "Quality Inspection"
+  },
+  {
+   "fieldname": "project",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Project",
+   "options": "Project"
+  },
+  {
+   "fieldname": "sales_order",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Sales Order",
+   "options": "Sales Order"
+  },
+  {
+   "fieldname": "customer",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Customer",
+   "options": "Customer"
+  },
+  {
+   "fieldname": "applicable_drawing",
+   "fieldtype": "Attach",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Applicable Drawing"
+  },
+  {
+   "fieldname": "tpir_reference_id",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "TPIR Reference Id",
+   "options": "TPI Request"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2026-01-09 12:44:09.131255",
+ "modified": "2026-01-30 10:43:57.441327",
  "modified_by": "Administrator",
  "module": "ERP Custom",
  "name": "Inspection Items",
