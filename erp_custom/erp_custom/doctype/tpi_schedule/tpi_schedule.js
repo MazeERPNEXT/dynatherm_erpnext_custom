@@ -1,6 +1,37 @@
 // Copyright (c) 2026, maze and contributors
 // For license information, please see license.txt
 
+<<<<<<< HEAD
+=======
+// // frappe.ui.form.on("TPI Schedule", {
+// // 	refresh(frm) {
+
+// // 	},
+// // });
+// frappe.ui.form.on("TPI Schedule", {
+//     refresh(frm) {
+//         if (frm.is_new()) return;
+
+//         frm.add_custom_button(
+//             __("Inspection Report"),
+//             function () {
+
+//                 // ✅ Open NEW Inspection Report with link
+//                 frappe.route_options = {
+//                     tpi_schedule: frm.doc.name
+//                 };
+
+//                 frappe.set_route("Form", "Inspection Report", "new-inspection-report-1");
+//             },
+//             __("Create")
+//         );
+//     }
+// });
+
+// Copyright (c) 2026, maze and contributors
+// For license information, please see license.txt
+
+>>>>>>> e97803c (TPI Request and Schedule updates)
 frappe.ui.form.on("TPI Schedule", {
     refresh(frm) {
 
@@ -85,7 +116,10 @@ function open_tpi_request_dialog(frm) {
    FETCH DATA FROM TPI REQUEST AND POPULATE TPI SCHEDULE
 ========================================================= */
 function fetch_tpi_request_data(frm, tpi_requests) {
+<<<<<<< HEAD
 
+=======
+>>>>>>> e97803c (TPI Request and Schedule updates)
     // Clear existing inspection items
     frm.clear_table("inspection_item");
 
@@ -105,7 +139,11 @@ function fetch_tpi_request_data(frm, tpi_requests) {
 
                 // Set parent fields only once
                 if (index === 0) {
+<<<<<<< HEAD
                     //frm.set_value("tpi_request_reference", doc.name || "");
+=======
+                    frm.set_value("tpi_request_reference", doc.name || "");
+>>>>>>> e97803c (TPI Request and Schedule updates)
                     frm.set_value("inspection_agency", doc.inspection_agency || "");
                     frm.set_value("location", doc.site_location || "");
                 }
@@ -114,7 +152,10 @@ function fetch_tpi_request_data(frm, tpi_requests) {
                 if (doc.inspection_item && doc.inspection_item.length) {
                     doc.inspection_item.forEach(row => {
                         let child = frm.add_child("inspection_item");
+<<<<<<< HEAD
 
+=======
+>>>>>>> e97803c (TPI Request and Schedule updates)
                         child.item_code = row.item_code || "";
                         child.item_name = row.item_name || "";
                         child.description = row.description || "";
@@ -126,7 +167,10 @@ function fetch_tpi_request_data(frm, tpi_requests) {
                         child.sales_order = row.sales_order || "";
                         child.customer = row.customer || "";
                         child.applicable_drawing = row.applicable_drawing || "";
+<<<<<<< HEAD
                         child.tpir_reference_id = doc.name;
+=======
+>>>>>>> e97803c (TPI Request and Schedule updates)
                     });
                 }
 
@@ -134,7 +178,10 @@ function fetch_tpi_request_data(frm, tpi_requests) {
 
                 if (completed === tpi_requests.length) {
                     frm.refresh_field("inspection_item");
+<<<<<<< HEAD
 
+=======
+>>>>>>> e97803c (TPI Request and Schedule updates)
                     frappe.show_alert({
                         message: __("TPI Schedule populated successfully"),
                         indicator: "green"
@@ -144,3 +191,7 @@ function fetch_tpi_request_data(frm, tpi_requests) {
         });
     });
 }
+<<<<<<< HEAD
+=======
+
+>>>>>>> e97803c (TPI Request and Schedule updates)

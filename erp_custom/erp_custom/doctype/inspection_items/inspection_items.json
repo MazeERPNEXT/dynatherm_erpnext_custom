@@ -17,7 +17,11 @@
   "sales_order",
   "customer",
   "applicable_drawing",
+<<<<<<< HEAD
   "tpir_reference_id"
+=======
+  "reference_id"
+>>>>>>> e97803c (TPI Request and Schedule updates)
  ],
  "fields": [
   {
@@ -110,19 +114,31 @@
    "label": "Applicable Drawing"
   },
   {
+<<<<<<< HEAD
    "fieldname": "tpir_reference_id",
    "fieldtype": "Link",
    "in_list_view": 1,
    "in_standard_filter": 1,
    "label": "TPIR Reference Id",
    "options": "TPI Request"
+=======
+   "fieldname": "reference_id",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Reference Id"
+>>>>>>> e97803c (TPI Request and Schedule updates)
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
+<<<<<<< HEAD
  "modified": "2026-01-30 10:43:57.441327",
+=======
+ "modified": "2026-01-29 16:44:28.141143",
+>>>>>>> e97803c (TPI Request and Schedule updates)
  "modified_by": "Administrator",
  "module": "ERP Custom",
  "name": "Inspection Items",
