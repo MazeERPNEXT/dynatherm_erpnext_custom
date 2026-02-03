@@ -42,7 +42,7 @@
   },
   {
    "fieldname": "qty",
-   "fieldtype": "Float",
+   "fieldtype": "Int",
    "in_list_view": 1,
    "in_preview": 1,
    "label": "Qty"
@@ -56,21 +56,24 @@
    "fieldtype": "Float",
    "in_list_view": 1,
    "in_preview": 1,
-   "label": "Length"
+   "label": "Length",
+   "precision": "2"
   },
   {
    "fieldname": "width",
    "fieldtype": "Float",
    "in_list_view": 1,
    "in_preview": 1,
-   "label": "Width"
+   "label": "Width",
+   "precision": "2"
   },
   {
    "fieldname": "thickness",
    "fieldtype": "Float",
    "in_list_view": 1,
    "in_preview": 1,
-   "label": "Thickness"
+   "label": "Thickness",
+   "precision": "2"
   },
   {
    "fieldname": "item_no",
@@ -85,27 +88,32 @@
   {
    "fieldname": "density",
    "fieldtype": "Float",
-   "label": "Density"
+   "label": "Density",
+   "precision": "2"
   },
   {
    "fieldname": "total_weight",
    "fieldtype": "Float",
-   "label": "Total Weight"
+   "label": "Total Weight",
+   "precision": "2"
   },
   {
    "fieldname": "scrap_margin",
-   "fieldtype": "Float",
-   "label": "Scrap Margin (%)"
+   "fieldtype": "Percent",
+   "label": "Scrap Margin (%)",
+   "precision": "2"
   },
   {
    "fieldname": "scrap_margin_kg",
    "fieldtype": "Float",
-   "label": "Scrap Margin (Kg)"
+   "label": "Scrap Margin (Kg)",
+   "precision": "2"
   },
   {
    "fieldname": "kgs_per_unit",
    "fieldtype": "Float",
-   "label": "Kgs Per Unit"
+   "label": "Kgs Per Unit",
+   "precision": "2"
   },
   {
    "fieldname": "column_break_rrdd",
@@ -122,7 +130,7 @@
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2026-01-28 18:30:07.751759",
+ "modified": "2026-01-30 17:14:32.158550",
  "modified_by": "Administrator",
  "module": "ERP Custom",
  "name": "Cutting Plan Item",

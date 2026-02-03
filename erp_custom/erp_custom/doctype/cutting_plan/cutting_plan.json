@@ -7,15 +7,22 @@
  "engine": "InnoDB",
  "field_order": [
   "cutting_no",
+  "bom_no",
   "item_no",
   "qty",
+  "column_break_wwxj",
   "moc",
   "job_no",
-  "column_break_wwxj",
-  "date",
   "purchase_no",
   "item_to_manufacture",
+  "planning_info_section",
+  "date",
+  "column_break_nrng",
   "material_availability",
+  "responsibility_section",
+  "approved_by",
+  "column_break_jgxj",
+  "drawn_by",
   "section_break_geex",
   "length",
   "column_break_ygok",
@@ -32,8 +39,9 @@
    "label": "Item No"
   },
   {
+   "default": "1",
    "fieldname": "qty",
-   "fieldtype": "Float",
+   "fieldtype": "Int",
    "label": "Qty"
   },
   {
@@ -43,7 +51,7 @@
   },
   {
    "fieldname": "purchase_no",
-   "fieldtype": "Float",
+   "fieldtype": "Data",
    "label": "Purchase No"
   },
   {
@@ -105,7 +113,8 @@
   },
   {
    "fieldname": "section_break_geex",
-   "fieldtype": "Section Break"
+   "fieldtype": "Section Break",
+   "label": "Dimensions"
   },
   {
    "fieldname": "column_break_ygok",
@@ -114,12 +123,45 @@
   {
    "fieldname": "column_break_hkei",
    "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "approved_by",
+   "fieldtype": "Data",
+   "label": "Approved By"
+  },
+  {
+   "fieldname": "drawn_by",
+   "fieldtype": "Data",
+   "label": "Drawn By"
+  },
+  {
+   "fieldname": "bom_no",
+   "fieldtype": "Data",
+   "label": "Bom No"
+  },
+  {
+   "fieldname": "planning_info_section",
+   "fieldtype": "Section Break",
+   "label": "Planning Info"
+  },
+  {
+   "fieldname": "column_break_nrng",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "responsibility_section",
+   "fieldtype": "Section Break",
+   "label": "Responsibility"
+  },
+  {
+   "fieldname": "column_break_jgxj",
+   "fieldtype": "Column Break"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-01-28 18:48:55.535862",
+ "modified": "2026-01-30 17:27:20.155683",
  "modified_by": "Administrator",
  "module": "ERP Custom",
  "name": "Cutting Plan",

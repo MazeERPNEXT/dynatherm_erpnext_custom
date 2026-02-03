@@ -2,27 +2,29 @@
  "actions": [],
  "allow_import": 1,
  "allow_rename": 1,
- "autoname": "field:fg_name",
+ "autoname": "QAP-.YYYY.-.####",
  "creation": "2026-01-12 18:49:03.502905",
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
-  "project",
   "customer",
-  "fg_name",
-  "item_code",
-  "item_name",
+  "vendor",
   "qap_id",
   "date",
-  "column_break_dkiq",
   "tag_no",
+  "column_break_dkiq",
   "purchase_order_no",
   "purchase_order_date",
-  "qty",
+  "item_code",
+  "item_name",
   "drg_no",
-  "status",
+  "qty",
   "section_break_llfa",
-  "table_fkgp"
+  "table_fkgp",
+  "section_break_dkwt",
+  "prepared_by",
+  "column_break_gwvw",
+  "verified_by"
  ],
  "fields": [
   {
@@ -34,7 +36,7 @@
   {
    "fieldname": "customer",
    "fieldtype": "Link",
-   "label": "Customer",
+   "label": "Client",
    "options": "Customer"
   },
   {
@@ -77,24 +79,6 @@
    "label": "QAP Date"
   },
   {
-   "fieldname": "status",
-   "fieldtype": "Data",
-   "label": "Status"
-  },
-  {
-   "fieldname": "fg_name",
-   "fieldtype": "Link",
-   "label": "FG Name",
-   "options": "Item",
-   "unique": 1
-  },
-  {
-   "fieldname": "project",
-   "fieldtype": "Link",
-   "label": "Project",
-   "options": "Project"
-  },
-  {
    "fieldname": "purchase_order_date",
    "fieldtype": "Date",
    "label": "Purchase Order Date"
@@ -108,16 +92,40 @@
    "fieldtype": "Table",
    "label": "QAP Item",
    "options": "QAP Item"
+  },
+  {
+   "fieldname": "vendor",
+   "fieldtype": "Link",
+   "label": "Vendor",
+   "options": "Supplier"
+  },
+  {
+   "fieldname": "section_break_dkwt",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "prepared_by",
+   "fieldtype": "Attach",
+   "label": "Prepared By"
+  },
+  {
+   "fieldname": "column_break_gwvw",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "verified_by",
+   "fieldtype": "Attach",
+   "label": "Verified By"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-01-23 14:05:13.629810",
+ "modified": "2026-02-03 11:37:01.949552",
  "modified_by": "Administrator",
  "module": "ERP Custom",
  "name": "Quality Assurance Plan",
- "naming_rule": "By fieldname",
+ "naming_rule": "Expression (old style)",
  "owner": "Administrator",
  "permissions": [
   {
