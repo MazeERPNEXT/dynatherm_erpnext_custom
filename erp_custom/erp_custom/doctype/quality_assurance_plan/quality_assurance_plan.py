@@ -65,37 +65,41 @@
 
 #         return new_file.file_url
 
-@frappe.whitelist()
-def merge_pdfs(self):
+import frappe
+from frappe.model.document import Document
 
-    try:
-        from pypdf import PdfReader, PdfWriter
-    except ImportError:
-        frappe.throw("pypdf library not installed")
+class QualityAssurancePlan(Document):
 
-    import frappe
-    from frappe.utils.file_manager import get_file_path
+    @frappe.whitelist()
+    def merge_pdfs(self):
 
-    writer = PdfWriter()
-    pdf_found = False
+        try:
+            from pypdf import PdfReader, PdfWriter
+        except ImportError:
+            frappe.throw("pypdf library not installed")
 
-    for row in self.qap_item:
-        if row.attachment:
-            file_path = get_file_path(row.attachment)
-            reader = PdfReader(file_path)
+        from frappe.utils.file_manager import get_file_path
 
-            for page in reader.pages:
-                writer.add_page(page)
+        writer = PdfWriter()
+        pdf_found = False
 
-            pdf_found = True
+        for row in self.qap_item:
+            if row.attachment:
+                file_path = get_file_path(row.attachment)
+                reader = PdfReader(file_path)
 
-    if not pdf_found:
-        frappe.throw("No PDF files found.")
+                for page in reader.pages:
+                    writer.add_page(page)
 
-    output_path = f"/private/files/{self.name}_Dossier.pdf"
-    full_path = frappe.get_site_path(output_path.replace("/", ""))
+                pdf_found = True
 
-    with open(full_path, "wb") as f:
-        writer.write(f)
+        if not pdf_found:
+            frappe.throw("No PDF files found.")
 
-    return output_path
+        output_path = f"/private/files/{self.name}_Dossier.pdf"
+        full_path = frappe.get_site_path(output_path.replace("/", ""))
+
+        with open(full_path, "wb") as f:
+            writer.write(f)
+
+        return output_path
