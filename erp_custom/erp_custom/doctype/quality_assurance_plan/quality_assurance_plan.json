@@ -20,7 +20,7 @@
   "drg_no",
   "qty",
   "section_break_llfa",
-  "table_fkgp",
+  "qap_item",
   "section_break_dkwt",
   "prepared_by",
   "column_break_gwvw",
@@ -88,12 +88,6 @@
    "fieldtype": "Section Break"
   },
   {
-   "fieldname": "table_fkgp",
-   "fieldtype": "Table",
-   "label": "QAP Item",
-   "options": "QAP Item"
-  },
-  {
    "fieldname": "vendor",
    "fieldtype": "Link",
    "label": "Vendor",
@@ -116,12 +110,18 @@
    "fieldname": "verified_by",
    "fieldtype": "Attach",
    "label": "Verified By"
+  },
+  {
+   "fieldname": "qap_item",
+   "fieldtype": "Table",
+   "label": "QAP Item",
+   "options": "QAP Item"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-02-03 11:37:01.949552",
+ "modified": "2026-02-18 12:23:16.661226",
  "modified_by": "Administrator",
  "module": "ERP Custom",
  "name": "Quality Assurance Plan",

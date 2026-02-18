@@ -5,6 +5,18 @@
 
 let __auto_fg_rate_update = false;
 
+function highlight_total_estimate_cost(frm) {
+    const field = frm.get_field("total_estimate_cost");
+    if (!field || !field.$wrapper) return;
+
+    field.$wrapper.css({
+        "background-color": "#fff3cd",
+        "font-weight": "bold",
+        "border": "2px solid #ffc107"
+    });
+}
+
+
 // -------------------- ERPNext Controller Setup --------------------
 if (typeof erpnext !== "undefined" && erpnext) {
 	try {
@@ -106,6 +118,9 @@ function fetch_bom_recursive(bom_name, opts, cb) {
 // ----------------------------------------------------
 frappe.ui.form.on("Estimate", {
 	 refresh(frm) {
+        // ⭐ UI ONLY – Safe highlight
+        highlight_total_estimate_cost(frm);
+
         if (frm.doc.docstatus === 1) {
 
             // -------------------------------
@@ -1074,6 +1089,9 @@ function compute_total_estimate_cost(frm) {
     const total = flt(frm.doc.sfg_grand_total_cost) + flt(frm.doc.rm_grand_total_cost) + flt(frm.doc.final_vehicle_cost);
 
     frm.set_value("total_estimate_cost", flt(total, 2));
+
+    // ⭐ UI refresh only
+    highlight_total_estimate_cost(frm);
 }
 
 
