@@ -12,13 +12,12 @@
 import frappe
 import os
 from frappe.model.document import Document
-from pypdf import PdfMerger
-
 
 class QualityAssurancePlan(Document):
 
     @frappe.whitelist()
     def merge_pdfs(self):
+        from pypdf import PdfMerger
 
         merger = PdfMerger()
         pdf_urls = []
