@@ -65,8 +65,11 @@
 
 #         return new_file.file_url
 
+
 import frappe
+import io
 from frappe.model.document import Document
+
 
 class QualityAssurancePlan(Document):
 
@@ -96,10 +99,19 @@ class QualityAssurancePlan(Document):
         if not pdf_found:
             frappe.throw("No PDF files found.")
 
-        output_path = f"/private/files/{self.name}_Dossier.pdf"
-        full_path = frappe.get_site_path(output_path.replace("/", ""))
+        pdf_buffer = io.BytesIO()
+        writer.write(pdf_buffer)
+        pdf_buffer.seek(0)
 
-        with open(full_path, "wb") as f:
-            writer.write(f)
+        file_doc = frappe.get_doc({
+            "doctype": "File",
+            "file_name": f"{self.name}_Dossier.pdf",
+            "attached_to_doctype": self.doctype,
+            "attached_to_name": self.name,
+            "is_private": 1,
+            "content": pdf_buffer.read()
+        })
 
-        return output_path
+        file_doc.insert(ignore_permissions=True)
+
+        return file_doc.file_url
