@@ -116,7 +116,6 @@ import frappe
 import io
 from frappe.model.document import Document
 
-
 class QualityAssurancePlan(Document):
 
     @frappe.whitelist()
