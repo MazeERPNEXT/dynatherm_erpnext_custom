@@ -8,7 +8,7 @@ app_license = "mit"
 # Apps
 # ------------------
 
-required_apps = ["frappe>=15.0.0,<16.0.0","resilient-tech/india_compliance"]
+required_apps = ["resilient-tech/india_compliance"]
 
 # Each item in the list will be shown as an app in the apps page
 # add_to_apps_screen = [
