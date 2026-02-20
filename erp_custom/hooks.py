@@ -4,11 +4,10 @@ app_publisher = "maze"
 app_description = "ERP Custom"
 app_email = "msk312508@gmail.com"
 app_license = "mit"
-
+required_apps = ["frappe/erpnext"]
 # Apps
 # ------------------
 
-required_apps = ["resilient-tech/india_compliance"]
 
 # Each item in the list will be shown as an app in the apps page
 # add_to_apps_screen = [
