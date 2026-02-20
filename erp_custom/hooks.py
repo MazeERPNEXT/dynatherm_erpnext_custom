@@ -313,7 +313,8 @@ fixtures = [
     "Services Type",
     "Consumable Type",
     "Machinery Type",
-    "Certification Type"
+    "Certification Type",
+    "Workspace Sidebar"
 ]
 
 
