@@ -21,8 +21,7 @@
  "ref_doctype": "Purchase Invoice",
  "reference_report": "Purchase Invoice",
  "report_name": "TDS - Tax Report",
- "report_script": "<!-- Header / Basic info -->\n<h3>Purchase Invoice: {{ doc.name }}</h3>\n<p><strong>Supplier:</strong> {{ doc.supplier }}</p>\n<p><strong>Tax Withholding Category:</strong> {{ doc.get('tax_withholding_category') or doc.get('tax_withholding_category') }}</p>\n\n<!-- Table: Only show tax rows with Charge Type = 'Actual' -->\n<table border=\"1\" cellpadding=\"6\" cellspacing=\"0\" style=\"border-collapse:collapse;\">\n  <thead>\n    <tr>\n      <th>Charge Type</th>\n      <th>Tax Description</th>\n      <th style=\"text-align:right\">Amount</th>\n    </tr>\n  </thead>\n  <tbody>\n    {%- for t in doc.get('taxes') or [] %}\n      {%- if (t.get('charge_type') or '').lower() == 'actual' %}\n        <tr>\n          <td>{{ t.get('charge_type') }}</td>\n          <td>{{ t.get('description') or t.get('account_head') }}</td>\n          <td style=\"text-align:right\">{{ \"{:,.2f}\".format(t.get('tax_amount') or t.get('rate') or 0) }}</td>\n        </tr>\n      {%- endif %}\n    {%- endfor %}\n  </tbody>\n</table>\n",
- "report_type": "Report Builder",
+  "report_type": "Query Report",
  "roles": [
   {
    "role": "Accounts User"

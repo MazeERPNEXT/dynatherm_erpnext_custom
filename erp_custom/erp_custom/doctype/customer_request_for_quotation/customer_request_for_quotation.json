@@ -862,13 +862,11 @@
   },
   {
    "fieldname": "source",
-   "fieldtype": "Link",
+   "fieldtype": "Select",
    "label": "Source",
-   "oldfieldname": "source",
-   "oldfieldtype": "Select",
-   "options": "Lead Source",
+   "options": "Advertisement\nCold Call\nWebsite\nReference",
    "print_hide": 1
-  },
+},
   {
    "allow_on_submit": 1,
    "depends_on": "eval:doc.status=='Lost'",
