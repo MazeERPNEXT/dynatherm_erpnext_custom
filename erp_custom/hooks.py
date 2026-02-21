@@ -318,10 +318,6 @@ fixtures = [
 ]
 
 
-# doctype_js = {
-#     "Customer Request For Quotation": "public/js/customer_request_for_quotation.js"
-# }
-
 
 doctype_js = {
     "Estimate": "public/js/estimate.js",

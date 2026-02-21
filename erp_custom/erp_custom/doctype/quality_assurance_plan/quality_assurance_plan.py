@@ -109,7 +109,6 @@
 #         return file_doc.file_url
 
 
-
 import frappe
 import io
 from frappe.model.document import Document
