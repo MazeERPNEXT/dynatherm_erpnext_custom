@@ -7,6 +7,7 @@
 // 	},
 // });
 
+
 frappe.ui.form.on('Quality Assurance Plan', {
     refresh(frm) {
 

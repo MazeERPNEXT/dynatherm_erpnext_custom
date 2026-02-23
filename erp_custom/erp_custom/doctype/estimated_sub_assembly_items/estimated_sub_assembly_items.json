@@ -85,14 +85,16 @@
    "fieldname": "length",
    "fieldtype": "Float",
    "in_list_view": 1,
-   "label": "Length (mm)"
+   "label": "Length (mm)",
+   "precision": "2"
   },
   {
    "depends_on": "eval: doc.item_group === 'Plates'\n",
    "fieldname": "width",
    "fieldtype": "Float",
    "in_list_view": 1,
-   "label": "Width (mm)"
+   "label": "Width (mm)",
+   "precision": "2"
   },
   {
    "depends_on": "eval: ['Plates','Flanges'].includes(doc.item_group)\n",
@@ -106,7 +108,8 @@
    "fieldname": "density",
    "fieldtype": "Float",
    "in_list_view": 1,
-   "label": "Density (kg/m\u00b3)"
+   "label": "Density (kg/m\u00b3)",
+   "precision": "2"
   },
   {
    "fieldname": "kilogramskgs",
@@ -125,7 +128,8 @@
    "fieldname": "outer_diameter",
    "fieldtype": "Float",
    "in_list_view": 1,
-   "label": "Outer Diameter (mm)"
+   "label": "Outer Diameter (mm)",
+   "precision": "2"
   },
   {
    "depends_on": "eval: ['Flanges'].includes(doc.item_group)\n",
@@ -139,7 +143,8 @@
    "fieldname": "wall_thickness",
    "fieldtype": "Float",
    "in_list_view": 1,
-   "label": "Wall Thickness (mm)"
+   "label": "Wall Thickness (mm)",
+   "precision": "2"
   },
   {
    "fieldname": "qty",
@@ -211,6 +216,7 @@
    "fieldname": "transportation_cost",
    "fieldtype": "Currency",
    "label": "Transportation Cost (\u20b9)",
+   "precision": "2",
    "read_only": 1
   },
   {
@@ -244,7 +250,7 @@
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2026-01-10 15:56:35.022655",
+ "modified": "2026-02-21 15:45:57.992529",
  "modified_by": "Administrator",
  "module": "ERP Custom",
  "name": "Estimated Sub Assembly Items",
