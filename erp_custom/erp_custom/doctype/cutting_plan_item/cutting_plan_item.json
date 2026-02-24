@@ -17,9 +17,12 @@
   "width",
   "thickness",
   "density",
+  "outer_diameter",
+  "inner_diameter",
+  "wall_thickness",
+  "column_break_rrdd",
   "kgs_per_unit",
   "total_weight",
-  "column_break_rrdd",
   "scrap_margin",
   "scrap_margin_kg"
  ],
@@ -124,13 +127,28 @@
    "fieldtype": "Link",
    "label": "Item Code",
    "options": "Item"
+  },
+  {
+   "fieldname": "outer_diameter",
+   "fieldtype": "Float",
+   "label": "Outer Diameter"
+  },
+  {
+   "fieldname": "inner_diameter",
+   "fieldtype": "Float",
+   "label": "Inner Diameter"
+  },
+  {
+   "fieldname": "wall_thickness",
+   "fieldtype": "Float",
+   "label": "Wall Thickness"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2026-01-30 17:14:32.158550",
+ "modified": "2026-02-23 18:29:02.411184",
  "modified_by": "Administrator",
  "module": "ERP Custom",
  "name": "Cutting Plan Item",

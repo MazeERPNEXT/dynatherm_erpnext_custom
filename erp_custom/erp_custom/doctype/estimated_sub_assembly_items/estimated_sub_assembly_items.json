@@ -101,7 +101,8 @@
    "fieldname": "thickness",
    "fieldtype": "Float",
    "in_list_view": 1,
-   "label": "Thickness (mm)"
+   "label": "Thickness (mm)",
+   "precision": "2"
   },
   {
    "depends_on": "eval: ['Plates','Tubes','Pipes','Rods','Bars','Flanges','Forgings'].includes(doc.item_group)\n",
@@ -136,7 +137,8 @@
    "fieldname": "inner_diameter",
    "fieldtype": "Float",
    "in_list_view": 1,
-   "label": "Inner Diameter (mm)"
+   "label": "Inner Diameter (mm)",
+   "precision": "2"
   },
   {
    "depends_on": "eval: ['Tubes','Pipes','Forgings'].includes(doc.item_group)\n",
@@ -216,7 +218,6 @@
    "fieldname": "transportation_cost",
    "fieldtype": "Currency",
    "label": "Transportation Cost (\u20b9)",
-   "precision": "2",
    "read_only": 1
   },
   {
@@ -250,7 +251,7 @@
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2026-02-21 15:45:57.992529",
+ "modified": "2026-02-24 17:55:21.807817",
  "modified_by": "Administrator",
  "module": "ERP Custom",
  "name": "Estimated Sub Assembly Items",

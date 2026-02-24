@@ -79,6 +79,10 @@ def create_cutting_plan_from_bom(bom_name):
             "width": row.custom_width,
             "thickness": row.custom_thickness,
             "density": row.custom_density,
+            
+            "outer_diameter": row.custom_outer_diameter,
+            "inner_diameter": row.custom_inner_diameter,
+            "wall_thickness": row.custom_wall_thickness,
 
             # Weight & Scrap
             "kgs_per_unit": row.custom_kilogramskgs,
