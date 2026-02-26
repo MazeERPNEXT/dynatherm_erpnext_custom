@@ -5,41 +5,6 @@
 
 let __auto_fg_rate_update = false;
 
-// function highlight_total_estimate_cost(frm) {
-//     const field = frm.get_field("total_estimate_cost");
-//     if (!field || !field.$wrapper) return;
-
-//     field.$wrapper.css({
-//         "background-color": "#e6ffe6",
-//         "font-weight": "bold",
-//         "border": "2px solid #66cc66"
-//     });
-// }
-
-// function highlight_grand_totals(frm) {
-
-//     setTimeout(() => {
-
-//         const fields = [
-//             "transport_fg_costs",
-//             "sfg_grand_total_cost",
-//             "rm_grand_total_cost"
-//         ];
-
-//         fields.forEach(fieldname => {
-//             const field = frm.get_field(fieldname);
-//             if (field && field.$wrapper) {
-//                 field.$wrapper.css({
-//                     "background-color": "#fff9db",
-//                     "font-weight": "600",
-//                     "border": "1px solid #f4d03f"
-//                 });
-//             }
-//         });
-
-//     }, 100);
-// }
-
 function render_overall_details(frm) {
 
     if (!frm.fields_dict.overall_details) return;
@@ -57,23 +22,28 @@ function render_overall_details(frm) {
     let sfg_grand_total = sfg_total + sfg_transport + sfg_tpi;
 
     // 🔹 FG Values
+    let fg_total = 0;
+    (frm.doc.items || []).forEach(row => {
+        fg_total += safeNumber(row.amount);
+    });
     let fg_transport = safeNumber(frm.doc.transport_fg_costs);
-    let total_estimate_cost = sfg_grand_total + rm_grand_total + fg_transport;
+    let fg_tpi = 0;
+    (frm.doc.items || []).forEach(row => {
+        fg_tpi += safeNumber(row.tpi_rate);
+    });
+    let total_estimate_cost = safeNumber(frm.doc.total_estimate_cost);
+    // let total_estimate_cost = sfg_grand_total + rm_grand_total + fg_transport + fg_tpi;
 
     let html = `<div style="margin-top:15px; font-family:Arial;">
         <div style="display:flex; gap:20px; flex-wrap:wrap;">
 
           <!-- RM -->
 <div style="flex:1; min-width:280px; border:2px solid #f4d03f; padding:15px; border-radius:8px; background:#fff9db;">
-    
     <h4 style="color:#b7950b; font-weight:800; font-size:20px; margin-bottom:10px;"> RM Details </h4>
-
     <p style="font-size:13px; color:#000;">RM Total Cost (₹) : ${format_currency(rm_total)}</p>
     <p style="font-size:13px; color:#000;">RM Transport Cost (₹) : ${format_currency(rm_transport)}</p>
     <p style="font-size:13px; color:#000;">RM TPI Cost (₹) : ${format_currency(rm_tpi)}</p>
-
     <hr>
-
     <p style="font-weight:800; font-size:15px; color:#000; background:#ffeaa7; padding:6px 10px; border-radius:6px;">
         RM Grand Total Cost (₹) : ${format_currency(rm_grand_total)} </p>
 </div>
@@ -81,15 +51,11 @@ function render_overall_details(frm) {
 
 <!-- SFG -->
 <div style="flex:1; min-width:280px; border:2px solid #5dade2; padding:15px; border-radius:8px; background:#eaf4ff;">
-    
     <h4 style="color:#1f4e79; font-weight:800; font-size:20px; margin-bottom:10px;"> SFG Details </h4>
-
     <p style="font-size:13px; color:#000;">SFG Total Cost (₹) : ${format_currency(sfg_total)}</p>
     <p style="font-size:13px; color:#000;">SFG Transport Cost (₹) : ${format_currency(sfg_transport)}</p>
     <p style="font-size:13px; color:#000;">SFG TPI Cost (₹) : ${format_currency(sfg_tpi)}</p>
-
     <hr>
-
     <p style="font-weight:800; font-size:15px; color:#000; background:#d6eaff; padding:6px 10px; border-radius:6px;">
         SFG Grand Total Cost (₹) : ${format_currency(sfg_grand_total)} </p>
 </div>
@@ -97,15 +63,12 @@ function render_overall_details(frm) {
 
 <!-- FG -->
 <div style="flex:1; min-width:280px; border:2px solid #66cc66; padding:15px; border-radius:8px; background:#e6ffe6;">
-    
     <h4 style="color:#1e7e34; font-weight:800; font-size:20px; margin-bottom:10px;"> FG Details </h4>
-
     <p style="font-size:13px; color:#000;">FG Transport Cost (₹) : ${format_currency(fg_transport)}</p>
+    <p style="font-size:13px; color:#000;">FG TPI Cost (₹) : ${format_currency(fg_tpi)}</p>
     <p style="font-size:13px; color:#000;">SFG Grand Total Cost (₹) : ${format_currency(sfg_grand_total)}</p>
     <p style="font-size:13px; color:#000;">RM Grand Total Cost (₹) : ${format_currency(rm_grand_total)}</p>
-
     <hr>
-
     <p style="font-weight:900; font-size:17px; color:#000; background:#c6f5c6; padding:8px 12px; border-radius:6px;">
         Total Estimate Cost (₹) : ${format_currency(total_estimate_cost)} </p>
 </div>
@@ -114,6 +77,16 @@ function render_overall_details(frm) {
     </div>`;
 
     frm.fields_dict.overall_details.$wrapper.html(html);
+}
+
+function compute_fg_tpi_cost(frm) {
+    // let total = 0;
+    // (frm.doc.items || []).forEach(row => {
+    //     total += flt(row.tpi_rate);
+    // });
+
+    // frm.set_value("fg_tpi_cost", flt(total, 2));
+    compute_total_estimate_cost(frm);
 }
 
 // -------------------- ERPNext Controller Setup --------------------
@@ -235,10 +208,8 @@ frappe.ui.form.on("Estimate", {
     },
 
 	 refresh(frm) {
+            // ⭐ UI ONLY – Safe highlight
          render_overall_details(frm);
-        // ⭐ UI ONLY – Safe highlight
-        // highlight_total_estimate_cost(frm);
-        // highlight_grand_totals(frm);
         
         if (frm.doc.docstatus === 1) {
 
@@ -248,11 +219,9 @@ frappe.ui.form.on("Estimate", {
             frm.add_custom_button(
                 __("Request For Quotation"),
                 () => {
-
                     let has_items = false;
 
                     frappe.model.with_doctype("Request for Quotation", () => {
-
                         let rfq = frappe.model.get_new_doc("Request for Quotation");
                         rfq.custom_estimate_reference = frm.doc.name;
 
@@ -306,11 +275,8 @@ frappe.ui.form.on("Estimate", {
                         // 2️⃣ PASS RM ITEMS
                         // =====================================================
                         (frm.doc.estimated_sub_assembly_items || []).forEach(src => {
-
                             if (!src.item_code) return;
-
                             has_items = true;
-
                             let tgt = frappe.model.add_child(
                                 rfq,
                                 "Request for Quotation Item",
@@ -351,11 +317,9 @@ frappe.ui.form.on("Estimate", {
                             frappe.msgprint(__("No valid SFG or RM items available to create RFQ."));
                             return;
                         }
-
                         rfq.__run_link_triggers = false;
                         frappe.set_route("Form", "Request for Quotation", rfq.name);
                     });
-
                 },
                 __("Create")
             );
@@ -432,7 +396,6 @@ frappe.ui.form.on("Estimate", {
         // ---------------------------
         // CONSUMABLE ITEM FILTER LOGIC
         // ---------------------------
-
         const child_fieldname = "estimated_consumable";
         const grid = frm.fields_dict[child_fieldname]?.grid;
         if (!grid) return;
@@ -470,7 +433,7 @@ frappe.ui.form.on("Estimate", {
     rm_tpi_cost: render_overall_details,
 
     transport_fg_costs: render_overall_details,
-
+    fg_tpi_cost: render_overall_details,
 
     after_save(frm) {
     highlight_total_estimate_cost(frm);
@@ -628,7 +591,7 @@ frappe.ui.form.on("Estimate", {
 
         holding_charge(frm) {
             calculate_transport_costs(frm);
-    }
+    },
     });
 
     // 🔁 COMMON SAFE CALCULATION FUNCTION
@@ -676,6 +639,10 @@ frappe.ui.form.on("Estimate Item", {
                 compute_transport_fg_total(frm);
             });
     },
+
+    // tpi_rate(frm) {
+    //     compute_fg_tpi_cost(frm);
+    // },
 
     get_items_from_bom(frm, cdt, cdn) {
     const row_parent = locals[cdt][cdn];
@@ -783,50 +750,97 @@ frappe.ui.form.on("Estimate Item", {
     });
 },
 
-    rate(frm, cdt, cdn) {
-    const row = locals[cdt][cdn];
-    if (!row) return;
+        rate(frm, cdt, cdn) {
 
-    const fg = row.item_code;
-    const fg_totals = get_sfg_totals_by_fg(frm);
-    const data = fg_totals[fg];
-    if (!data) return;
+            const row = locals[cdt][cdn];
+            if (!row) return;
 
-    const min_rate = flt(data.sfg_amount) + flt(data.sfg_transport) + flt(data.rm_amount) + flt(data.rm_transport);
+            const fg = row.item_code;
+            const fg_totals = get_sfg_totals_by_fg(frm);
+            const data = fg_totals[fg];
+            if (!data) return;
 
-    const entered_rate = flt(row.rate);
-    const qty = flt(row.qty) || 1;
+            const min_base_rate =
+                flt(data.sfg_amount) +
+                flt(data.sfg_transport) +
+                flt(data.rm_amount) +
+                flt(data.rm_transport);
 
-    if (entered_rate < min_rate) {
-        if (!__auto_fg_rate_update) {
-        frappe.msgprint({
-            title: __("Rate Not Allowed"),
-            message: __(
-                "Rate for {0} cannot be less than its SFG + RM cost ({1}).",
-                [fg, format_currency(min_rate)]
-            ),
-            indicator: "red"
-        });
-    }
+            const tpi_rate = flt(row.tpi_rate) || 0;
+            const qty = flt(row.qty) || 1;
 
-        frappe.model.set_value(cdt, cdn, "rate", min_rate);
-        frappe.model.set_value(cdt, cdn, "amount", flt(min_rate * qty, 2));
-        return;
-    }
+            let final_rate = flt(row.rate);
 
-    frappe.model.set_value(cdt, cdn, "amount", flt(entered_rate * qty, 2));
-    compute_sfg_grand_total_and_set_rate
-},
+            // 👉 Detect if user manually edited rate
+            const calculated_min_final = flt(min_base_rate + tpi_rate, 2);
 
-    qty(frm, cdt, cdn) {
+            if (final_rate < calculated_min_final) {
+
+                if (!__auto_fg_rate_update) {
+                    frappe.msgprint({
+                        title: __("Rate Not Allowed"),
+                        message: __(
+                            "Rate for {0} cannot be less than its SFG + RM cost ({1}).",
+                            [fg, format_currency(min_base_rate)]
+                        ),
+                        indicator: "red"
+                    });
+                }
+
+                final_rate = calculated_min_final;
+            }
+
+            frappe.model.set_value(cdt, cdn, "rate", final_rate);
+            frappe.model.set_value(cdt, cdn, "amount", flt(final_rate * qty, 2));
+
+            compute_total_estimate_cost(frm);
+            render_overall_details(frm);
+        },
+
+        tpi_rate(frm, cdt, cdn) {
+
+            const row = locals[cdt][cdn];
+            if (!row) return;
+
+            const fg = row.item_code;
+            const fg_totals = get_sfg_totals_by_fg(frm);
+            const data = fg_totals[fg];
+            if (!data) return;
+
+            const min_base_rate =
+                flt(data.sfg_amount) +
+                flt(data.sfg_transport) +
+                flt(data.rm_amount) +
+                flt(data.rm_transport);
+
+            const tpi_rate = flt(row.tpi_rate) || 0;
+            const qty = flt(row.qty) || 1;
+
+            const final_rate = flt(min_base_rate + tpi_rate, 2);
+
+            frappe.model.set_value(cdt, cdn, "rate", final_rate);
+            frappe.model.set_value(cdt, cdn, "amount", flt(final_rate * qty, 2));
+
+            compute_fg_tpi_cost(frm);
+            compute_total_estimate_cost(frm);
+            render_overall_details(frm);
+        },
+
+        qty(frm, cdt, cdn) {
+
         const row = locals[cdt][cdn];
+        if (!row) return;
+
         const qty = safeNumber(row.qty) || 1;
         const rate = safeNumber(row.rate) || 0;
+
         const amount = Number((qty * rate).toFixed(2));
 
         frappe.model.set_value(cdt, cdn, "amount", amount, () => {
             recompute_total(frm);
             compute_transport_fg_total(frm);
+            compute_total_estimate_cost(frm);
+            render_overall_details(frm);
         });
     },
 
@@ -1290,13 +1304,32 @@ function set_estimate_item_rate(frm, mode) {
 // ✅ TOTAL ESTIMATE COST = SFG GRAND TOTAL + FINAL VEHICLE COST
 // ---------------------------------------------------------
 function compute_total_estimate_cost(frm) {
-    const total = flt(frm.doc.sfg_grand_total_cost) + flt(frm.doc.rm_grand_total_cost) + flt(frm.doc.final_vehicle_cost);
-    frm.set_value("total_estimate_cost", flt(total, 2));
 
-    // ⭐ UI refresh only
-    highlight_total_estimate_cost(frm);
-    highlight_grand_totals(frm);
+    let fg_total = 0;
+
+    (frm.doc.items || []).forEach(row => {
+        fg_total += flt(row.amount);
+    });
+
+    const sfg_tpi = flt(frm.doc.sfg_tpi_cost) || 0;
+    const rm_tpi = flt(frm.doc.rm_tpi_cost) || 0;
+    const fg_tpi = flt(frm.doc.fg_tpi_cost) || 0;
+    const transport_fg = flt(frm.doc.transport_fg_costs) || 0;
+
+    const grand_total = flt(fg_total + sfg_tpi + rm_tpi + transport_fg + fg_tpi, 2);
+
+    frm.set_value("total_estimate_cost", grand_total);
+
+    // highlight_total_estimate_cost(frm);
 }
+// function compute_total_estimate_cost(frm) {
+//     const total = flt(frm.doc.sfg_grand_total_cost) + flt(frm.doc.rm_grand_total_cost) + flt(frm.doc.final_vehicle_cost);
+//     frm.set_value("total_estimate_cost", flt(total, 2));
+
+//     // ⭐ UI refresh only
+//     highlight_total_estimate_cost(frm);
+//     highlight_grand_totals(frm);
+// }
 
 function compute_sfg_tpi_cost(frm) {
     let total = 0;
