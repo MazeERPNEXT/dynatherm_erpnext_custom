@@ -19,28 +19,9 @@ frappe.ui.form.on('Quality Assurance Plan', {
 
     refresh(frm) {
         update_qap_progress(frm);
-
-        if (!frm.is_new()) {
-
-            let btn = frm.add_custom_button('Generate Dossier', function () {
-
-                frappe.call({
-                    doc: frm.doc,
-                    method: "merge_pdfs",
-                    callback: function (r) {
-                        if (r.message) {
-                            window.open(r.message);
-                        }
-                    }
-                });
-
-            });
-
-            // Add professional color
-            btn.addClass('btn-primary');
-
-        }
+        dossier_action(frm);
     },
+    
      validate: function(frm) {
         update_qap_progress(frm);
     },
@@ -70,4 +51,31 @@ function update_qap_progress(frm) {
     let percent = Math.round((completed / total) * 100);
 
     frm.set_value("per_progress", percent);
+}
+
+function dossier_action(frm) {
+    if (!frm.is_new()) {
+
+            let btn = frm.add_custom_button(__('Generate Dossier'), function () {
+
+                frappe.call({
+                    doc: frm.doc,
+                    method: "merge_pdfs",
+                    freeze: true,
+                    freeze_message: __("Generating Dossier... Please wait"),
+                    callback: function (r) {
+                        if (r.message) {
+                            window.open(r.message);
+                            frappe.msgprint(__('Dossier Generated Successfully'));
+                        }
+                    },
+                    error: function(err) {
+                        frappe.msgprint(__('Error while generating dossier'));
+                    }
+                });
+
+            });
+
+            btn.addClass('btn-primary');
+        }
 }
