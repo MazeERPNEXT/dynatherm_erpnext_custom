@@ -22,7 +22,7 @@ frappe.ui.form.on('Quality Assurance Plan', {
 
         if (!frm.is_new()) {
 
-            let btn = frm.add_custom_button('Generate Dossier', function () {
+            let btn = frm.add_custom_button('<i class="fa fa-file-pdf-o" style="font-size:20px;"></i>Generate Dossier', function () {
 
                 frappe.call({
                     doc: frm.doc,
