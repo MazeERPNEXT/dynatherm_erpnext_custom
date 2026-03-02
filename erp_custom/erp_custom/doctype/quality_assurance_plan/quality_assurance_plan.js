@@ -37,7 +37,7 @@ frappe.ui.form.on('Quality Assurance Plan', {
             });
 
             // Add professional color
-            btn.addClass('btn-primary');
+            btn.addClass('btn-danger');
 
         }
     },
