@@ -12,13 +12,17 @@
   "qap_id",
   "date",
   "tag_no",
+  "qty",
   "column_break_dkiq",
   "purchase_order_no",
   "purchase_order_date",
   "item_code",
   "item_name",
   "drg_no",
-  "qty",
+  "status",
+  "section_break_mqqc",
+  "per_progress",
+  "qap_progress",
   "section_break_llfa",
   "qap_item",
   "section_break_dkwt",
@@ -36,12 +40,16 @@
   {
    "fieldname": "customer",
    "fieldtype": "Link",
+   "in_filter": 1,
+   "in_list_view": 1,
    "label": "Client",
    "options": "Customer"
   },
   {
    "fieldname": "qap_id",
    "fieldtype": "Data",
+   "in_filter": 1,
+   "in_list_view": 1,
    "label": "QAP ID"
   },
   {
@@ -71,11 +79,15 @@
   {
    "fieldname": "drg_no",
    "fieldtype": "Data",
+   "in_filter": 1,
+   "in_list_view": 1,
    "label": "DRG No"
   },
   {
    "fieldname": "date",
    "fieldtype": "Date",
+   "in_filter": 1,
+   "in_list_view": 1,
    "label": "QAP Date"
   },
   {
@@ -116,16 +128,38 @@
    "fieldtype": "Table",
    "label": "QAP Item",
    "options": "QAP Item"
+  },
+  {
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "in_filter": 1,
+   "in_list_view": 1,
+   "label": "QAP Status",
+   "options": "\nInProgress\nCompleted\nNot Planned"
+  },
+  {
+   "fieldname": "per_progress",
+   "fieldtype": "Percent",
+   "label": "Progress %"
+  },
+  {
+   "fieldname": "section_break_mqqc",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "qap_progress",
+   "fieldtype": "HTML",
+   "label": "QAP Progress "
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-02-18 12:23:16.661226",
+ "modified": "2026-03-02 15:07:49.511488",
  "modified_by": "Administrator",
  "module": "ERP Custom",
  "name": "Quality Assurance Plan",
- "naming_rule": "Expression (old style)",
+ "naming_rule": "Expression",
  "owner": "Administrator",
  "permissions": [
   {

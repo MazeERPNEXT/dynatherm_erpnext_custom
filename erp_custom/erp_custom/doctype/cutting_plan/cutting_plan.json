@@ -30,7 +30,8 @@
   "column_break_hkei",
   "thickness",
   "section_break_esfk",
-  "cutting_plan_item"
+  "cutting_plan_item",
+  "amended_from"
  ],
  "fields": [
   {
@@ -156,16 +157,27 @@
   {
    "fieldname": "column_break_jgxj",
    "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "Cutting Plan",
+   "print_hide": 1,
+   "read_only": 1,
+   "search_index": 1
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
+ "is_submittable": 1,
  "links": [],
- "modified": "2026-01-30 17:27:20.155683",
+ "modified": "2026-03-02 13:39:09.656101",
  "modified_by": "Administrator",
  "module": "ERP Custom",
  "name": "Cutting Plan",
- "naming_rule": "Expression (old style)",
+ "naming_rule": "Expression",
  "owner": "Administrator",
  "permissions": [
   {
