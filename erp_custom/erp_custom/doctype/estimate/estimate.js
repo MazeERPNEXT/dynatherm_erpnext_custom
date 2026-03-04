@@ -719,6 +719,9 @@ frappe.ui.form.on("Estimate Item", {
                             row.uom = bi.uom;
                             row.bom_no = bi.bom_no || "";
 
+                            // row.rate = item.rate || 0;
+                            // row.amount = flt(row.qty) * flt(row.rate);
+
                             // FULL FIELD MAPPING
                             row.material_type = bi.custom_material_type || "";
                             row.length = bi.custom_length || 0;
@@ -1463,18 +1466,33 @@ function compute_total_estimate_cost(frm) {
 
     const rm_grand_total  = flt(frm.doc.rm_grand_total_cost || 0);
     const sfg_grand_total = flt(frm.doc.sfg_grand_total_cost || 0);
-
-    const fg_transport = flt(frm.doc.transport_fg_costs || 0);
+    const fg_transport    = flt(frm.doc.transport_fg_costs || 0);
 
     let fg_tpi = 0;
     (frm.doc.items || []).forEach(row => {
         fg_tpi += flt(row.tpi_rate || 0);
     });
 
-    const grand_total = flt(rm_grand_total + sfg_grand_total + fg_transport + fg_tpi, 2);
+    const grand_total = flt(
+        rm_grand_total + sfg_grand_total + fg_transport + fg_tpi,
+        2
+    );
 
+    // ✅ Set Parent Total
     frm.set_value("total_estimate_cost", grand_total);
-    frm.refresh_field("total_estimate_cost");
+
+    // ✅ NEW: Sync to FG Child Rate
+    (frm.doc.items || []).forEach(row => {
+
+        const qty = flt(row.qty) || 1;
+        const rate = grand_total;
+
+        frappe.model.set_value(row.doctype, row.name, "rate", rate);
+        frappe.model.set_value(row.doctype, row.name, "amount", flt(rate * qty, 2));
+
+    });
+
+    frm.refresh_field("items");
 }
 
 function compute_sfg_tpi_cost(frm) {
@@ -1855,59 +1873,74 @@ function get_rm_totals_by_sfg(frm) {
     return map;
 }
 
-function get_sfg_totals_by_fg(frm) {
-    let map = {};
+// function get_sfg_totals_by_fg(frm) {
+//     let map = {};
 
-    // 🔹 SFG TABLE
-    (frm.doc.estimated_bom_materials || []).forEach(row => {
+//     // 🔹 SFG TABLE
+//     (frm.doc.estimated_bom_materials || []).forEach(row => {
 
-        const fg = row.finished_good_item;
-        if (!fg) return;
+//         const fg = row.finished_good_item;
+//         if (!fg) return;
 
-        if (!map[fg]) {
-            map[fg] = {
-                sfg_amount: 0,
-                sfg_transport: 0,
-                rm_amount: 0,
-                rm_transport: 0
-            };
-        }
+//         if (!map[fg]) {
+//             map[fg] = {
+//                 sfg_amount: 0,
+//                 sfg_transport: 0,
+//                 rm_amount: 0,
+//                 rm_transport: 0
+//             };
+//         }
 
-        map[fg].sfg_amount += flt(row.amount || 0);
-        map[fg].sfg_transport += flt(row.transportation_cost || 0);
-    });
-
-    // 🔹 RM TABLE
-    (frm.doc.estimated_sub_assembly_items || []).forEach(row => {
-
-        const fg = row.finished_good_item;
-        if (!fg) return;
-
-        if (!map[fg]) {
-            map[fg] = {
-                sfg_amount: 0,
-                sfg_transport: 0,
-                rm_amount: 0,
-                rm_transport: 0
-            };
-        }
-
-        map[fg].rm_amount += flt(row.amount || 0);
-        map[fg].rm_transport += flt(row.transportation_cost || 0);
-    });
-
-    return map;
-}
-
-// function compute_total_estimate_cost(frm) {
-//     let grand_total = 0;
-//     (frm.doc.items || []).forEach(row => {
-//         grand_total += flt(row.amount || 0);
+//         map[fg].sfg_amount += flt(row.amount || 0);
+//         map[fg].sfg_transport += flt(row.transportation_cost || 0);
 //     });
 
-//     frm.set_value("total_estimate_cost", flt(grand_total, 2));
-//     frm.refresh_field("total_estimate_cost");
+//     // 🔹 RM TABLE
+//     (frm.doc.estimated_sub_assembly_items || []).forEach(row => {
+
+//         const fg = row.finished_good_item;
+//         if (!fg) return;
+
+//         if (!map[fg]) {
+//             map[fg] = {
+//                 sfg_amount: 0,
+//                 sfg_transport: 0,
+//                 rm_amount: 0,
+//                 rm_transport: 0
+//             };
+//         }
+
+//         map[fg].rm_amount += flt(row.amount || 0);
+//         map[fg].rm_transport += flt(row.transportation_cost || 0);
+//     });
+
+//     return map;
 // }
+
+function get_sfg_totals_by_fg(frm) {
+
+    let sfg_grand_total_cost = 0;
+    let rm_grand_total_cost = 0;
+
+    (frm.doc.estimated_bom_materials || []).forEach(row => {
+
+        // If SFG exists
+        if (row.is_subassembly_item) {
+            sfg_grand_total_cost += flt(row.amount);
+        }
+
+        // RM directly under FG (2-Level case)
+        if (!row.is_subassembly_item) {
+            rm_grand_total_cost += flt(row.amount);
+        }
+
+    });
+
+    return {
+        sfg_grand_total_cost: sfg_grand_total_cost,
+        rm_grand_total_cost: rm_grand_total_cost
+    };
+}
 
 function sync_estimate_items_per_fg(frm) {
     if (!frm.doc.items || !frm.doc.items.length) return;
@@ -1928,12 +1961,6 @@ function sync_estimate_items_per_fg(frm) {
 
         const sfg_tpi_share = total_sfg_amount ? (flt(data.sfg_amount)/total_sfg_amount)*total_sfg_tpi : 0;
         const rm_tpi_share  = total_rm_amount ? (flt(data.rm_amount)/total_rm_amount)*total_rm_tpi : 0;
-
-        // const base_cost = flt(data.sfg_amount) + flt(data.sfg_transport)
-        //                 + flt(data.rm_amount) + flt(data.rm_transport)
-        //                 + flt(sfg_tpi_share) + flt(rm_tpi_share);
-
-        // const final_rate = flt(base_cost + flt(row.transport_cost||0) + flt(row.tpi_rate||0), 2);
 
         const base_cost =
         flt(data.sfg_amount)
