@@ -450,13 +450,76 @@ frappe.ui.form.on("Estimate", {
     // ------------------------------------------
     // CASE 1: If SFG exists → use SFG BOMs
     // ------------------------------------------
-    if (frm.doc.estimated_bom_materials && 
-        frm.doc.estimated_bom_materials.length > 0) {
 
-        bom_list = frm.doc.estimated_bom_materials
-            .filter(d => d.bom_no && d.item_source !== "Buy")
-            .map(d => d.bom_no);
-    }
+    if (frm.doc.estimated_bom_materials && 
+    frm.doc.estimated_bom_materials.length > 0) {
+
+    bom_list = frm.doc.estimated_bom_materials
+        .filter(d => d.bom_no && d.item_source !== "Buy")
+        .map(d => d.bom_no);
+
+    // ⭐ IF SFG SOURCE = BUY → ADD IT DIRECTLY INTO RM TABLE
+    (frm.doc.estimated_bom_materials || []).forEach(d => {
+
+        if (d.item_source === "Buy") {
+
+            let key = [
+                d.item_code,
+                d.bom_no,
+                flt(d.length || 0),
+                flt(d.width || 0),
+                flt(d.thickness || 0)
+            ].join("|");
+
+            let exists = (frm.doc.estimated_sub_assembly_items || []).some(r =>
+                [
+                    r.item_code,
+                    r.bom_no,
+                    flt(r.length),
+                    flt(r.width),
+                    flt(r.thickness)
+                ].join("|") === key
+            );
+
+            if (exists) return;
+
+            let row = frm.add_child("estimated_sub_assembly_items");
+
+            row.finished_good_item = d.finished_good_item;
+
+            row.item_code = d.item_code;
+            row.item_name = d.item_name;
+            row.item_group = d.item_group;
+            row.uom = d.uom;
+            row.bom_no = d.bom_no;
+
+            row.length = d.length || 0;
+            row.width = d.width || 0;
+            row.thickness = d.thickness || 0;
+            row.density = d.density || 0;
+
+            row.outer_diameter = d.outer_diameter || 0;
+            row.inner_diameter = d.inner_diameter || 0;
+            row.wall_thickness = d.wall_thickness || 0;
+
+            row.kilogramskgs = d.kilogramskgs || 0;
+            row.total_weight = d.total_weight || 0;
+
+            row.material_type = d.material_type || "";
+
+            row.scrap_margin = d.scrap_margin || 0;
+            row.scrap_quantity = d.scrap_quantity || 0;
+
+            row.transportation_rate = d.transportation_rate || 0;
+            row.transportation_cost = d.transportation_cost || 0;
+
+            row.qty = flt(d.qty) || 1;
+
+            row.rate = flt(d.rate) || 0;
+            row.amount = flt(d.amount) || 0;
+        }
+    });
+}
     // ------------------------------------------
     // CASE 2: If NO SFG → Direct FG BOM
     // ------------------------------------------
@@ -1082,6 +1145,9 @@ function handle_buy(frm, row) {
     // 🔹 STORE ORIGINAL TPI BEFORE ZEROING
     const original_tpi = flt(row.tpi_rate || 0);
 
+    // ⭐ REMOVE BOM RM ITEMS
+    remove_related_raw_materials(frm, row.item_code);
+
     // -----------------------------------
     // 1️⃣ REMOVE OLD RM LINKED TO THIS SFG
     // -----------------------------------
@@ -1170,6 +1236,9 @@ function handle_buy(frm, row) {
 
 function handle_make(frm, row) {
     if (!row || !row.item_code) return;
+
+    // ⭐ REMOVE BOM RM ITEMS
+    remove_related_raw_materials(frm, row.item_code);
 
     // 🔹 FIND RM TPI BEFORE DELETE
     let rm_tpi = 0;

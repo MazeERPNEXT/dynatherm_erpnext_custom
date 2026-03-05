@@ -509,7 +509,8 @@
   {
    "fieldname": "total_sub_assembly",
    "fieldtype": "Currency",
-   "label": "RM Total Cost (\u20b9)"
+   "label": "RM Total Cost (\u20b9)",
+   "read_only": 1
   },
   {
    "fieldname": "consumable_tab",
@@ -519,7 +520,8 @@
   {
    "fieldname": "transport_rm_costs",
    "fieldtype": "Currency",
-   "label": "RM Transport Cost (\u20b9)"
+   "label": "RM Transport Cost (\u20b9)",
+   "read_only": 1
   },
   {
    "fieldname": "transport_fg_costs",
@@ -530,7 +532,8 @@
   {
    "fieldname": "transport_consumable_costs",
    "fieldtype": "Currency",
-   "label": "Transport Consumable Costs (\u20b9)"
+   "label": "Transport Consumable Costs (\u20b9)",
+   "read_only": 1
   },
   {
    "fieldname": "estimated_consumable",
@@ -541,12 +544,14 @@
   {
    "fieldname": "total_consumable_costs",
    "fieldtype": "Currency",
-   "label": "Total Consumable Costs (\u20b9)"
+   "label": "Total Consumable Costs (\u20b9)",
+   "read_only": 1
   },
   {
    "fieldname": "total_operation_costs",
    "fieldtype": "Currency",
-   "label": "Opertion Total Cost (\u20b9)"
+   "label": "Opertion Total Cost (\u20b9)",
+   "read_only": 1
   },
   {
    "fieldname": "section_break_zmut",
@@ -563,22 +568,26 @@
   {
    "fieldname": "rm_grand_total_cost",
    "fieldtype": "Currency",
-   "label": "RM Grand Total Cost (\u20b9)"
+   "label": "RM Grand Total Cost (\u20b9)",
+   "read_only": 1
   },
   {
    "fieldname": "total",
    "fieldtype": "Currency",
-   "label": "SFG Total Cost (\u20b9)"
+   "label": "SFG Total Cost (\u20b9)",
+   "read_only": 1
   },
   {
    "fieldname": "transport_sfg_costs",
    "fieldtype": "Currency",
-   "label": "SFG Transport Cost (\u20b9)"
+   "label": "SFG Transport Cost (\u20b9)",
+   "read_only": 1
   },
   {
    "fieldname": "sfg_grand_total_cost",
    "fieldtype": "Currency",
-   "label": "SFG Grand Total Cost (\u20b9)"
+   "label": "SFG Grand Total Cost (\u20b9)",
+   "read_only": 1
   },
   {
    "fieldname": "section_break_enow",
@@ -615,7 +624,8 @@
    "fieldname": "weight_in_tonnes",
    "fieldtype": "Float",
    "label": "Weight (In Tonnes)",
-   "precision": "2"
+   "precision": "2",
+   "read_only": 1
   },
   {
    "fieldname": "vehicle_rate",
@@ -671,12 +681,14 @@
   {
    "fieldname": "sfg_tpi_cost",
    "fieldtype": "Currency",
-   "label": "SFG TPI Cost (\u20b9)"
+   "label": "SFG TPI Cost (\u20b9)",
+   "read_only": 1
   },
   {
    "fieldname": "rm_tpi_cost",
    "fieldtype": "Currency",
-   "label": "RM TPI Cost (\u20b9)"
+   "label": "RM TPI Cost (\u20b9)",
+   "read_only": 1
   },
   {
    "fieldname": "column_break_ysgb",
@@ -744,7 +756,7 @@
  "idx": 82,
  "is_submittable": 1,
  "links": [],
- "modified": "2026-02-24 17:50:11.211147",
+ "modified": "2026-03-04 18:03:06.324040",
  "modified_by": "Administrator",
  "module": "ERP Custom",
  "name": "Estimate",
