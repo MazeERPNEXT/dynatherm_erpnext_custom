@@ -8,7 +8,8 @@ def get_data():
 			"Auto Repeat": "reference_document",
 		},
 		"transactions": [
-			{"label": _("Sales Order"), "items": ["Sales Order"]},
-			{"label": _("Subscription"), "items": ["Auto Repeat"]},
+			{"label": _("Customer Request For Quotation"), "items": ["Customer Request For Quotation"]},
+			{"label": _("Estimate"), "items": ["Estimate"]},
+			{"label": _("Quotation"), "items": ["Quotation"]},
 		],
 	}

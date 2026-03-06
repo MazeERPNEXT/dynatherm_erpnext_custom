@@ -367,7 +367,8 @@ override_whitelisted_methods = {
 
 
 override_doctype_class = {
-    "BOM": "erp_custom.erp_custom.overrides.bom.CustomBOM"
+    "BOM": "erp_custom.erp_custom.overrides.bom.CustomBOM",
+    # "Request for Quotation": "erp_custom.overrides.request_for_quotation.CustomRequestForQuotation"
 }
 
 # doc_events = {
