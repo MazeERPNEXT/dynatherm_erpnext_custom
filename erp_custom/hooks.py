@@ -371,6 +371,18 @@ override_doctype_class = {
 }
 
 # doc_events = {
+#     "Request for Quotation": {
+#         "on_submit": "erp_custom.erp_custom.overrides.request_for_quotation.send_email_background"
+#     }
+# }
+
+doc_events = {
+    "Request for Quotation": {
+        "before_submit": "erp_custom.erp_custom.overrides.request_for_quotation.send_email_background"
+    }
+}
+
+# doc_events = {
 #     "Stock Entry": {
 #         "before_save": "erp_custom.overrides.stock_entry_utils.copy_custom_dimensions_from_work_order"
 #     }
