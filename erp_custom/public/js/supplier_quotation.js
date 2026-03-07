@@ -1,4 +1,18 @@
 frappe.ui.form.on("Supplier Quotation", {
+    refresh(frm) {
+
+        // Remove Quotation button from Create menu after submit
+        if (frm.doc.docstatus === 1) {
+
+            // remove button
+            frm.remove_custom_button("Quotation", "Create");
+
+            // sometimes ERPNext re-renders, so ensure removal again
+            setTimeout(() => {
+                frm.remove_custom_button("Quotation", "Create");
+            }, 500);
+        }
+    },
     onload_post_render(frm) {
         (frm.doc.items || []).forEach(row => {
 

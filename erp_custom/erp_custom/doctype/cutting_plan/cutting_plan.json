@@ -1,28 +1,40 @@
 {
  "actions": [],
+ "allow_import": 1,
  "allow_rename": 1,
- "autoname": "CP-.YYYY.-.#### ",
+ "autoname": "field:title",
  "creation": "2026-01-19 18:52:49.822088",
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
+  "title",
   "cutting_no",
-  "bom_no",
+  "item_to_manufacture",
   "item_no",
   "qty",
   "column_break_wwxj",
+  "bom_no",
   "moc",
-  "job_no",
+  "drawing_no",
+  "tag_no",
+  "column_break_wkad",
   "purchase_no",
-  "item_to_manufacture",
+  "job_no",
+  "scale",
+  "rev",
   "planning_info_section",
   "date",
   "column_break_nrng",
   "material_availability",
   "responsibility_section",
   "approved_by",
+  "approved_date",
   "column_break_jgxj",
   "drawn_by",
+  "drawn_date",
+  "column_break_tmqp",
+  "checked_by",
+  "checked_date",
   "section_break_geex",
   "length",
   "column_break_ygok",
@@ -73,7 +85,8 @@
   {
    "fieldname": "thickness",
    "fieldtype": "Float",
-   "label": "Thickness"
+   "label": "Thickness",
+   "precision": "2"
   },
   {
    "fieldname": "section_break_esfk",
@@ -105,12 +118,14 @@
   {
    "fieldname": "length",
    "fieldtype": "Float",
-   "label": "Length"
+   "label": "Length",
+   "precision": "2"
   },
   {
    "fieldname": "width",
    "fieldtype": "Float",
-   "label": "Width"
+   "label": "Width",
+   "precision": "2"
   },
   {
    "fieldname": "section_break_geex",
@@ -167,17 +182,71 @@
    "print_hide": 1,
    "read_only": 1,
    "search_index": 1
+  },
+  {
+   "fieldname": "column_break_tmqp",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "checked_by",
+   "fieldtype": "Data",
+   "label": "Checked By"
+  },
+  {
+   "fieldname": "drawing_no",
+   "fieldtype": "Data",
+   "label": "Drawing No"
+  },
+  {
+   "fieldname": "scale",
+   "fieldtype": "Data",
+   "label": "Scale"
+  },
+  {
+   "fieldname": "tag_no",
+   "fieldtype": "Data",
+   "label": "Tag No"
+  },
+  {
+   "fieldname": "approved_date",
+   "fieldtype": "Date",
+   "label": "Approved Date"
+  },
+  {
+   "fieldname": "drawn_date",
+   "fieldtype": "Date",
+   "label": "Drawn Date"
+  },
+  {
+   "fieldname": "checked_date",
+   "fieldtype": "Date",
+   "label": "Checked Date"
+  },
+  {
+   "fieldname": "rev",
+   "fieldtype": "Data",
+   "label": "Rev"
+  },
+  {
+   "fieldname": "column_break_wkad",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "title",
+   "fieldtype": "Data",
+   "label": "Title",
+   "unique": 1
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2026-03-02 13:39:09.656101",
+ "modified": "2026-03-07 12:52:23.670348",
  "modified_by": "Administrator",
  "module": "ERP Custom",
  "name": "Cutting Plan",
- "naming_rule": "Expression",
+ "naming_rule": "By fieldname",
  "owner": "Administrator",
  "permissions": [
   {
