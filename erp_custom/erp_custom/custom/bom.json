@@ -1,5 +1,6 @@
 {
  "custom_perms": [],
+ "custom_fields": [],
  "doctype": "BOM",
  "links": [],
  "property_setters": [
