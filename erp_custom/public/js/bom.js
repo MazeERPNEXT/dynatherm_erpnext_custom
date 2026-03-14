@@ -81,39 +81,85 @@ frappe.ui.form.on("BOM Item", {
     // ITEM CODE SELECT
     // =========================================================
     item_code(frm, cdt, cdn) {
-        const row = locals[cdt][cdn];
-        if (!row.item_code) return;
+    const row = locals[cdt][cdn];
 
-        // ---- Fetch from Item Master
-        frappe.db.get_value(
-            "Item",
-            row.item_code,
-            ["item_group", "default_bom", "custom_material_type", "custom_density","custom_thickness"]
-        ).then(r => {
-            if (!r || !r.message) return;
+    // If item removed → clear dependent fields
+    if (!row.item_code) {
+        frappe.model.set_value(cdt, cdn, "item_name", "");
+        frappe.model.set_value(cdt, cdn, "custom_item_group", "");
+        frappe.model.set_value(cdt, cdn, "bom_no", "");
+        frappe.model.set_value(cdt, cdn, "custom_material_type", "");
+        frappe.model.set_value(cdt, cdn, "custom_density", 0);
+        frappe.model.set_value(cdt, cdn, "custom_thickness", 0);
+        frappe.model.set_value(cdt, cdn, "custom_last_purchase_price", 0);
+        return;
+    }
 
-            const item = r.message;
+    // ---- Fetch from Item Master
+    frappe.db.get_value(
+        "Item",
+        row.item_code,
+        ["item_group", "default_bom", "custom_material_type", "custom_density","custom_thickness"]
+    ).then(r => {
+        if (!r || !r.message) return;
 
-            frappe.model.set_value(cdt, cdn, "custom_item_group", item.item_group || "");
-            frappe.model.set_value(cdt, cdn, "bom_no", item.default_bom || "");
-            frappe.model.set_value(cdt, cdn, "custom_material_type", item.custom_material_type || "");
-            frappe.model.set_value(cdt, cdn, "custom_density", item.custom_density || 0);
-            frappe.model.set_value(cdt, cdn, "custom_thickness", item.custom_thickness || 0);
+        const item = r.message;
 
-            calculate_kgs(frm, cdt, cdn);
-        });
+        frappe.model.set_value(cdt, cdn, "custom_item_group", item.item_group || "");
+        frappe.model.set_value(cdt, cdn, "bom_no", item.default_bom || "");
+        frappe.model.set_value(cdt, cdn, "custom_material_type", item.custom_material_type || "");
+        frappe.model.set_value(cdt, cdn, "custom_density", item.custom_density || 0);
+        frappe.model.set_value(cdt, cdn, "custom_thickness", item.custom_thickness || 0);
 
-        // // ---- Last Purchase Price
-        frappe.db.get_list("Item Price", {
-            filters: { item_code: row.item_code, buying: 1 },
-            fields: ["price_list_rate"],
-            order_by: "modified desc",
-            limit: 1
-        }).then(res => {
-            const rate = res?.length ? res[0].price_list_rate : 0;
-            frappe.model.set_value(cdt, cdn, "custom_last_purchase_price", rate);
-        });
-    },
+        calculate_kgs(frm, cdt, cdn);
+    });
+
+    // ---- Last Purchase Price
+    frappe.db.get_list("Item Price", {
+        filters: { item_code: row.item_code, buying: 1 },
+        fields: ["price_list_rate"],
+        order_by: "modified desc",
+        limit: 1
+    }).then(res => {
+        const rate = res?.length ? res[0].price_list_rate : 0;
+        frappe.model.set_value(cdt, cdn, "custom_last_purchase_price", rate);
+    });
+},
+
+    // item_code(frm, cdt, cdn) {
+    //     const row = locals[cdt][cdn];
+    //     if (!row.item_code) return;
+
+    //     // ---- Fetch from Item Master
+    //     frappe.db.get_value(
+    //         "Item",
+    //         row.item_code,
+    //         ["item_group", "default_bom", "custom_material_type", "custom_density","custom_thickness"]
+    //     ).then(r => {
+    //         if (!r || !r.message) return;
+
+    //         const item = r.message;
+
+    //         frappe.model.set_value(cdt, cdn, "custom_item_group", item.item_group || "");
+    //         frappe.model.set_value(cdt, cdn, "bom_no", item.default_bom || "");
+    //         frappe.model.set_value(cdt, cdn, "custom_material_type", item.custom_material_type || "");
+    //         frappe.model.set_value(cdt, cdn, "custom_density", item.custom_density || 0);
+    //         frappe.model.set_value(cdt, cdn, "custom_thickness", item.custom_thickness || 0);
+
+    //         calculate_kgs(frm, cdt, cdn);
+    //     });
+
+    //     // // ---- Last Purchase Price
+    //     frappe.db.get_list("Item Price", {
+    //         filters: { item_code: row.item_code, buying: 1 },
+    //         fields: ["price_list_rate"],
+    //         order_by: "modified desc",
+    //         limit: 1
+    //     }).then(res => {
+    //         const rate = res?.length ? res[0].price_list_rate : 0;
+    //         frappe.model.set_value(cdt, cdn, "custom_last_purchase_price", rate);
+    //     });
+    // },
 
     // =========================================================
     // TRIGGERS
