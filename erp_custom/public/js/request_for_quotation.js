@@ -18,3 +18,24 @@
 //         );
 //     }
 // });
+
+
+frappe.ui.form.on("Request for Quotation", {
+    refresh(frm) {
+
+        // Remove buttons only in Draft
+        if (frm.doc.docstatus === 0) {
+
+            frm.remove_custom_button("Opportunity", "Get Items From");
+            frm.remove_custom_button("Possible Supplier", "Get Items From");
+            frm.remove_custom_button("Link to Material Requests", "Tools");
+
+            // Ensure removal after ERPNext re-renders
+            setTimeout(() => {
+                frm.remove_custom_button("Opportunity", "Get Items From");
+                frm.remove_custom_button("Possible Supplier", "Get Items From");
+                frm.remove_custom_button("Link to Material Requests", "Tools");
+            }, 500);
+        }
+    }
+});
