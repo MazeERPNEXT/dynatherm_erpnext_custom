@@ -464,6 +464,7 @@ frappe.ui.form.on("Estimate", {
         if (d.item_source === "Buy") {
 
             let key = [
+                d.finished_good_item || "",
                 d.item_code,
                 d.bom_no,
                 flt(d.length || 0),
@@ -473,6 +474,7 @@ frappe.ui.form.on("Estimate", {
 
             let exists = (frm.doc.estimated_sub_assembly_items || []).some(r =>
                 [
+                    r.finished_good_item || "",
                     r.item_code,
                     r.bom_no,
                     flt(r.length),
@@ -543,6 +545,7 @@ frappe.ui.form.on("Estimate", {
     let existing_keys = new Set(
         (frm.doc.estimated_sub_assembly_items || []).map(r =>
             [
+                r.finished_good_item || "",
                 r.item_code,
                 r.bom_no,
                 flt(r.length),
@@ -604,6 +607,7 @@ frappe.ui.form.on("Estimate", {
             items.forEach(bi => {
 
                 let key = [
+                    current_fg || "",
                     bi.item_code,
                     current_bom,
                     flt(bi.custom_length || 0),
@@ -1005,6 +1009,8 @@ frappe.ui.form.on("Estimate Item", {
 // ---------------------------------------------------------
 // Estimated BOM Materials - CHILD TABLE
 // ---------------------------------------------------------
+let __deleted_sfg_bom = null;
+
 frappe.ui.form.on("Estimated BOM Materials", {
     item_code(frm, cdt, cdn) {
         const row = locals[cdt][cdn];
@@ -1047,21 +1053,83 @@ frappe.ui.form.on("Estimated BOM Materials", {
     },
 
     item_source(frm, cdt, cdn) {
+
         const row = locals[cdt][cdn];
         if (!row) return;
 
+        // ---------- BUY ----------
         if (row.item_source === "Buy") {
-            handle_buy(frm, row);
-        } else {
-            handle_make(frm, row);
+
+            // Remove BOM RM rows
+            (frm.doc.estimated_sub_assembly_items || []).forEach(rm => {
+                if (rm.bom_no && row.bom_no && rm.bom_no === row.bom_no) {
+                    frappe.model.remove_from_locals(rm.doctype, rm.name);
+                }
+            });
+
+            // Add the SFG item itself as RM
+            let child = frm.add_child("estimated_sub_assembly_items");
+
+            child.item_code = row.item_code;
+            child.item_name = row.item_name;
+            child.item_group = row.item_group;
+            child.qty = row.qty || 1;
+            child.uom = row.uom || 1;
+
+            child.length = row.length;
+            child.width = row.width;
+            child.thickness = row.thickness;
+            child.density = row.density;
+
+            child.outer_diameter = row.outer_diameter;
+            child.inner_diameter = row.inner_diameter;
+            child.wall_thickness = row.wall_thickness;
+            child.kilogramskgs = row.kilogramskgs;
+            child.total_weight = row.total_weight;
+            
+            child.bom_no = row.bom_no;
+
+            frm.refresh_field("estimated_sub_assembly_items");
+
         }
 
-    recalc_estimate_totals(frm);
-        // ✅ ENSURE FG ALWAYS UPDATES
-    recompute_all_sub_assembly_totals(frm);
-    compute_rm_grand_total(frm);
-    sync_estimate_items_per_fg(frm);
+        // ---------- MAKE ----------
+        if (row.item_source === "Make") {
+
+            // Remove direct RM row of the SFG
+            (frm.doc.estimated_sub_assembly_items || []).forEach(rm => {
+                if (rm.item_code === row.item_code) {
+                    frappe.model.remove_from_locals(rm.doctype, rm.name);
+                }
+            });
+
+            frm.refresh_field("estimated_sub_assembly_items");
+
+        }
+
+        // Recalculate totals
+        recompute_all_sub_assembly_totals(frm);
+        compute_rm_grand_total(frm);
+        compute_sfg_grand_total_and_set_rate(frm);
+
     },
+
+    // item_source(frm, cdt, cdn) {
+    //     const row = locals[cdt][cdn];
+    //     if (!row) return;
+
+    //     if (row.item_source === "Buy") {
+    //         handle_buy(frm, row);
+    //     } else {
+    //         handle_make(frm, row);
+    //     }
+
+    // recalc_estimate_totals(frm);
+    //     // ✅ ENSURE FG ALWAYS UPDATES
+    // recompute_all_sub_assembly_totals(frm);
+    // compute_rm_grand_total(frm);
+    // sync_estimate_items_per_fg(frm);
+    // },
 
     // rate: compute_bom_amount,
     rate(frm, cdt, cdn) {
@@ -1072,13 +1140,6 @@ frappe.ui.form.on("Estimated BOM Materials", {
     compute_transport_sfg_total(frm);
     recompute_all_sub_assembly_totals(frm);
     compute_rm_grand_total(frm);
-
-    // compute_sfg_grand_total_and_set_rate(frm);
-
-    // __auto_fg_rate_update = true;
-    // sync_estimate_items_per_fg(frm);
-    // __auto_fg_rate_update = false;
-
     compute_total_estimate_cost(frm);
 },
 
@@ -1086,6 +1147,7 @@ frappe.ui.form.on("Estimated BOM Materials", {
         calculate_total_weight(frm, cdt, cdn);
         compute_bom_amount(frm, cdt, cdn);
         calculate_scrap_transport(frm, cdt, cdn);
+        compute_sfg_grand_total_and_set_rate(frm);
     },
     margin: compute_bom_amount,
     scrap_margin: calculate_scrap_transport,
@@ -1106,37 +1168,48 @@ frappe.ui.form.on("Estimated BOM Materials", {
         frappe.model.set_value(cdt, cdn, "scrap_quantity", 0);
         frappe.model.set_value(cdt, cdn, "transportation_rate", 0);
         frappe.model.set_value(cdt, cdn, "transportation_cost", 0);
-    },
-
-    estimated_bom_materials_remove(frm) {
-    setTimeout(() => {
-
-        recompute_total(frm);
-        compute_transport_sfg_total(frm);
-        compute_sfg_tpi_cost(frm);
-
-        recompute_all_sub_assembly_totals(frm);
-        compute_rm_grand_total(frm);
-
-        compute_sfg_grand_total_and_set_rate(frm);
-
-          // ✅ REQUIRED
-        sync_estimate_items_per_fg(frm);
-        compute_total_estimate_cost(frm);
 
         compute_weight_in_tonnes(frm);
+    },
+
+    // Capture BOM before row deletion
+    before_estimated_bom_materials_remove(frm, cdt, cdn) {
+        const row = locals[cdt][cdn];
+        if (row) {
+            __deleted_sfg_bom = row.bom_no;
+        }
+    },
+
+    // Actual delete logic
+    estimated_bom_materials_remove(frm) {
+        if (__deleted_sfg_bom) {
+            (frm.doc.estimated_sub_assembly_items || []).forEach(rm => {
+                if (rm.bom_no === __deleted_sfg_bom) {
+                    frappe.model.remove_from_locals(rm.doctype, rm.name);
+                }
+            });
+
+            frm.refresh_field("estimated_sub_assembly_items");
+            __deleted_sfg_bom = null;
+        }
+
+        setTimeout(() => {
+            recompute_total(frm);
+            compute_transport_sfg_total(frm);
+            compute_sfg_tpi_cost(frm);
+
+            recompute_all_sub_assembly_totals(frm);
+            compute_rm_grand_total(frm);
+
+            compute_sfg_grand_total_and_set_rate(frm);
+
+            sync_estimate_items_per_fg(frm);
+            compute_total_estimate_cost(frm);
+
+            compute_weight_in_tonnes(frm);
 
         }, 100);
-    },
-
-
-    total_weight(frm) {
-        compute_weight_in_tonnes(frm);
-    },
-
-    estimated_bom_materials_add(frm) {
-        compute_weight_in_tonnes(frm);
-    },
+    },  
 });
 
 function handle_buy(frm, row) {
@@ -1498,30 +1571,34 @@ function compute_transport_sfg_total(frm) {
 // ⭐ NEW FINAL FUNCTION (REQUIRED LOGIC ONLY)
 // ---------------------------------------------------------
 function compute_sfg_grand_total_and_set_rate(frm) {
+
     let sfg_total = 0;
     let transport_total = 0;
 
     (frm.doc.estimated_bom_materials || []).forEach(sfg => {
 
-    let total_amount = 0;
+        let total_amount = 0;
 
-    (frm.doc.estimated_sub_assembly_items || []).forEach(rm => {
+        (frm.doc.estimated_sub_assembly_items || []).forEach(rm => {
 
-        if (rm.bom_no === sfg.bom_no) {
-            total_amount += flt(rm.amount);
-        }
+            if (rm.bom_no === sfg.bom_no) {
+                total_amount += flt(rm.amount);
+            }
+
+        });
+
+        // RM total -> SFG rate.  pass RM total as RATE (RM based amount will pass in SFG)
+        frappe.model.set_value(sfg.doctype, sfg.name, "rate", flt(total_amount, 2));
+
+        // amount = qty * rate
+        let amount = flt(sfg.qty) * flt(total_amount);
+
+        frappe.model.set_value(sfg.doctype, sfg.name, "amount", flt(amount, 2));
+
+        // ADD TO GRAND TOTAL
+        sfg_total += amount;
 
     });
-
-    // pass RM total as RATE (RM based amount will pass in SFG)
-    frappe.model.set_value(sfg.doctype, sfg.name, "rate", flt(total_amount, 2));
-
-    // amount = qty * rate
-    let amount = flt(sfg.qty) * flt(total_amount);
-
-    frappe.model.set_value(sfg.doctype, sfg.name, "amount", flt(amount, 2));
-
-});
 
     frm.set_value("total", flt(sfg_total, 2));
     frm.set_value("transport_sfg_costs", flt(transport_total, 2));
@@ -1788,54 +1865,28 @@ function calculate_transport_cost_total(frm) {
 }
 
 function recompute_all_sub_assembly_totals(frm) {
-
     let total_amount = 0;
     let total_transport = 0;
 
-    // 🔹 Reset SFG amounts first
-    (frm.doc.estimated_bom_materials || []).forEach(sfg => {
-        sfg.amount = 0;
-    });
-
-    // 🔹 Loop RM rows
     (frm.doc.estimated_sub_assembly_items || []).forEach(r => {
-
-        total_amount += flt(r.amount);
-        total_transport += flt(r.transportation_cost);
-
-        // 🔹 Find matching SFG and add RM amount
+        let matched = false;
         (frm.doc.estimated_bom_materials || []).forEach(sfg => {
-
-            if (r.finished_good_item === sfg.item_code) {
-                sfg.amount = flt(sfg.amount) + flt(r.amount);
+            if (r.bom_no && sfg.bom_no && r.bom_no === sfg.bom_no) {
+                matched = true;
             }
-
         });
 
+        // Only RM items NOT belonging to SFG
+        if (!matched) {
+            total_amount += flt(r.amount);
+            total_transport += flt(r.transportation_cost);
+        }
     });
 
     frm.set_value("total_sub_assembly", flt(total_amount, 2));
     frm.set_value("transport_rm_costs", flt(total_transport, 2));
-
-    frm.refresh_field("estimated_bom_materials");
-
     compute_rm_grand_total(frm);
 }
-
-// function recompute_all_sub_assembly_totals(frm) {
-//     let total_amount = 0;
-//     let total_transport = 0;
-
-//     (frm.doc.estimated_sub_assembly_items || []).forEach(r => {
-//         total_amount += flt(r.amount);
-//         total_transport += flt(r.transportation_cost);
-//     });
-
-//     frm.set_value("total_sub_assembly", flt(total_amount, 2));
-//     frm.set_value("transport_rm_costs", flt(total_transport, 2));
-
-//     compute_rm_grand_total(frm);
-// }
 
 function compute_rm_tpi_cost(frm) {
     let total = 0;
@@ -1918,14 +1969,37 @@ function recalc_scrap_and_transport(frm, cdt, cdn) {
 // ---------------------------------------------------------
 // RM GRAND TOTAL (Parent) total_sub_assembly + transport_rm_costs
 // ---------------------------------------------------------
-
 function compute_rm_grand_total(frm) {
+
     let total_rm = 0;
     let total_transport = 0;
 
     (frm.doc.estimated_sub_assembly_items || []).forEach(row => {
-        total_rm += flt(row.amount || 0);
-        total_transport += flt(row.transportation_cost || 0);
+
+        let matched = false;
+
+        (frm.doc.estimated_bom_materials || []).forEach(sfg => {
+
+            if (row.bom_no && sfg.bom_no && row.bom_no === sfg.bom_no) {
+
+                if (sfg.item_source === "Make") {
+                    matched = true;
+                }
+
+                if (sfg.item_source === "Buy") {
+                    matched = false;
+                }
+
+            }
+
+        });
+
+        // Add to total only if not part of MAKE SFG
+        if (!matched) {
+            total_rm += flt(row.amount || 0);
+            total_transport += flt(row.transportation_cost || 0);
+        }
+
     });
 
     const rm_tpi = flt(frm.doc.rm_tpi_cost || 0);
@@ -1941,10 +2015,47 @@ function compute_rm_grand_total(frm) {
         "rm_grand_total_cost"
     ]);
 
-    // 🔥 IMPORTANT FOR HTML UPDATE
     render_overall_details(frm);
     compute_total_estimate_cost(frm);
 }
+
+// function compute_rm_grand_total(frm) {
+//     let total_rm = 0;
+//     let total_transport = 0;
+
+//     (frm.doc.estimated_sub_assembly_items || []).forEach(row => {
+
+//         let matched = false;
+
+//         (frm.doc.estimated_bom_materials || []).forEach(sfg => {
+//             if (row.bom_no && sfg.bom_no && row.bom_no === sfg.bom_no) {
+//                 matched = true;
+//             }
+//         });
+
+//         if (!matched) {
+//             total_rm += flt(row.amount || 0);
+//             total_transport += flt(row.transportation_cost || 0);
+//         }
+
+//     });
+
+//     const rm_tpi = flt(frm.doc.rm_tpi_cost || 0);
+//     const grand_total = flt(total_rm + total_transport + rm_tpi, 2);
+
+//     frm.set_value("total_sub_assembly", flt(total_rm, 2));
+//     frm.set_value("transport_rm_costs", flt(total_transport, 2));
+//     frm.set_value("rm_grand_total_cost", grand_total);
+
+//     frm.refresh_fields([
+//         "total_sub_assembly",
+//         "transport_rm_costs",
+//         "rm_grand_total_cost"
+//     ]);
+
+//     render_overall_details(frm);
+//     compute_total_estimate_cost(frm);
+// }
 
 // ---------------------------------------------------------
 // ✅ WEIGHT IN TONNES CALCULATION

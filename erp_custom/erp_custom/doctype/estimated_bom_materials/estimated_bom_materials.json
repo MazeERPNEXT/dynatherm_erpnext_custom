@@ -34,8 +34,7 @@
   "total_weight",
   "scrap_quantity",
   "transportation_cost",
-  "tpi_rate",
-  "get_subassembly_items"
+  "tpi_rate"
  ],
  "fields": [
   {
@@ -231,18 +230,13 @@
    "fieldname": "finished_good_item",
    "fieldtype": "Data",
    "label": "Finished Good Item"
-  },
-  {
-   "fieldname": "get_subassembly_items",
-   "fieldtype": "Button",
-   "label": "Get subassembly Items From SFG"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2026-03-14 14:35:59.173272",
+ "modified": "2026-03-14 17:28:06.927515",
  "modified_by": "Administrator",
  "module": "ERP Custom",
  "name": "Estimated BOM Materials",
