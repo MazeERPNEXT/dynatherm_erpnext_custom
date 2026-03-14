@@ -39,39 +39,89 @@ function render_overall_details(frm) {
         <div style="display:flex; gap:20px; flex-wrap:wrap;">
 
           <!-- RM -->
-<div style="flex:1; min-width:280px; border:2px solid #f4d03f; padding:15px; border-radius:8px; background:#fff9db;">
-    <h4 style="color:#b7950b; font-weight:800; font-size:20px; margin-bottom:10px;"> RM Details </h4>
-    <p style="font-size:13px; color:#000;">RM Total Cost (₹) : ${format_currency(rm_total)}</p>
-    <p style="font-size:13px; color:#000;">RM Transport Cost (₹) : ${format_currency(rm_transport)}</p>
-    <p style="font-size:13px; color:#000;">RM TPI Cost (₹) : ${format_currency(rm_tpi)}</p>
-    <hr>
-    <p style="font-weight:800; font-size:15px; color:#000; background:#ffeaa7; padding:6px 10px; border-radius:6px;">
-        RM Grand Total Cost (₹) : ${format_currency(rm_grand_total)} </p>
+<div style="flex:1; min-width:280px; border:2px solid #f4d03f; padding:16px; border-radius:10px; background:#fff9db;">
+
+    <h4 style="color:#b7950b; font-weight:800; font-size:20px; margin-bottom:14px;"> RM Details </h4>
+    <div style="display:flex; justify-content:space-between; font-size:13px; margin-bottom:6px; color:#000;">
+        <span>RM Transport Cost : </span>
+        <span style="font-weight:600;">${format_currency(rm_transport)}</span>
+    </div>
+
+    <div style="display:flex; justify-content:space-between; font-size:13px; margin-bottom:6px; color:#000;">
+        <span>RM TPI Cost : </span>
+        <span style="font-weight:600;">${format_currency(rm_tpi)}</span>
+    </div>
+
+    <div style="display:flex; justify-content:space-between; font-size:13px; margin-bottom:10px; color:#000;">
+        <span>RM Total Cost : </span>
+        <span style="font-weight:600;">${format_currency(rm_total)}</span>
+    </div>
+
+    <hr style="border:0; border-top:1px solid #e0c84f; margin:8px 0;">
+    <div style="display:flex; justify-content:space-between; font-weight:800; font-size:15px; background:#ffeaa7; padding:8px 10px; border-radius:6px; color:#000;">
+        <span>RM Grand Total Cost </span>
+        <span>${format_currency(rm_grand_total)}</span>
+    </div>
 </div>
 
 
 <!-- SFG -->
-<div style="flex:1; min-width:280px; border:2px solid #5dade2; padding:15px; border-radius:8px; background:#eaf4ff;">
-    <h4 style="color:#1f4e79; font-weight:800; font-size:20px; margin-bottom:10px;"> SFG Details </h4>
-    <p style="font-size:13px; color:#000;">SFG Total Cost (₹) : ${format_currency(sfg_total)}</p>
-    <p style="font-size:13px; color:#000;">SFG Transport Cost (₹) : ${format_currency(sfg_transport)}</p>
-    <p style="font-size:13px; color:#000;">SFG TPI Cost (₹) : ${format_currency(sfg_tpi)}</p>
-    <hr>
-    <p style="font-weight:800; font-size:15px; color:#000; background:#d6eaff; padding:6px 10px; border-radius:6px;">
-        SFG Grand Total Cost (₹) : ${format_currency(sfg_grand_total)} </p>
+<div style="flex:1; min-width:280px; border:2px solid #5dade2; padding:16px; border-radius:10px; background:#eaf4ff;">
+
+    <h4 style="color:#1f4e79; font-weight:800; font-size:20px; margin-bottom:14px;"> SFG Details </h4>
+    <div style="display:flex; justify-content:space-between; font-size:13px; margin-bottom:6px; color:#000;">
+        <span>SFG Transport Cost :</span>
+        <span style="font-weight:600;">${format_currency(sfg_transport)}</span>
+    </div>
+
+    <div style="display:flex; justify-content:space-between; font-size:13px; margin-bottom:6px; color:#000;">
+        <span>SFG TPI Cost :</span>
+        <span style="font-weight:600;">${format_currency(sfg_tpi)}</span>
+    </div>
+
+    <div style="display:flex; justify-content:space-between; font-size:13px; margin-bottom:10px; color:#000;">
+        <span>SFG Total Cost :</span>
+        <span style="font-weight:600;">${format_currency(sfg_total)}</span>
+    </div>
+
+    <hr style="border:0; border-top:1px solid #9cc9f0; margin:8px 0;">
+    <div style="display:flex; justify-content:space-between; font-weight:800; font-size:15px; background:#d6eaff; padding:8px 10px; border-radius:6px; color:#000;">
+        <span>SFG Grand Total Cost</span>
+        <span>${format_currency(sfg_grand_total)}</span>
+    </div>
+
 </div>
 
-
 <!-- FG -->
-<div style="flex:1; min-width:280px; border:2px solid #66cc66; padding:15px; border-radius:8px; background:#e6ffe6;">
-    <h4 style="color:#1e7e34; font-weight:800; font-size:20px; margin-bottom:10px;"> FG Details </h4>
-    <p style="font-size:13px; color:#000;">FG Transport Cost (₹) : ${format_currency(fg_transport)}</p>
-    <p style="font-size:13px; color:#000;">FG TPI Cost (₹) : ${format_currency(fg_tpi)}</p>
-    <p style="font-size:13px; color:#000;">SFG Grand Total Cost (₹) : ${format_currency(sfg_grand_total)}</p>
-    <p style="font-size:13px; color:#000;">RM Grand Total Cost (₹) : ${format_currency(rm_grand_total)}</p>
-    <hr>
-    <p style="font-weight:900; font-size:17px; color:#000; background:#c6f5c6; padding:8px 12px; border-radius:6px;">
-        Total Estimate Cost (₹) : ${format_currency(total_estimate_cost)} </p>
+<div style="flex:1; min-width:280px; border:2px solid #66cc66; padding:16px; border-radius:10px; background:#e6ffe6;">
+
+    <h4 style="color:#1e7e34; font-weight:800; font-size:20px; margin-bottom:14px;"> FG Details </h4>
+    <div style="display:flex; justify-content:space-between; font-size:13px; margin-bottom:6px; color:#000;">
+        <span>RM Grand Total Cost :</span>
+        <span style="font-weight:600;">${format_currency(rm_grand_total)}</span>
+    </div>
+
+    <div style="display:flex; justify-content:space-between; font-size:13px; margin-bottom:6px; color:#000;">
+        <span>SFG Grand Total Cost :</span>
+        <span style="font-weight:600;">${format_currency(sfg_grand_total)}</span>
+    </div>
+
+    <div style="display:flex; justify-content:space-between; font-size:13px; margin-bottom:6px; color:#000;">
+        <span>FG Transport Cost :</span>
+        <span style="font-weight:600;">${format_currency(fg_transport)}</span>
+    </div>
+
+    <div style="display:flex; justify-content:space-between; font-size:13px; margin-bottom:10px; color:#000;">
+        <span>FG TPI Cost :</span>
+        <span style="font-weight:600;">${format_currency(fg_tpi)}</span>
+    </div>
+
+    <hr style="border:0; border-top:1px solid #9be39b; margin:8px 0;">
+    <div style="display:flex; justify-content:space-between; font-weight:900; font-size:17px; background:#c6f5c6; padding:8px 12px; border-radius:6px; color:#000;">
+        <span>Total Estimate Cost</span>
+        <span>${format_currency(total_estimate_cost)}</span>
+    </div>
+
 </div>
 
         </div>
