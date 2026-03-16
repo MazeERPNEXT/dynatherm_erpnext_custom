@@ -415,7 +415,7 @@
    "description": null,
    "docstatus": 0,
    "dt": "BOM Item",
-   "fetch_from": null,
+   "fetch_from": "item_code.item_group",
    "fetch_if_empty": 0,
    "fieldname": "custom_item_group",
    "fieldtype": "Link",

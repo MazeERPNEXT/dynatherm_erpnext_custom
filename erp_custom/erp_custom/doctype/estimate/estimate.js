@@ -496,6 +496,10 @@ frappe.ui.form.on("Estimate", {
 
     // (2) Button → get_subassembly_items
     get_subassembly_items(frm) {
+
+    if (!frm._fetched_sub_boms) {
+        frm._fetched_sub_boms = new Set();
+    }
     let bom_list = [];
     // ------------------------------------------
     // CASE 1: If SFG exists → use SFG BOMs
@@ -522,18 +526,35 @@ frappe.ui.form.on("Estimate", {
                 flt(d.thickness || 0)
             ].join("|");
 
-            let exists = (frm.doc.estimated_sub_assembly_items || []).some(r =>
-                [
-                    r.finished_good_item || "",
-                    r.item_code,
-                    r.bom_no,
-                    flt(r.length),
-                    flt(r.width),
-                    flt(r.thickness)
-                ].join("|") === key
-            );
+            // let exists = (frm.doc.estimated_sub_assembly_items || []).some(r =>
+            //     [
+            //         r.finished_good_item || "",
+            //         r.item_code,
+            //         r.bom_no,
+            //         flt(r.length),
+            //         flt(r.width),
+            //         flt(r.thickness)
+            //     ].join("|") === key
+            // );
 
-            if (exists) return;
+            // if (exists) return;
+
+            let exists = (frm.doc.estimated_sub_assembly_items || []).some(r => {
+            // Strong duplicate check
+            if (
+                r.item_code === d.item_code &&
+                r.bom_no === d.bom_no &&
+                flt(r.length || 0) === flt(d.length || 0) &&
+                flt(r.width || 0) === flt(d.width || 0) &&
+                flt(r.thickness || 0) === flt(d.thickness || 0)
+            ) {
+                return true;
+            }
+
+            return false;
+        });
+
+        if (exists) return;
 
             let row = frm.add_child("estimated_sub_assembly_items");
 
@@ -648,6 +669,10 @@ frappe.ui.form.on("Estimate", {
         let current_bom = typeof current === "string" ? current : current.bom;
         let current_fg = typeof current === "string" ? null : current.fg;
 
+        if (frm._fetched_sub_boms.has(current_bom)) {
+            return process_next_bom();
+        }
+
         fetch_bom_recursive(current_bom, { max_depth: 6 }, (err, items) => {
 
             if (err || !items || !items.length) {
@@ -711,6 +736,7 @@ frappe.ui.form.on("Estimate", {
                 existing_keys.add(key);
                 added++;
             });
+            frm._fetched_sub_boms.add(current_bom);
 
             process_next_bom();
         });
@@ -787,6 +813,16 @@ frappe.ui.form.on("Estimate Item", {
 
             if (!bom_no || !String(bom_no).trim()) {
                 frappe.msgprint(__("Please select a BOM first."));
+                return;
+            }
+
+            // Prevent duplicate fetch after save
+            if (!frm._fetched_boms) {
+                frm._fetched_boms = new Set();
+            }
+
+            if (frm._fetched_boms.has(bom_no)) {
+                frappe.msgprint(__("Items already fetched for this BOM."));
                 return;
             }
 
@@ -937,6 +973,7 @@ frappe.ui.form.on("Estimate Item", {
                         compute_total_estimate_cost(frm);
                     }, 100);
 
+                    frm._fetched_boms.add(bom_no);
                     frappe.msgprint(
                         __(`SFG Added: ${added_sfg} | RM Added: ${added_rm}`)
                     );
@@ -1118,6 +1155,12 @@ frappe.ui.form.on("Estimated BOM Materials", {
             });
 
             // Add the SFG item itself as RM
+            let exists = (frm.doc.estimated_sub_assembly_items || []).some(r =>
+                r.item_code === row.item_code && r.bom_no === row.bom_no
+            );
+
+            if (exists) return;
+
             let child = frm.add_child("estimated_sub_assembly_items");
 
             child.item_code = row.item_code;
@@ -1144,18 +1187,28 @@ frappe.ui.form.on("Estimated BOM Materials", {
         }
 
         // ---------- MAKE ----------
-        if (row.item_source === "Make") {
+            if (row.item_source === "Make") {
 
-            // Remove direct RM row of the SFG
-            (frm.doc.estimated_sub_assembly_items || []).forEach(rm => {
-                if (rm.item_code === row.item_code) {
-                    frappe.model.remove_from_locals(rm.doctype, rm.name);
+                // Remove direct RM row of the SFG
+                (frm.doc.estimated_sub_assembly_items || []).forEach(rm => {
+                    if (rm.item_code === row.item_code) {
+                        frappe.model.remove_from_locals(rm.doctype, rm.name);
+                    }
+                });
+
+                frm.refresh_field("estimated_sub_assembly_items");
+
+                // Allow BOM to fetch again
+                if (frm._fetched_sub_boms && row.bom_no) {
+                    frm._fetched_sub_boms.delete(row.bom_no);
                 }
-            });
 
-            frm.refresh_field("estimated_sub_assembly_items");
+                // Re-fetch BOM RM items
+                if (row.bom_no) {
+                    frm.trigger("get_subassembly_items");
+                }
 
-        }
+            }
 
         // Recalculate totals
         recompute_all_sub_assembly_totals(frm);
@@ -1163,23 +1216,6 @@ frappe.ui.form.on("Estimated BOM Materials", {
         compute_sfg_grand_total_and_set_rate(frm);
 
     },
-
-    // item_source(frm, cdt, cdn) {
-    //     const row = locals[cdt][cdn];
-    //     if (!row) return;
-
-    //     if (row.item_source === "Buy") {
-    //         handle_buy(frm, row);
-    //     } else {
-    //         handle_make(frm, row);
-    //     }
-
-    // recalc_estimate_totals(frm);
-    //     // ✅ ENSURE FG ALWAYS UPDATES
-    // recompute_all_sub_assembly_totals(frm);
-    // compute_rm_grand_total(frm);
-    // sync_estimate_items_per_fg(frm);
-    // },
 
     // rate: compute_bom_amount,
     rate(frm, cdt, cdn) {
@@ -1621,16 +1657,12 @@ function compute_transport_sfg_total(frm) {
 // ⭐ NEW FINAL FUNCTION (REQUIRED LOGIC ONLY)
 // ---------------------------------------------------------
 function compute_sfg_grand_total_and_set_rate(frm) {
-
     let sfg_total = 0;
     let transport_total = 0;
 
     (frm.doc.estimated_bom_materials || []).forEach(sfg => {
-
         let total_amount = 0;
-
         (frm.doc.estimated_sub_assembly_items || []).forEach(rm => {
-
             if (rm.bom_no === sfg.bom_no) {
                 total_amount += flt(rm.amount);
             }
@@ -1687,11 +1719,33 @@ function set_estimate_item_rate(frm, mode) {
 // ✅ TOTAL ESTIMATE COST = SFG GRAND TOTAL + FINAL VEHICLE COST
 // ---------------------------------------------------------
 function compute_total_estimate_cost(frm) {
+    let rm_grand_total  = flt(frm.doc.rm_grand_total_cost || 0);
+    let sfg_grand_total = flt(frm.doc.sfg_grand_total_cost || 0);
+    const fg_transport  = flt(frm.doc.transport_fg_costs || 0);
 
-    const rm_grand_total  = flt(frm.doc.rm_grand_total_cost || 0);
-    const sfg_grand_total = flt(frm.doc.sfg_grand_total_cost || 0);
-    const fg_transport    = flt(frm.doc.transport_fg_costs || 0);
+    // ----------------------------
+    // FIX: Recalculate RM if empty
+    // ----------------------------
+    if (!rm_grand_total) {
+        (frm.doc.estimated_sub_assembly_items || []).forEach(r => {
+            rm_grand_total += flt(r.amount || 0);
+            rm_grand_total += flt(r.transportation_cost || 0);
+        });
+    }
 
+    // ----------------------------
+    // FIX: Recalculate SFG if empty
+    // ----------------------------
+    if (!sfg_grand_total) {
+        (frm.doc.estimated_bom_materials || []).forEach(r => {
+            sfg_grand_total += flt(r.amount || 0);
+            sfg_grand_total += flt(r.transportation_cost || 0);
+        });
+    }
+
+    // ----------------------------
+    // FG TPI
+    // ----------------------------
     let fg_tpi = 0;
     (frm.doc.items || []).forEach(row => {
         fg_tpi += flt(row.tpi_rate || 0);
@@ -1702,7 +1756,7 @@ function compute_total_estimate_cost(frm) {
     // ✅ Set Parent Total
     frm.set_value("total_estimate_cost", grand_total);
 
-    // ✅ NEW: Sync to FG Child Rate
+    // ✅ Sync to FG Child Rate
     (frm.doc.items || []).forEach(row => {
 
         const qty = flt(row.qty) || 1;
@@ -1715,6 +1769,35 @@ function compute_total_estimate_cost(frm) {
 
     frm.refresh_field("items");
 }
+// function compute_total_estimate_cost(frm) {
+
+//     const rm_grand_total  = flt(frm.doc.rm_grand_total_cost || 0);
+//     const sfg_grand_total = flt(frm.doc.sfg_grand_total_cost || 0);
+//     const fg_transport    = flt(frm.doc.transport_fg_costs || 0);
+
+//     let fg_tpi = 0;
+//     (frm.doc.items || []).forEach(row => {
+//         fg_tpi += flt(row.tpi_rate || 0);
+//     });
+
+//     const grand_total = flt(rm_grand_total + sfg_grand_total + fg_transport + fg_tpi, 2);
+
+//     // ✅ Set Parent Total
+//     frm.set_value("total_estimate_cost", grand_total);
+
+//     // ✅ NEW: Sync to FG Child Rate
+//     (frm.doc.items || []).forEach(row => {
+
+//         const qty = flt(row.qty) || 1;
+//         const rate = grand_total;
+
+//         frappe.model.set_value(row.doctype, row.name, "rate", rate);
+//         frappe.model.set_value(row.doctype, row.name, "amount", flt(rate * qty, 2));
+
+//     });
+
+//     frm.refresh_field("items");
+// }
 
 function compute_sfg_tpi_cost(frm) {
     let total = 0;
