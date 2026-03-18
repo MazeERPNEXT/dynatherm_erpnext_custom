@@ -22,11 +22,12 @@
   "scale",
   "rev",
   "responsibility_section",
-  "approved_by",
-  "approved_date",
   "column_break_jgxj",
   "drawn_by",
   "drawn_date",
+  "column_break_azax",
+  "approved_by",
+  "approved_date",
   "column_break_tmqp",
   "checked_by",
   "checked_date",
@@ -46,7 +47,8 @@
   {
    "fieldname": "item_no",
    "fieldtype": "Data",
-   "label": "Item Code"
+   "label": "Item Code",
+   "options": "Item"
   },
   {
    "default": "1",
@@ -220,13 +222,17 @@
    "fieldtype": "Link",
    "label": "UOM",
    "options": "UOM"
+  },
+  {
+   "fieldname": "column_break_azax",
+   "fieldtype": "Column Break"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2026-03-18 11:52:57.529983",
+ "modified": "2026-03-18 12:55:05.015063",
  "modified_by": "Administrator",
  "module": "ERP Custom",
  "name": "Cutting Plan",
