@@ -10,22 +10,17 @@
   "title",
   "cutting_no",
   "item_to_manufacture",
-  "item_no",
-  "qty",
-  "column_break_wwxj",
   "bom_no",
+  "column_break_wwxj",
   "moc",
   "drawing_no",
   "tag_no",
-  "column_break_wkad",
   "purchase_no",
+  "column_break_wkad",
+  "date",
   "job_no",
   "scale",
   "rev",
-  "planning_info_section",
-  "date",
-  "column_break_nrng",
-  "material_availability",
   "responsibility_section",
   "approved_by",
   "approved_date",
@@ -36,10 +31,12 @@
   "checked_by",
   "checked_date",
   "section_break_geex",
-  "length",
+  "item_no",
+  "qty",
+  "uom",
   "column_break_ygok",
+  "length",
   "width",
-  "column_break_hkei",
   "thickness",
   "section_break_esfk",
   "cutting_plan_item",
@@ -49,7 +46,7 @@
   {
    "fieldname": "item_no",
    "fieldtype": "Data",
-   "label": "Item No"
+   "label": "Item Code"
   },
   {
    "default": "1",
@@ -105,12 +102,6 @@
    "options": "Item"
   },
   {
-   "fieldname": "material_availability",
-   "fieldtype": "Select",
-   "label": "Material Availability",
-   "options": "\nAvailable\nNot Available"
-  },
-  {
    "fieldname": "job_no",
    "fieldtype": "Data",
    "label": "Job No"
@@ -130,14 +121,10 @@
   {
    "fieldname": "section_break_geex",
    "fieldtype": "Section Break",
-   "label": "Dimensions"
+   "label": "Item Details"
   },
   {
    "fieldname": "column_break_ygok",
-   "fieldtype": "Column Break"
-  },
-  {
-   "fieldname": "column_break_hkei",
    "fieldtype": "Column Break"
   },
   {
@@ -154,15 +141,6 @@
    "fieldname": "bom_no",
    "fieldtype": "Data",
    "label": "Bom No"
-  },
-  {
-   "fieldname": "planning_info_section",
-   "fieldtype": "Section Break",
-   "label": "Planning Info"
-  },
-  {
-   "fieldname": "column_break_nrng",
-   "fieldtype": "Column Break"
   },
   {
    "fieldname": "responsibility_section",
@@ -236,13 +214,19 @@
    "fieldtype": "Data",
    "label": "Title",
    "unique": 1
+  },
+  {
+   "fieldname": "uom",
+   "fieldtype": "Link",
+   "label": "UOM",
+   "options": "UOM"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2026-03-07 12:52:23.670348",
+ "modified": "2026-03-18 11:52:57.529983",
  "modified_by": "Administrator",
  "module": "ERP Custom",
  "name": "Cutting Plan",

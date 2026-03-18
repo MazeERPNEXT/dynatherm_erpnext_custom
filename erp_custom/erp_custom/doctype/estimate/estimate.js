@@ -526,19 +526,6 @@ frappe.ui.form.on("Estimate", {
                 flt(d.thickness || 0)
             ].join("|");
 
-            // let exists = (frm.doc.estimated_sub_assembly_items || []).some(r =>
-            //     [
-            //         r.finished_good_item || "",
-            //         r.item_code,
-            //         r.bom_no,
-            //         flt(r.length),
-            //         flt(r.width),
-            //         flt(r.thickness)
-            //     ].join("|") === key
-            // );
-
-            // if (exists) return;
-
             let exists = (frm.doc.estimated_sub_assembly_items || []).some(r => {
             // Strong duplicate check
             if (
@@ -610,9 +597,6 @@ frappe.ui.form.on("Estimate", {
         return frappe.msgprint(__("No BOM found to fetch Sub-Assembly items."));
     }
 
-    // ✅ DO NOT CLEAR TABLE
-    // ❌ frm.clear_table("estimated_sub_assembly_items");
-
     let existing_keys = new Set(
         (frm.doc.estimated_sub_assembly_items || []).map(r =>
             [
@@ -631,10 +615,7 @@ frappe.ui.form.on("Estimate", {
 
     function process_next_bom() {
         if (processed >= bom_list.length) {
-            frm.refresh_field("estimated_sub_assembly_items");
-
               setTimeout(() => {
-
             // 🔹 Recalculate RM totals
             recompute_all_sub_assembly_totals(frm);
             compute_rm_grand_total(frm);
@@ -654,6 +635,7 @@ frappe.ui.form.on("Estimate", {
             // 🔹 Refresh display
             frm.refresh_fields([
                 "items",
+                "estimated_bom_materials",
                 "estimated_sub_assembly_items",
                 "overall_details",
                 "total_estimate_cost"
@@ -1769,35 +1751,6 @@ function compute_total_estimate_cost(frm) {
 
     frm.refresh_field("items");
 }
-// function compute_total_estimate_cost(frm) {
-
-//     const rm_grand_total  = flt(frm.doc.rm_grand_total_cost || 0);
-//     const sfg_grand_total = flt(frm.doc.sfg_grand_total_cost || 0);
-//     const fg_transport    = flt(frm.doc.transport_fg_costs || 0);
-
-//     let fg_tpi = 0;
-//     (frm.doc.items || []).forEach(row => {
-//         fg_tpi += flt(row.tpi_rate || 0);
-//     });
-
-//     const grand_total = flt(rm_grand_total + sfg_grand_total + fg_transport + fg_tpi, 2);
-
-//     // ✅ Set Parent Total
-//     frm.set_value("total_estimate_cost", grand_total);
-
-//     // ✅ NEW: Sync to FG Child Rate
-//     (frm.doc.items || []).forEach(row => {
-
-//         const qty = flt(row.qty) || 1;
-//         const rate = grand_total;
-
-//         frappe.model.set_value(row.doctype, row.name, "rate", rate);
-//         frappe.model.set_value(row.doctype, row.name, "amount", flt(rate * qty, 2));
-
-//     });
-
-//     frm.refresh_field("items");
-// }
 
 function compute_sfg_tpi_cost(frm) {
     let total = 0;
