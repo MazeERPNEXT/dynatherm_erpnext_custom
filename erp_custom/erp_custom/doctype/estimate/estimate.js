@@ -1644,10 +1644,12 @@ function compute_sfg_grand_total_and_set_rate(frm) {
 
     (frm.doc.estimated_bom_materials || []).forEach(sfg => {
         let total_amount = 0;
+        let total_weight = 0;
         
         (frm.doc.estimated_sub_assembly_items || []).forEach(rm => {
             if (rm.bom_no === sfg.bom_no) {
                 total_amount += flt(rm.amount);
+                total_weight += flt(rm.total_weight);
             }
 
         });
@@ -1659,6 +1661,9 @@ function compute_sfg_grand_total_and_set_rate(frm) {
         let amount = flt(sfg.qty) * flt(total_amount);
 
         frappe.model.set_value(sfg.doctype, sfg.name, "amount", flt(amount, 2));
+
+          // ---------- WEIGHT ----------
+        frappe.model.set_value(sfg.doctype, sfg.name, "total_weight", flt(total_weight, 3));
 
         // ADD TO GRAND TOTAL
         sfg_total += amount;
@@ -2156,7 +2161,11 @@ function compute_weight_in_tonnes(frm) {
     });
 
     (frm.doc.estimated_sub_assembly_items || []).forEach(row => {
-        total_kg += flt(row.total_weight);
+        // total_kg += flt(row.total_weight);
+         // only count RM without BOM
+        if (!row.bom_no) {
+            total_kg += flt(row.total_weight);
+        }
     });
 
     // KG → TONNES
