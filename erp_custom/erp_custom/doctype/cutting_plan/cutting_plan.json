@@ -9,10 +9,9 @@
  "field_order": [
   "title",
   "cutting_no",
-  "nested_drawing_no",
   "column_break_wwxj",
   "date",
-  "moc",
+  "job_no",
   "responsibility_section",
   "column_break_jgxj",
   "drawn_by",
@@ -30,11 +29,6 @@
   "amended_from"
  ],
  "fields": [
-  {
-   "fieldname": "moc",
-   "fieldtype": "Data",
-   "label": "MOC"
-  },
   {
    "fieldname": "cutting_no",
    "fieldtype": "Data",
@@ -126,11 +120,6 @@
    "fieldtype": "Column Break"
   },
   {
-   "fieldname": "nested_drawing_no",
-   "fieldtype": "Data",
-   "label": "Nested Drawing No"
-  },
-  {
    "fieldname": "section_break_mort",
    "fieldtype": "Section Break"
   },
@@ -139,13 +128,18 @@
    "fieldtype": "Table",
    "label": "Plate Details",
    "options": "Cutting Plan Plate Details"
+  },
+  {
+   "fieldname": "job_no",
+   "fieldtype": "Data",
+   "label": "Job No"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2026-03-18 15:19:27.226214",
+ "modified": "2026-03-18 15:25:33.854245",
  "modified_by": "Administrator",
  "module": "ERP Custom",
  "name": "Cutting Plan",
