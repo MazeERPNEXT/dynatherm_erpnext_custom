@@ -39,6 +39,7 @@
    "options": "Project"
   },
   {
+   "default": "Nos",
    "fieldname": "uom",
    "fieldtype": "Link",
    "in_list_view": 1,
@@ -47,6 +48,7 @@
    "options": "UOM"
   },
   {
+   "default": "1",
    "fieldname": "qty",
    "fieldtype": "Int",
    "in_list_view": 1,
@@ -169,7 +171,7 @@
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2026-03-18 17:30:49.431341",
+ "modified": "2026-03-18 17:55:49.774309",
  "modified_by": "Administrator",
  "module": "ERP Custom",
  "name": "Cutting Plan Item",

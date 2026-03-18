@@ -40,6 +40,10 @@ def make_material_request(cutting_plan):
 
     # Loop Cutting Plan Plate Details
     for row in cp.cutting_plan_plate_details:
+         # ✅ Only send items where material is NOT available
+        if row.material_availability != "Not Available":
+            continue
+        
         mr.append("items", {
             "custom_cutting_plan_no": cp.name,
             "item_code": row.item_code,
