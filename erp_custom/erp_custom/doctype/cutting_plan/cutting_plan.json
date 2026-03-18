@@ -23,7 +23,7 @@
   "checked_by",
   "checked_date",
   "section_break_mort",
-  "plate_details",
+  "cutting_plan_plate_details",
   "section_break_esfk",
   "cutting_plan_item",
   "amended_from"
@@ -48,7 +48,8 @@
   },
   {
    "fieldname": "section_break_esfk",
-   "fieldtype": "Section Break"
+   "fieldtype": "Section Break",
+   "label": "Item Details"
   },
   {
    "fieldname": "cutting_plan_item",
@@ -115,13 +116,8 @@
   },
   {
    "fieldname": "section_break_mort",
-   "fieldtype": "Section Break"
-  },
-  {
-   "fieldname": "plate_details",
-   "fieldtype": "Table",
-   "label": "Plate Details",
-   "options": "Cutting Plan Plate Details"
+   "fieldtype": "Section Break",
+   "label": "Plate Details"
   },
   {
    "fieldname": "job_no",
@@ -131,13 +127,19 @@
   {
    "fieldname": "column_break_unjj",
    "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "cutting_plan_plate_details",
+   "fieldtype": "Table",
+   "label": "Cutting Plan Plate Details",
+   "options": "Cutting Plan Plate Details"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2026-03-18 15:42:40.617767",
+ "modified": "2026-03-18 15:49:38.057154",
  "modified_by": "Administrator",
  "module": "ERP Custom",
  "name": "Cutting Plan",

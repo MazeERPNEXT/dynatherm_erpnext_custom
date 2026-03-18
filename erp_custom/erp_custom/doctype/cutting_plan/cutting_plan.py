@@ -8,7 +8,6 @@
 # class CuttingPlan(Document):
 # 	pass
 
-
 import frappe
 from frappe.model.document import Document
 
@@ -26,20 +25,21 @@ def make_material_request(cutting_plan):
         frappe.throw("Cutting Plan must be Submitted")
 
     mr = frappe.new_doc("Material Request")
-    mr.material_request_type = "Material Transfer"
+    mr.material_request_type = "Purchase"
     mr.schedule_date = cp.date
 
-    # 🔹 Use Correct Child Table Fieldname Here (MR ->CP)
-    for row in cp.cutting_plan_item:
+    # Loop Cutting Plan Plate Details (Child Table)
+    for row in cp.cutting_plan_plate_details:
         mr.append("items", {
             "item_code": row.item_code,
-            "qty": row.qty if hasattr(row, "qty") else 1,
+            "qty": row.qty or 1,
+            "uom": row.uom,
             "schedule_date": cp.date,
-           
-            # Parent → Child mapping
-            "custom_length": cp.length,
-            "custom_width": cp.width,
-            "custom_thickness": cp.thickness,
+
+            # Child → Child Mapping
+            "custom_length": row.length,
+            "custom_width": row.width,
+            "custom_thickness": row.thickness,
         })
 
     mr.insert(ignore_permissions=True)
