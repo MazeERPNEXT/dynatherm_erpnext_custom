@@ -9,17 +9,10 @@
  "field_order": [
   "title",
   "cutting_no",
-  "item_to_manufacture",
-  "bom_no",
+  "nested_drawing_no",
   "column_break_wwxj",
-  "moc",
-  "drawing_no",
-  "tag_no",
-  "purchase_no",
-  "column_break_wkad",
   "date",
-  "job_no",
-  "scale",
+  "moc",
   "rev",
   "responsibility_section",
   "column_break_jgxj",
@@ -32,7 +25,7 @@
   "checked_by",
   "checked_date",
   "section_break_geex",
-  "item_no",
+  "item_code",
   "qty",
   "uom",
   "column_break_ygok",
@@ -45,12 +38,6 @@
  ],
  "fields": [
   {
-   "fieldname": "item_no",
-   "fieldtype": "Data",
-   "label": "Item Code",
-   "options": "Item"
-  },
-  {
    "default": "1",
    "fieldname": "qty",
    "fieldtype": "Int",
@@ -60,11 +47,6 @@
    "fieldname": "moc",
    "fieldtype": "Data",
    "label": "MOC"
-  },
-  {
-   "fieldname": "purchase_no",
-   "fieldtype": "Data",
-   "label": "Purchase No"
   },
   {
    "fieldname": "cutting_no",
@@ -79,7 +61,9 @@
   {
    "fieldname": "date",
    "fieldtype": "Date",
-   "label": "Date"
+   "in_list_view": 1,
+   "label": "Date",
+   "reqd": 1
   },
   {
    "fieldname": "thickness",
@@ -96,17 +80,6 @@
    "fieldtype": "Table",
    "label": "Cutting Plan Item",
    "options": "Cutting Plan Item"
-  },
-  {
-   "fieldname": "item_to_manufacture",
-   "fieldtype": "Link",
-   "label": "Item to Manufacture",
-   "options": "Item"
-  },
-  {
-   "fieldname": "job_no",
-   "fieldtype": "Data",
-   "label": "Job No"
   },
   {
    "fieldname": "length",
@@ -140,11 +113,6 @@
    "label": "Drawn By"
   },
   {
-   "fieldname": "bom_no",
-   "fieldtype": "Data",
-   "label": "Bom No"
-  },
-  {
    "fieldname": "responsibility_section",
    "fieldtype": "Section Break",
    "label": "Responsibility"
@@ -173,21 +141,6 @@
    "label": "Checked By"
   },
   {
-   "fieldname": "drawing_no",
-   "fieldtype": "Data",
-   "label": "Drawing No"
-  },
-  {
-   "fieldname": "scale",
-   "fieldtype": "Data",
-   "label": "Scale"
-  },
-  {
-   "fieldname": "tag_no",
-   "fieldtype": "Data",
-   "label": "Tag No"
-  },
-  {
    "fieldname": "approved_date",
    "fieldtype": "Date",
    "label": "Approved Date"
@@ -208,10 +161,6 @@
    "label": "Rev"
   },
   {
-   "fieldname": "column_break_wkad",
-   "fieldtype": "Column Break"
-  },
-  {
    "fieldname": "title",
    "fieldtype": "Data",
    "label": "Title",
@@ -226,13 +175,24 @@
   {
    "fieldname": "column_break_azax",
    "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "nested_drawing_no",
+   "fieldtype": "Data",
+   "label": "Nested Drawing No"
+  },
+  {
+   "fieldname": "item_code",
+   "fieldtype": "Link",
+   "label": "Item Code",
+   "options": "Item"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2026-03-18 12:55:05.015063",
+ "modified": "2026-03-18 14:34:24.642548",
  "modified_by": "Administrator",
  "module": "ERP Custom",
  "name": "Cutting Plan",

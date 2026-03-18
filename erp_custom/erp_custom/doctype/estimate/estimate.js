@@ -1644,6 +1644,7 @@ function compute_sfg_grand_total_and_set_rate(frm) {
 
     (frm.doc.estimated_bom_materials || []).forEach(sfg => {
         let total_amount = 0;
+        
         (frm.doc.estimated_sub_assembly_items || []).forEach(rm => {
             if (rm.bom_no === sfg.bom_no) {
                 total_amount += flt(rm.amount);

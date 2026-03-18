@@ -7,11 +7,15 @@
  "engine": "InnoDB",
  "field_order": [
   "project",
-  "item_no",
   "item_code",
-  "column_break_adhv",
-  "uom",
+  "item_no",
   "qty",
+  "uom",
+  "column_break_adhv",
+  "drawing_no",
+  "job_no",
+  "scale",
+  "tag_no",
   "material_availability",
   "dimensions_section",
   "length",
@@ -151,13 +155,33 @@
    "fieldtype": "Select",
    "label": "Material Availability",
    "options": "\nAvailable\nNot Available"
+  },
+  {
+   "fieldname": "drawing_no",
+   "fieldtype": "Data",
+   "label": "Drawing No"
+  },
+  {
+   "fieldname": "job_no",
+   "fieldtype": "Data",
+   "label": "Job No"
+  },
+  {
+   "fieldname": "scale",
+   "fieldtype": "Data",
+   "label": "Scale"
+  },
+  {
+   "fieldname": "tag_no",
+   "fieldtype": "Data",
+   "label": "Tag No"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2026-03-18 11:47:53.062383",
+ "modified": "2026-03-18 14:29:27.527866",
  "modified_by": "Administrator",
  "module": "ERP Custom",
  "name": "Cutting Plan Item",
