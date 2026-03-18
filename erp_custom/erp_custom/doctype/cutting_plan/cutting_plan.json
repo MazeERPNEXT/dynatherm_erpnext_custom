@@ -13,7 +13,6 @@
   "column_break_wwxj",
   "date",
   "moc",
-  "rev",
   "responsibility_section",
   "column_break_jgxj",
   "drawn_by",
@@ -24,25 +23,13 @@
   "column_break_tmqp",
   "checked_by",
   "checked_date",
-  "section_break_geex",
-  "item_code",
-  "qty",
-  "uom",
-  "column_break_ygok",
-  "length",
-  "width",
-  "thickness",
+  "section_break_mort",
+  "plate_details",
   "section_break_esfk",
   "cutting_plan_item",
   "amended_from"
  ],
  "fields": [
-  {
-   "default": "1",
-   "fieldname": "qty",
-   "fieldtype": "Int",
-   "label": "Qty"
-  },
   {
    "fieldname": "moc",
    "fieldtype": "Data",
@@ -66,12 +53,6 @@
    "reqd": 1
   },
   {
-   "fieldname": "thickness",
-   "fieldtype": "Float",
-   "label": "Thickness",
-   "precision": "2"
-  },
-  {
    "fieldname": "section_break_esfk",
    "fieldtype": "Section Break"
   },
@@ -80,27 +61,6 @@
    "fieldtype": "Table",
    "label": "Cutting Plan Item",
    "options": "Cutting Plan Item"
-  },
-  {
-   "fieldname": "length",
-   "fieldtype": "Float",
-   "label": "Length",
-   "precision": "2"
-  },
-  {
-   "fieldname": "width",
-   "fieldtype": "Float",
-   "label": "Width",
-   "precision": "2"
-  },
-  {
-   "fieldname": "section_break_geex",
-   "fieldtype": "Section Break",
-   "label": "Item Details"
-  },
-  {
-   "fieldname": "column_break_ygok",
-   "fieldtype": "Column Break"
   },
   {
    "fieldname": "approved_by",
@@ -156,22 +116,10 @@
    "label": "Checked Date"
   },
   {
-   "fieldname": "rev",
-   "fieldtype": "Data",
-   "label": "Rev"
-  },
-  {
    "fieldname": "title",
    "fieldtype": "Data",
    "label": "Title",
    "unique": 1
-  },
-  {
-   "default": "Nos",
-   "fieldname": "uom",
-   "fieldtype": "Link",
-   "label": "UOM",
-   "options": "UOM"
   },
   {
    "fieldname": "column_break_azax",
@@ -183,17 +131,21 @@
    "label": "Nested Drawing No"
   },
   {
-   "fieldname": "item_code",
-   "fieldtype": "Link",
-   "label": "Item Code",
-   "options": "Item"
+   "fieldname": "section_break_mort",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "plate_details",
+   "fieldtype": "Table",
+   "label": "Plate Details",
+   "options": "Cutting Plan Plate Details"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2026-03-18 14:49:18.252211",
+ "modified": "2026-03-18 15:19:27.226214",
  "modified_by": "Administrator",
  "module": "ERP Custom",
  "name": "Cutting Plan",
