@@ -321,7 +321,6 @@ app_include_js = [
 
 
 fixtures = [
-    "Item Group",
     "Supplier Type",
     "Raw Material Type",
     "Services Type",
