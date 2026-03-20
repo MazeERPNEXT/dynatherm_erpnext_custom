@@ -234,7 +234,7 @@
   "doctype": "Item Group",
   "gst_hsn_code": null,
   "image": null,
-  "is_group": 0,
+  "is_group": 1,
   "item_group_defaults": [],
   "item_group_name": "Machinery",
   "modified": "2026-02-25 15:26:06.849750",
