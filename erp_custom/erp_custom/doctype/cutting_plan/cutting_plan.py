@@ -7,6 +7,7 @@
 
 # class CuttingPlan(Document):
 # 	pass
+
 import frappe
 from frappe.model.document import Document
 
@@ -36,7 +37,8 @@ def make_material_request(cutting_plan):
     # 🔹 Create new Material Request
     mr = frappe.new_doc("Material Request")
     mr.material_request_type = "Purchase"
-    mr.company = cp.company 
+    
+    mr.company = frappe.defaults.get_global_default("company")
     
     mr.schedule_date = cp.date
 
