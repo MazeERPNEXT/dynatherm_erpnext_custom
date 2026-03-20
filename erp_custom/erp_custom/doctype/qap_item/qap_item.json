@@ -18,6 +18,7 @@
   "tpi",
   "bcpl",
   "attachment",
+  "attachment_type",
   "section_break_qsfp",
   "remarks"
  ],
@@ -114,13 +115,19 @@
    "fieldname": "schedule",
    "fieldtype": "Datetime",
    "label": "Schedule"
+  },
+  {
+   "fieldname": "attachment_type",
+   "fieldtype": "Select",
+   "label": "Attachment Type",
+   "options": "Yes\nNo"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2026-03-12 16:26:28.598967",
+ "modified": "2026-03-19 15:29:02.014492",
  "modified_by": "Administrator",
  "module": "ERP Custom",
  "name": "QAP Item",

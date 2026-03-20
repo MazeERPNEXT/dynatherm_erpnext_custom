@@ -1,53 +1,42 @@
-// frappe.ui.form.on("Purchase Order", {
-//     refresh(frm) {
-//         frm.set_query("supplier", () => {
-//             return {
-//                 filters: {
-//                     workflow_state: "Approved"
-//                 }
-//             };
-//         });
-
-//         setTimeout(() => {
-//             let f = frm.fields_dict["supplier"];
-//             if (f && f.df) {
-//                 f.df.get_query = function () {
-//                     return {
-//                         filters: {
-//                             workflow_state: "Approved"
-//                         }
-//                     };
-//                 };
-//             }
-//         }, 0);
-//     }
-// });
-
-
-
 frappe.ui.form.on("Purchase Order", {
-    refresh(frm) {
-        // Filter for Supplier (already working for you)
-        frm.set_query("supplier", () => {
-            return {
-                filters: { workflow_state: "Approved" }
-            };
-        });
+    validate: function(frm) {
 
-        // Filter for Item Code inside the child table
-        frm.fields_dict["items"].grid.get_field("item_code").get_query = function (doc, cdt, cdn) {
-            return {
-                filters: {
-                    workflow_state: "Approved",
-                    is_purchase_item: 1,  
-                    has_variants: 0    
+        // 🔹 Check Supplier
+        return frappe.call({
+            method: "erp_custom.erp_custom.overrides.purchase_order.validate_item_workflow",
+            args: {
+                supplier: frm.doc.supplier
+            }
+        }).then(r => {
+
+            if (r.message.status === "error") {
+                frappe.throw(r.message.message);
+            }
+
+            // 🔹 Check Items
+            let promises = [];
+
+            (frm.doc.items || []).forEach(row => {
+                if (row.item_code) {
+                    let p = frappe.call({
+                        method: "erp_custom.erp_custom.overrides.purchase_order.validate_item_workflow",
+                        args: {
+                            item_code: row.item_code
+                        }
+                    }).then(r => {
+                        if (r.message.status === "error") {
+                            frappe.throw(r.message.message);
+                        }
+                    });
+
+                    promises.push(p);
                 }
-            };
-        };
+            });
+
+            return Promise.all(promises);
+        });
     }
 });
-
-
 
 // ----------------------------------------------------
 // ------------ PURCHASE ORDER ITEM -------------------

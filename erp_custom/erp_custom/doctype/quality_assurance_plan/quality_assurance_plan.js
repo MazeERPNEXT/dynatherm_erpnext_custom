@@ -1,9 +1,9 @@
 frappe.ui.form.on('Quality Assurance Plan', {
 
-    setup(frm) {
-        // Auto fetch item_name from Item master
-        frm.add_fetch('item_code', 'item_name', 'item_name');
-    },
+    // setup(frm) {
+    //     // Auto fetch item_name from Item master
+    //     frm.add_fetch('item_code', 'item_name', 'item_name');
+    // },
 
     item_code(frm) {
 
@@ -11,9 +11,7 @@ frappe.ui.form.on('Quality Assurance Plan', {
 
         // Split words and take first letter of each
         let words = frm.doc.item_name.trim().split(" ");
-
         let label = words.map(word => word[0].toUpperCase()).join("");
-
         frm.set_value("item_label", label);
     },
 

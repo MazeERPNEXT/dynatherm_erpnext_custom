@@ -294,30 +294,54 @@ app_include_js = [
 #     }
 # ]
 
-fixtures = [
-    "Item Group"
-]
+
+# 19.03
+# fixtures = [
+#     "Item Group"
+# ]
+
+# fixtures = [
+#     {
+#         "doctype": "Certification Type",
+#         "filters": {
+#             "name": ["is", "set"]
+#         }
+#     }
+# ]
+
+# fixtures = [
+#     "Supplier Type",
+#     "Raw Material Type",
+#     "Services Type",
+#     "Consumable Type",
+#     "Machinery Type",
+#     "Certification Type",
+#     "Workspace Sidebar"
+# ]
+
 
 fixtures = [
-    {
-        "doctype": "Certification Type",
-        "filters": {
-            "name": ["is", "set"]
-        }
-    }
-]
-
-fixtures = [
+    "Item Group",
     "Supplier Type",
     "Raw Material Type",
     "Services Type",
     "Consumable Type",
     "Machinery Type",
-    "Certification Type",
-    "Workspace Sidebar"
+
+    {
+        "doctype": "Certification Type",
+        "filters": [["name", "is", "set"]]
+    },
+
+    {
+        "doctype": "Workspace Sidebar"
+    },
+
+    {
+        "doctype": "Workspace",
+        "filters": [["name", "in", ["Frappe HR"]]]
+    }
 ]
-
-
 
 doctype_js = {
     "Estimate": "public/js/estimate.js",
@@ -368,6 +392,7 @@ override_whitelisted_methods = {
 
 override_doctype_class = {
     "BOM": "erp_custom.erp_custom.overrides.bom.CustomBOM",
+    # "Purchase Order": "erp_custom.erp_custom.overrides.purchase_order.validate_item_workflow",
     # "Request for Quotation": "erp_custom.overrides.request_for_quotation.CustomRequestForQuotation"
 }
 

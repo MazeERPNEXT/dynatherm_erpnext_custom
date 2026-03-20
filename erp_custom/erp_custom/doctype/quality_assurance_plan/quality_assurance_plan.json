@@ -65,6 +65,7 @@
    "label": "Purchase Order No"
   },
   {
+   "fetch_from": "item_code.item_name",
    "fieldname": "item_name",
    "fieldtype": "Data",
    "label": "Item Name"
@@ -113,7 +114,7 @@
   },
   {
    "fieldname": "prepared_by",
-   "fieldtype": "Attach",
+   "fieldtype": "Data",
    "label": "Prepared By"
   },
   {
@@ -122,7 +123,7 @@
   },
   {
    "fieldname": "verified_by",
-   "fieldtype": "Attach",
+   "fieldtype": "Data",
    "label": "Verified By"
   },
   {
@@ -168,7 +169,7 @@
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-03-04 18:25:03.715325",
+ "modified": "2026-03-19 15:23:52.621262",
  "modified_by": "Administrator",
  "module": "ERP Custom",
  "name": "Quality Assurance Plan",
