@@ -468,7 +468,9 @@ class QualityAssurancePlan(Document):
             can.setFont("Helvetica", 10)
 
             # Bottom center page number
-            can.drawCentredString(A4[0] / 2, 20, f"{i + 1}")
+            # can.drawCentredString(A4[0] / 2, 20, f"{i + 1}")
+            # Bottom Right Corner page number
+            can.drawRightString(A4[0] - 40, 15, f"{i + 1}")
 
             can.save()
             packet.seek(0)
