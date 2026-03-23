@@ -13,9 +13,26 @@ from frappe.model.document import Document
 
 
 class CuttingPlan(Document):
-    pass
+    def validate(self):
+        self.sync_job_no_from_child()
 
+    def sync_job_no_from_child(self):
+        job_nos = set()
 
+        # 🔹 Collect from child table
+        for row in self.cutting_plan_plate_details:
+            if row.job_no:
+                job_nos.add(row.job_no)
+
+        # 🔹 Clear parent table
+        self.set("job_no", [])
+
+        # 🔹 Add unique values to parent multiselect table
+        for jn in job_nos:
+            self.append("job_no", {
+                "job_no": jn
+            })
+            
 @frappe.whitelist()
 def make_material_request(cutting_plan):
 

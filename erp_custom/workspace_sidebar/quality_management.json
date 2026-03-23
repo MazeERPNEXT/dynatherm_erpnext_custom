@@ -1,0 +1,43 @@
+{
+ "app": "erp_custom",
+ "creation": "2026-03-23 13:27:41.275778",
+ "docstatus": 0,
+ "doctype": "Workspace Sidebar",
+ "for_user": "quality.user@dapl.com",
+ "header_icon": "quality",
+ "idx": 0,
+ "items": [
+  {
+   "child": 0,
+   "collapsible": 1,
+   "icon": "inspection-panel",
+   "indent": 0,
+   "keep_closed": 0,
+   "label": "Quality Inspection",
+   "link_to": "Quality Inspection",
+   "link_type": "DocType",
+   "navigate_to_tab": "",
+   "show_arrow": 0,
+   "type": "Link"
+  },
+  {
+   "child": 0,
+   "collapsible": 1,
+   "icon": "book-up",
+   "indent": 0,
+   "keep_closed": 0,
+   "label": "Quality Assurance Plan",
+   "link_to": "Quality Assurance Plan",
+   "link_type": "DocType",
+   "show_arrow": 0,
+   "type": "Link"
+  }
+ ],
+ "modified": "2026-03-23 14:24:00.413087",
+ "modified_by": "Administrator",
+ "module": "Stock",
+ "name": "Quality Management",
+ "owner": "Administrator",
+ "standard": 1,
+ "title": "Quality Management"
+}
