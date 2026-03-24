@@ -134,7 +134,7 @@ frappe.ui.form.on('QAP Item', {
 });
 
 
-// 🔥 MAIN LOGIC (ONLY YES / NO BASED)
+// MAIN LOGIC (ONLY YES / NO BASED)
 function update_qap_progress(frm) {
 
     let rows = frm.doc.qap_item || [];

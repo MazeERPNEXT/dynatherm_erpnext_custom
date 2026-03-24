@@ -1,10 +1,11 @@
 import frappe
 import io
+import os
 from frappe.model.document import Document
 from frappe.utils import nowdate, getdate 
-from reportlab.lib.styles import ParagraphStyle
 
 class QualityAssurancePlan(Document):
+
     def before_insert(self):
         if not self.qap_id:
             self.qap_id = self.generate_qap_id()
@@ -36,10 +37,6 @@ class QualityAssurancePlan(Document):
         pdf_buffers = []
         index_data = []
 
-        # ---------------------------------------------------
-        # STYLES
-        # ---------------------------------------------------
-
         styles = getSampleStyleSheet()
 
         title_style = ParagraphStyle(
@@ -59,26 +56,33 @@ class QualityAssurancePlan(Document):
         )
 
         # ---------------------------------------------------
-        # STEP 1: Collect Attachments
+        # STEP 1: Collect Attachments (SAFE)
         # ---------------------------------------------------
 
-        current_page = 3
+        current_page = 1   # ✅ Start from 1 (attachment numbering)
         serial_no = 1
         pdf_found = False
 
         for row in self.qap_item:
             if row.attachment:
                 file_path = get_file_path(row.attachment)
-                reader = PdfReader(file_path)
+
+                # ✅ Skip invalid files
+                if not file_path or not os.path.exists(file_path) or os.path.getsize(file_path) == 0:
+                    continue
+
+                try:
+                    reader = PdfReader(file_path)
+                except Exception:
+                    frappe.msgprint(f"Invalid PDF skipped: {row.attachment}")
+                    continue
 
                 page_count = len(reader.pages)
-                start_page = current_page
-                end_page = current_page + page_count - 1
 
                 index_data.append({
                     "serial": serial_no,
                     "title": row.characteristics or "Untitled",
-                    "range": f"{start_page} - {end_page}"
+                    "range": f"{current_page} - {current_page + page_count - 1}"
                 })
 
                 current_page += page_count
@@ -87,7 +91,7 @@ class QualityAssurancePlan(Document):
                 pdf_found = True
 
         if not pdf_found:
-            frappe.throw("No PDF files found.")
+            frappe.throw("No valid PDF files found.")
 
         # ---------------------------------------------------
         # STEP 2: Cover Page
@@ -140,7 +144,7 @@ class QualityAssurancePlan(Document):
         cover_buffer.seek(0)
 
         # ---------------------------------------------------
-        # STEP 3: Index Page
+        # STEP 3: Index Page (WITH WRAP)
         # ---------------------------------------------------
 
         index_buffer = io.BytesIO()
@@ -157,16 +161,14 @@ class QualityAssurancePlan(Document):
         index_elements.append(Paragraph("INDEX", section_heading))
         index_elements.append(Spacer(1, 0.4 * inch))
 
-        table_data = [["S.No", "Document Name", "Page No"]]
-
-        
-        # Style for wrapping text
         wrap_style = ParagraphStyle(
             name="WrapStyle",
             fontName="Helvetica",
             fontSize=10,
-            leading=12  
+            leading=12
         )
+
+        table_data = [["S.No", "Document Name", "Page No"]]
 
         for item in index_data:
             table_data.append([
@@ -187,7 +189,7 @@ class QualityAssurancePlan(Document):
         index_buffer.seek(0)
 
         # ---------------------------------------------------
-        # STEP 4: Merge All PDFs
+        # STEP 4: Merge PDFs
         # ---------------------------------------------------
 
         cover_reader = PdfReader(cover_buffer)
@@ -211,28 +213,32 @@ class QualityAssurancePlan(Document):
         final_buffer.seek(0)
 
         # ---------------------------------------------------
-        # STEP 6: Add Page Numbers
+        # STEP 6: Page Numbering (SKIP COVER + INDEX)
         # ---------------------------------------------------
 
         numbered_writer = PdfWriter()
         reader = PdfReader(final_buffer)
 
+        start_from = 2   # skip cover + index
+        page_number = 1
+
         for i, page in enumerate(reader.pages):
             packet = io.BytesIO()
-
             can = canvas.Canvas(packet, pagesize=A4)
             can.setFont("Helvetica", 10)
 
-            # Bottom center page number
-            # can.drawCentredString(A4[0] / 2, 20, f"{i + 1}")
-            # Bottom Right Corner page number
-            can.drawRightString(A4[0] - 10, 15, f"{i + 1}")
+            if i >= start_from:
+                can.drawRightString(A4[0] - 40, 20, f"{page_number}")
+                page_number += 1
 
             can.save()
             packet.seek(0)
 
-            overlay_pdf = PdfReader(packet)
-            page.merge_page(overlay_pdf.pages[0])
+            try:
+                overlay_pdf = PdfReader(packet)
+                page.merge_page(overlay_pdf.pages[0])
+            except Exception:
+                pass
 
             numbered_writer.add_page(page)
 
