@@ -332,20 +332,20 @@ fixtures = [
         "filters": [["name", "is", "set"]]
     },
 
-    {
-        "doctype": "Workspace Sidebar"
-    },
+    # {
+    #     "doctype": "Workspace Sidebar"
+    # },
 
-    {
-        "doctype": "Workspace",
-        "filters": [["name", "in", ["Frappe HR"]]]
-    },
     # {
     #     "doctype": "Workspace",
-    #     "filters": [
-    #         ["name", "in", ["Quality"]]
-    #     ]
-    # }
+    #     "filters": [["name", "in", ["Frappe HR"]]]
+    # },
+    {
+        "doctype": "Workspace",
+        "filters": [
+            ["name", "in", ["Quality", "Frappe HR"]]
+        ]
+    },
 ]
 
 doctype_js = {
