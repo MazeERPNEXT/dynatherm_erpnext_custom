@@ -340,6 +340,7 @@ fixtures = [
     #     "doctype": "Workspace",
     #     "filters": [["name", "in", ["Frappe HR"]]]
     # },
+    
     {
         "doctype": "Workspace",
         "filters": [
