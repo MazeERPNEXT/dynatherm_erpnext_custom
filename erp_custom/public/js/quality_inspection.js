@@ -1,6 +1,5 @@
 
 frappe.ui.form.on('Quality Inspection', {
-
     before_save(frm) {
         let today = frappe.datetime.get_today();
         let parts = today.split("-");
