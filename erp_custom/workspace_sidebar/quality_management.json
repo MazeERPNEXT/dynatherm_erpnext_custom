@@ -1,6 +1,6 @@
 {
  "app": "erp_custom",
- "creation": "2026-03-23 13:27:41.275778",
+ "creation": "2026-03-24 11:23:41.443773",
  "docstatus": 0,
  "doctype": "Workspace Sidebar",
  "for_user": "quality.user@dapl.com",
@@ -33,7 +33,7 @@
    "type": "Link"
   }
  ],
- "modified": "2026-03-23 17:12:54.823171",
+ "modified": "2026-03-24 11:47:31.703401",
  "modified_by": "Administrator",
  "module": "Stock",
  "name": "Quality Management",

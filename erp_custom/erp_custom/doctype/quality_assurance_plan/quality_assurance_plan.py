@@ -228,7 +228,7 @@ class QualityAssurancePlan(Document):
             can.setFont("Helvetica", 10)
 
             if i >= start_from:
-                can.drawRightString(A4[0] - 40, 20, f"{page_number}")
+                can.drawRightString(A4[0] - 10, 15, f"{page_number}")
                 page_number += 1
 
             can.save()
