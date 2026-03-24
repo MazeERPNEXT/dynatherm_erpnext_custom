@@ -139,7 +139,7 @@
    "in_filter": 1,
    "in_list_view": 1,
    "label": "QAP Status",
-   "options": "\nInProgress\nCompleted\nNot Planned"
+   "options": "\nInProgress\nCompleted"
   },
   {
    "fieldname": "per_progress",
@@ -176,7 +176,7 @@
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-03-23 12:35:17.898322",
+ "modified": "2026-03-24 14:23:07.690198",
  "modified_by": "Administrator",
  "module": "ERP Custom",
  "name": "Quality Assurance Plan",
