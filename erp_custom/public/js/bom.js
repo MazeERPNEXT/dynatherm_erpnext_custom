@@ -1,76 +1,95 @@
-// frappe.ui.form.on("BOM", {
-//     refresh(frm) {
-//         // Show button only after submit
-//         if (frm.doc.docstatus === 1) {
-//             frm.add_custom_button(__("Cutting Plan"), () => {
-//                 frappe.new_doc("Cutting Plan", {
-//                     project: frm.doc.project,  
-//                     item_to_manufacture: frm.doc.item,   // (Left: Cutting Plan | Right: Bom) 
-//                 });
-//             }, __("Create"));
-//         }
-//     }
-// });
-
-// frappe.ui.form.on("BOM", {
-//     refresh(frm) {
-//         if (frm.doc.docstatus === 1) {
-//             frm.add_custom_button(__("Cutting Plan"), () => {
-
-//                 // Prepare child table rows
-//                 const cutting_plan_items = [];
-
-//                 (frm.doc.items || []).forEach(bom_row => {
-//                     cutting_plan_items.push({
-//                         project: frm.doc.project,
-//                         item_code: bom_row.item_code,
-//                         uom: bom_row.uom,
-//                         qty: bom_row.qty,
-
-//                         length: bom_row.custom_length,
-//                         width: bom_row.custom_width,
-//                         thickness: bom_row.custom_thickness,
-
-//                         // custom_density: bom_row.custom_density,
-//                         // custom_outer_diameter: bom_row.custom_outer_diameter,
-//                         // custom_inner_diameter: bom_row.custom_inner_diameter,
-//                         // custom_wall_thickness: bom_row.custom_wall_thickness
-//                     });
-//                 });
-
-//                 // Pass data safely before opening form
-//                 frappe.route_options = {
-//                     project: frm.doc.project,
-//                     item_to_manufacture: frm.doc.item,
-//                     cutting_plan_item: cutting_plan_items
-//                 };
-
-//                 frappe.new_doc("Cutting Plan");
-
-//             }, __("Create"));
-//         }
-//     }
-// });
 
 frappe.ui.form.on("BOM", {
     refresh(frm) {
-        if (frm.doc.docstatus === 1) {
+                if (frm.doc.docstatus === 1) {
             frm.add_custom_button(__("Cutting Plan"), () => {
+                frappe.new_doc("Cutting Plan", {
+                    bom: frm.doc.name,
+                    company: frm.doc.company
+                }, (doc) => {
 
-                frappe.call({
-                    method: "erp_custom.erp_custom.overrides.cutting_plan.create_cutting_plan_from_bom",
-                    args: {
-                        bom_name: frm.doc.name
-                    },
-                    callback(r) {
-                        if (r.message) {
-                            frappe.set_route("Form", "Cutting Plan", r.message);
+                    // Ensure child table is clean
+                    doc.cutting_plan_plate_details = [];
+                    (frm.doc.items || []).forEach(row => {
+
+                        let child = frappe.model.add_child(
+                            doc,
+                            "Cutting Plan Plate Details",
+                            "cutting_plan_plate_details"
+                        );
+
+                        // ✅ STANDARD FIELDS
+                        frappe.model.set_value(child.doctype, child.name, "item_code", row.item_code);
+                        frappe.model.set_value(child.doctype, child.name, "qty", row.qty);
+                        frappe.model.set_value(child.doctype, child.name, "uom", row.uom);
+                        frappe.model.set_value(child.doctype, child.name, "description", row.description);
+                        frappe.model.set_value(child.doctype, child.name, "length", row.custom_length);
+                        frappe.model.set_value(child.doctype, child.name, "width", row.custom_width);
+                        frappe.model.set_value(child.doctype, child.name, "thickness", row.custom_thickness);
+
+                        // ✅ MAP JOB NO (IMPORTANT FOR YOUR LOGIC)
+                        if (row.custom_job_no) {
+                            frappe.model.set_value(child.doctype, child.name, "job_no", row.custom_job_no);
                         }
-                    }
-                });
 
+                    });
+
+                    frappe.after_ajax(() => {
+                        cur_frm.refresh_field("cutting_plan_plate_details");
+                    });
+                });
             }, __("Create"));
         }
+
+        // 🔹 Material Request (L: MR | R: BOM)
+            frm.add_custom_button(__("Material Request"), () => {
+
+                let mr = frappe.model.get_new_doc("Material Request");
+
+                mr.material_request_type = "Purchase";
+                mr.company = frm.doc.company;
+
+                (frm.doc.items || []).forEach(row => {
+
+                    let item = frappe.model.add_child(mr, "Material Request Item", "items");
+
+                    item.item_code = row.item_code;
+                    item.item_name = row.item_name;
+                    item.item_group = row.custom_item_group;
+                    item.description = row.description;
+                    item.qty = row.qty;
+                    item.uom = row.uom;
+
+                    // Custom fields
+                    item.custom_density = row.custom_density;
+                    item.custom_inner_diameter = row.custom_inner_diameter;
+                    item.custom_outer_diameter = row.custom_outer_diameter;
+                    item.custom_thickness = row.custom_thickness;
+                    item.custom_length = row.custom_length;
+                    item.custom_width = row.custom_width;
+                    item.custom_wall_thickness = row.custom_wall_thickness;
+
+                    item.custom_kilogramskgs = row.custom_kilogramskgs;
+                    item.custom_total_weight = row.custom_total_weight;
+
+                    item.custom_rate_inr = row.custom_rate_inr;
+                    item.custom_last_purchase_price = row.custom_last_purchase_price;
+
+                    item.custom_material_type = row.custom_material_type;
+                    item.custom_raw_material_type = row.custom_raw_material_type;
+                    item.custom_item_group = row.custom_item_group;
+
+                    item.custom_scrap_margin_kg = row.custom_scrap_margin_kgs;
+                    item.custom_scrap_margin_percentage = row.custom_scrap_margin_percentage;
+
+                    item.custom_transportation_cost = row.custom_transportation_cost;
+                    item.custom_transportation_cost_ = row.custom_transportation_cost_kgs;
+
+                });
+
+                frappe.set_route("Form", "Material Request", mr.name);
+            }, __("Create"));  
+
     }
 });
 
