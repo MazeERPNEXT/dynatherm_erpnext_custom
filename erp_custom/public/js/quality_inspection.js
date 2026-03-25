@@ -11,7 +11,7 @@ frappe.ui.form.on('Quality Inspection', {
         const map = {
             "Incoming": ["Purchase Receipt", "Purchase Invoice"],
             "Outgoing": ["Sales Invoice", "Delivery Note"],
-            "In Progress": ["Job Card"]
+            "In Process": ["Job Card"]
         };
 
         let options = map[frm.doc.inspection_type] || [];
