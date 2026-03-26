@@ -13,7 +13,7 @@ def validate_item_workflow(item_code=None, supplier=None):
         if supplier_state == "Draft":
             return {
                 "status": "error",
-                "message": f"Supplier {supplier} is in Draft state. Not allowed in Purchase Order."
+                "message": f"Supplier Master {supplier} is in Draft state. Not allowed in Purchase Order."
             }
 
     # -------------------------
@@ -25,7 +25,7 @@ def validate_item_workflow(item_code=None, supplier=None):
         if item_state == "Draft":
             return {
                 "status": "error",
-                "message": f"Item {item_code} is in Draft state. Not allowed in Purchase Order."
+                "message": f"Item Master {item_code} is in Draft state. Not allowed in Purchase Order."
             }
 
     return {"status": "ok"}

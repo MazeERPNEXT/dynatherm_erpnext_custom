@@ -65,17 +65,6 @@ frappe.ui.form.on("Purchase Order Item", {
 
             calculate_kgs(frm, cdt, cdn);
         });
-
-        // // ---- Last Purchase Price
-        // frappe.db.get_list("Item Price", {
-        //     filters: { item_code: row.item_code, buying: 1 },
-        //     fields: ["price_list_rate"],
-        //     order_by: "modified desc",
-        //     limit: 1
-        // }).then(res => {
-        //     const rate = res?.length ? res[0].price_list_rate : 0;
-        //     frappe.model.set_value(cdt, cdn, "custom_last_purchase_price", rate);
-        // });
     },
 
     qty: calculate_total_weight,

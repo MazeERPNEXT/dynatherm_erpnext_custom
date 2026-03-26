@@ -1,8 +1,84 @@
-frappe.ui.form.on("Material Request Item", {
+frappe.ui.form.on("Material Request", {
+    refresh(frm) {
+        if (frm.doc.docstatus !== 0) return;
 
-    // =========================================================
-    // ITEM CODE SELECT
-    // =========================================================
+        frm.add_custom_button(
+            __("Cutting Plan"),
+            function () {
+                open_cutting_plan_dialog(frm);
+            },
+            __("Get Items From") 
+        );
+    }
+});
+
+function open_cutting_plan_dialog(frm) {
+    let d = new frappe.ui.Dialog({
+        title: "Get Items from Cutting Plan",
+        fields: [
+            {
+                label: "Cutting Plan",
+                fieldname: "cutting_plan",
+                fieldtype: "Link",
+                options: "Cutting Plan",
+                reqd: 1
+            }
+        ],
+        primary_action_label: "Get Items",
+        primary_action(values) {
+
+            frappe.call({
+                method: "frappe.client.get",
+                args: {
+                    doctype: "Cutting Plan",
+                    name: values.cutting_plan
+                },
+                callback: function (r) {
+
+                    if (!r.message) {
+                        frappe.msgprint("No Cutting Plan found");
+                        return;
+                    }
+
+                    let doc = r.message;
+                    let items = doc.cutting_plan_plate_details || [];
+
+                    if (!items.length) {
+                        frappe.msgprint("No Plate Details found in Cutting Plan");
+                        return;
+                    }
+
+                    // 🔥 FIX: remove only default empty row
+                    if (frm.doc.items && frm.doc.items.length === 1 && !frm.doc.items[0].item_code) {
+                        frm.clear_table("items");
+                    }
+
+                    items.forEach(cp => {
+                        let row = frm.add_child("items");
+
+                        row.item_code = cp.item_code;
+                        row.item_name = cp.item_name;
+                        row.qty = cp.qty || cp.required_qty || 1;
+                        row.uom = cp.uom;
+                        row.custom_length = cp.length || 0;
+                        row.custom_width = cp.width || 0;
+                        row.custom_thickness = cp.thickness || 0;
+                    });
+
+                    frm.refresh_field("items");
+
+                    frappe.msgprint("Items fetched from Cutting Plan");
+                    d.hide();
+                }
+            });
+        }
+    });
+
+    d.show();
+}
+
+
+frappe.ui.form.on("Material Request Item", {
     item_code(frm, cdt, cdn) {
         const row = locals[cdt][cdn];
         if (!row.item_code) return;
