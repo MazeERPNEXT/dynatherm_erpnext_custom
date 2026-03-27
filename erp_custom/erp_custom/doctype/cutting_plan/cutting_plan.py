@@ -74,5 +74,42 @@ def make_material_request(cutting_plan):
         })
 
     mr.insert(ignore_permissions=True)
-
     return mr.name
+
+
+@frappe.whitelist()
+def make_request_for_quotation(cutting_plan):
+
+    cp = frappe.get_doc("Cutting Plan", cutting_plan)
+
+    if cp.docstatus != 1:
+        frappe.throw("Cutting Plan must be Submitted")
+
+    rfq = frappe.new_doc("Request for Quotation")
+
+    rfq.transaction_date = cp.date
+    rfq.company = frappe.defaults.get_user_default("Company")
+    rfq.status = "Draft"
+
+    for row in cp.cutting_plan_plate_details:
+
+        if row.material_availability != "Not Available":
+            continue
+
+        rfq.append("items", {
+            "custom_cutting_plan_no": cp.name,
+            "item_code": row.item_code,
+            "qty": row.qty or 1,
+            "uom": row.uom,
+            "conversion_factor": 1,
+            "custom_length": row.length,
+            "custom_width": row.width,
+            "custom_thickness": row.thickness,
+        })
+
+    # 🔥 REQUIRED FIXES
+    rfq.flags.ignore_validate = True
+    rfq.flags.ignore_mandatory = True   
+
+    rfq.insert(ignore_permissions=True)
+    return rfq.name

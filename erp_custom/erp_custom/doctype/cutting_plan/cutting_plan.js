@@ -15,7 +15,7 @@ frappe.ui.form.on("Cutting Plan", {
 
         if (frm.doc.docstatus === 1) {
 
-            frm.add_custom_button("Create Material Request", function () {
+            frm.add_custom_button("Material Request", function () {
 
                 frappe.call({
                     method: "erp_custom.erp_custom.doctype.cutting_plan.cutting_plan.make_material_request",
@@ -28,10 +28,24 @@ frappe.ui.form.on("Cutting Plan", {
                         }
                     }
                 });
+            }, "Create");
+
+             frm.add_custom_button("Request for Quotation", function () {
+
+                frappe.call({
+                    method: "erp_custom.erp_custom.doctype.cutting_plan.cutting_plan.make_request_for_quotation",
+                    args: {
+                        cutting_plan: frm.doc.name
+                    },
+                    callback: function (r) {
+                        if (r.message) {
+                            frappe.set_route("Form", "Request for Quotation", r.message);
+                        }
+                    }
+                });
 
             }, "Create");
         }
-
         update_job_no_from_child(frm);
     },
 
