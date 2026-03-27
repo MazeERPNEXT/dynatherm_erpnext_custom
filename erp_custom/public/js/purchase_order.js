@@ -1,4 +1,75 @@
 frappe.ui.form.on("Purchase Order", {
+    //  refresh(frm) {
+    //     if (frm.doc.docstatus === 1) {
+
+    //         frm.add_custom_button("Send Email for Purchase", function () {
+
+    //             frappe.call({
+    //                 method: "erp_custom.erp_custom.overrides.purchase_order.send_purchase_email",
+    //                 args: {
+    //                     purchase_order: frm.doc.name
+    //                 },
+    //                 callback: function (r) {
+    //                     if (r.message) {
+    //                         frappe.msgprint("Email sent to Purchase Team successfully");
+    //                     }
+    //                 }
+    //             });
+
+    //         });
+    //     }
+    // },
+    refresh(frm) {
+
+        if (frm.doc.docstatus === 1) {
+
+            frm.add_custom_button("Send Email for Purchase", function () {
+
+                frappe.call({
+                    method: "erp_custom.erp_custom.overrides.purchase_order.send_purchase_email",
+                    args: {
+                        purchase_order: frm.doc.name
+                    },
+                    callback: function (r) {
+
+                        let d = r.message;
+
+                        let html = `
+                            <div style="text-align:center;">
+                                <h2 style="color:green;">${d.company_name}</h2>
+                                <div>${d.company_address || ""}</div>
+                            </div>
+
+                            <br>
+
+                            <table style="width:100%">
+                                <tr>
+                                    <td width="50%">
+                                        <b>PO:</b> ${d.po}<br>
+                                        <b>Job Ref:</b> ${d.job_ref || ""}<br>
+                                        <b>Supplier:</b> ${d.supplier}<br>
+                                        <b>Contact:</b> ${d.contact_name || ""}
+                                    </td>
+
+                                    <td width="50%">
+                                        <b>Date:</b> ${d.date}<br>
+                                        <b>Required By:</b> ${d.required_by || ""}<br>
+                                        <b>Billing Address:</b> ${d.billing_address || ""}
+                                    </td>
+                                </tr>
+                            </table>
+                        `;
+
+                        let w = window.open("", "_blank");
+                        w.document.write(html);
+                        w.print();
+                    }
+                });
+
+            });
+        }
+    },
+
     validate: function(frm) {
 
         // 🔹 Check Supplier

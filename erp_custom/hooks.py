@@ -331,15 +331,6 @@ fixtures = [
         "doctype": "Certification Type",
         "filters": [["name", "is", "set"]]
     },
-
-    # {
-    #     "doctype": "Workspace Sidebar"
-    # },
-
-    # {
-    #     "doctype": "Workspace",
-    #     "filters": [["name", "in", ["Frappe HR"]]]
-    # },
     
     {
         "doctype": "Workspace",
