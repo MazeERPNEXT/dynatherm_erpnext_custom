@@ -10,11 +10,15 @@
   "qty",
   "uom",
   "column_break_jptg",
-  "length",
-  "width",
-  "thickness",
   "material_availability",
-  "job_no"
+  "job_no",
+  "tag_no",
+  "section_break_icbr",
+  "length",
+  "column_break_tsqa",
+  "width",
+  "column_break_dyeq",
+  "thickness"
  ],
  "fields": [
   {
@@ -81,13 +85,32 @@
    "fieldtype": "Link",
    "label": "Job No",
    "options": "Job Card"
+  },
+  {
+   "fieldname": "tag_no",
+   "fieldtype": "Small Text",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Tag No"
+  },
+  {
+   "fieldname": "section_break_icbr",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "column_break_tsqa",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_dyeq",
+   "fieldtype": "Column Break"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2026-03-21 14:44:35.860078",
+ "modified": "2026-03-27 12:54:01.357066",
  "modified_by": "Administrator",
  "module": "ERP Custom",
  "name": "Cutting Plan Plate Details",
