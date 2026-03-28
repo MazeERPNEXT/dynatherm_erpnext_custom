@@ -393,19 +393,18 @@ override_whitelisted_methods = {
 
 override_doctype_class = {
     "BOM": "erp_custom.erp_custom.overrides.bom.CustomBOM",
-    # "Purchase Order": "erp_custom.erp_custom.overrides.purchase_order.validate_item_workflow",
+    # "Purchase Order": "erp_custom.erp_custom.overrides.purchase_order.CustomPurchaseOrder"
     # "Request for Quotation": "erp_custom.overrides.request_for_quotation.CustomRequestForQuotation"
 }
 
-# doc_events = {
-#     "Request for Quotation": {
-#         "on_submit": "erp_custom.erp_custom.overrides.request_for_quotation.send_email_background"
-#     }
-# }
 
 doc_events = {
     "Request for Quotation": {
         "before_submit": "erp_custom.erp_custom.overrides.request_for_quotation.send_email_background"
+    },
+     "Purchase Order": {
+        "validate": "erp_custom.erp_custom.overrides.purchase_order.purchase_order_validate",
+        "before_save": "erp_custom.erp_custom.overrides.purchase_order.purchase_order_before_save",
     }
 }
 

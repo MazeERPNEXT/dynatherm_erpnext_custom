@@ -57,117 +57,12 @@ frappe.ui.form.on("Purchase Order", {
     }
 });
 
-// frappe.ui.form.on("Purchase Order", {
-//     refresh(frm) {
-
-//         if (frm.doc.docstatus === 1) {
-
-//             frm.add_custom_button("Send Email for Purchase", function () {
-
-//                 frappe.call({
-//                     method: "erp_custom.erp_custom.overrides.purchase_order.sent_po_supplier",
-//                     args: {
-//                         purchase_order: frm.doc.name
-//                     },
-//                     callback: function (r) {
-
-//                         let d = r.message;
-
-//                         let html = `
-//                         <div style="font-family: Arial; padding:20px; color:#333; line-height:1.6;">
-
-//                             <!-- HEADER -->
-//                             <div style="text-align:center; border-bottom:2px solid #2e7d32; padding-bottom:10px;">
-//                                 <h1 style="color:#2e7d32; margin:0;">${d.company_name}</h1>
-
-//                                 <div style="font-size:12px; color:#555; margin-top:5px;">
-//                                     ${(d.company_address || "").replace(/<br>/g, ", ")}
-//                                 </div>
-
-//                                 <div style="font-size:12px; margin-top:5px;">
-//                                     <b>Email:</b> ${d.company_email || "-"} &nbsp;&nbsp; | &nbsp;&nbsp;
-//                                     <b>GST:</b> ${d.company_gstin || "-"}
-//                                 </div>
-//                             </div>
-
-//                             <h2 style="text-align:center; margin:15px 0;">PURCHASE ORDER</h2>
-
-//                             <!-- INFO -->
-//                             <table style="width:100%; border-collapse:collapse;">
-//                                 <tr>
-
-//                                     <td style="width:50%; border:1px solid #ddd; padding:12px;">
-//                                         <b>PO:</b> ${d.po}<br>
-//                                         <b>Job Ref:</b> ${d.job_ref || ""}<br>
-//                                         <b>Supplier:</b> ${d.supplier}<br><br>
-//                                         <b>Contact:</b> ${d.contact_name || ""}
-//                                     </td>
-
-//                                     <td style="width:50%; border:1px solid #ddd; padding:12px;">
-//                                         <b>Date:</b> ${d.date}<br>
-//                                         <b>Required By:</b> ${d.required_by || ""}<br><br>
-
-//                                         <b>Billing Address:</b><br>
-//                                         ${d.billing_address || ""}
-//                                     </td>
-
-//                                 </tr>
-//                             </table>
-
-//                         </div>
-//                         `;
-//                     }
-//                 });
-
-//             });
-//         }
-//     },
-
-//     validate: function(frm) {
-
-//         // 🔹 Check Supplier
-//         return frappe.call({
-//             method: "erp_custom.erp_custom.overrides.purchase_order.validate_item_workflow",
-//             args: {
-//                 supplier: frm.doc.supplier
-//             }
-//         }).then(r => {
-
-//             if (r.message.status === "error") {
-//                 frappe.throw(r.message.message);
-//             }
-
-//             // 🔹 Check Items
-//             let promises = [];
-
-//             (frm.doc.items || []).forEach(row => {
-//                 if (row.item_code) {
-//                     let p = frappe.call({
-//                         method: "erp_custom.erp_custom.overrides.purchase_order.validate_item_workflow",
-//                         args: {
-//                             item_code: row.item_code
-//                         }
-//                     }).then(r => {
-//                         if (r.message.status === "error") {
-//                             frappe.throw(r.message.message);
-//                         }
-//                     });
-
-//                     promises.push(p);
-//                 }
-//             });
-
-//             return Promise.all(promises);
-//         });
-//     }
-// });
-
 // ----------------------------------------------------
 // ------------ PURCHASE ORDER ITEM -------------------
 // ----------------------------------------------------
 frappe.ui.form.on("Purchase Order Item", {
 
-        item_code(frm, cdt, cdn) {
+    item_code(frm, cdt, cdn) {
         const row = locals[cdt][cdn];
         if (!row.item_code) return;
 
@@ -283,7 +178,6 @@ function calculate_kgs(frm, cdt, cdn) {
 // ====================================================
 function calculate_total_weight(frm, cdt, cdn) {
     const row = locals[cdt][cdn];
-
     const total_weight = flt(row.qty) * flt(row.custom_kilogramskgs);
 
     frappe.model.set_value(cdt, cdn, "custom_total_weights", flt(total_weight, 4));
@@ -293,15 +187,53 @@ function calculate_total_weight(frm, cdt, cdn) {
 }
 
 // ====================================================
-// AMOUNT (₹) = Rate × Total Weight
+// AMOUNT (₹)
 // ====================================================
+// function calculate_custom_amount(frm, cdt, cdn) {
+//     const row = locals[cdt][cdn];
+
+//     const qty = flt(row.qty) || 0;
+//     const weight = flt(row.custom_total_weights) || 0;
+//     const original_rate = flt(row.price_list_rate || row.rate) || 0;
+
+//     if (!qty || !weight || !original_rate) return;
+
+//     // ✅ DO NOT CHANGE RATE AGAIN AFTER FIRST SET
+//     if (!row.__rate_fixed) {
+//         const new_rate = (weight * original_rate) / qty;
+//         frappe.model.set_value(cdt, cdn, "rate", flt(new_rate, 2));
+
+//         // mark as fixed
+//         frappe.model.set_value(cdt, cdn, "__rate_fixed", 1);
+//     }
+
+//     // ✅ Amount always correct
+//     frappe.model.set_value(cdt, cdn, "custom_amount_inr", flt(weight * original_rate, 2));
+
+//     frm.trigger("calculate_taxes_and_totals");
+// }
+
+
 function calculate_custom_amount(frm, cdt, cdn) {
     const row = locals[cdt][cdn];
 
+    const weight = flt(row.custom_total_weights) || 0;
     const rate = flt(row.rate) || 0;
-    const total_weight = flt(row.custom_total_weights) || 0;
 
-    frappe.model.set_value(cdt, cdn, "custom_amount_inr", flt(rate * total_weight, 2));
+    if (!weight || !rate) {
+        frappe.model.set_value(cdt, cdn, "custom_amount_overall_weight_based", 0);
+        return;
+    }
+
+    // ✅ Only calculation (NO RATE CHANGE)
+    const amount = weight * rate;
+
+    frappe.model.set_value(
+        cdt,
+        cdn,
+        "custom_amount_overall_weight_based",
+        flt(amount, 2)
+    );
 }
 
 // ====================================================
@@ -318,6 +250,5 @@ function calculate_scrap_and_transport(frm, cdt, cdn) {
     const transport_cost = total_weight * transport_rate;
 
     frappe.model.set_value(cdt, cdn, "custom_scrap_margin_kg", flt(scrap_kgs, 4));
-
     frappe.model.set_value(cdt, cdn, "custom_transportation_cost_", flt(transport_cost, 2));
 }

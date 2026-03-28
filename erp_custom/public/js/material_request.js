@@ -48,7 +48,7 @@ function open_cutting_plan_dialog(frm) {
                         return;
                     }
 
-                    // 🔥 FIX: remove only default empty row
+                    // FIX: remove only default empty row
                     if (frm.doc.items && frm.doc.items.length === 1 && !frm.doc.items[0].item_code) {
                         frm.clear_table("items");
                     }
