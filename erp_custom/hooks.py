@@ -403,7 +403,7 @@ doc_events = {
         "before_submit": "erp_custom.erp_custom.overrides.request_for_quotation.send_email_background"
     },
      "Purchase Order": {
-        "validate": "erp_custom.erp_custom.overrides.purchase_order.purchase_order_validate",
+        # "validate": "erp_custom.erp_custom.overrides.purchase_order.purchase_order_validate",
         "before_save": "erp_custom.erp_custom.overrides.purchase_order.purchase_order_before_save",
     }
 }

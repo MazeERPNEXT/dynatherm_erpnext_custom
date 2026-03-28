@@ -228,12 +228,7 @@ function calculate_custom_amount(frm, cdt, cdn) {
     // ✅ Only calculation (NO RATE CHANGE)
     const amount = weight * rate;
 
-    frappe.model.set_value(
-        cdt,
-        cdn,
-        "custom_amount_overall_weight_based",
-        flt(amount, 2)
-    );
+    frappe.model.set_value(cdt, cdn, "custom_amount_overall_weight_based", flt(amount, 2));
 }
 
 // ====================================================
