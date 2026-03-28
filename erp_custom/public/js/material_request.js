@@ -58,6 +58,7 @@ function open_cutting_plan_dialog(frm) {
 
                         row.item_code = cp.item_code;
                         row.item_name = cp.item_name;
+                        row.item_group = cp.item_group;
                         row.qty = cp.qty || cp.required_qty || 1;
                         row.uom = cp.uom;
                         row.custom_length = cp.length || 0;
