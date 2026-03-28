@@ -44,7 +44,7 @@ def sent_po_supplier(doc):
         return
 
     # Print Format
-    print_format_name = "PO"
+    print_format_name = "Purchase Order Standard"
 
     pdf_data = frappe.get_print(
         "Purchase Order",
@@ -131,6 +131,14 @@ def sent_po_supplier(doc):
 #     )
 
 #     frappe.msgprint(f"✅ Purchase Order sent successfully to {supplier_email}.")
+
+
+
+
+
+
+
+
 
 
 

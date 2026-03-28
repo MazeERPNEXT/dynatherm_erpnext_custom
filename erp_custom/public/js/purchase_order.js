@@ -8,11 +8,9 @@ frappe.ui.form.on("Purchase Order", {
                 frappe.call({
                     method: "erp_custom.erp_custom.overrides.purchase_order.sent_po_supplier",
                     args: {
-                        doc: frm.doc.name   // ✅ important change
+                        doc: frm.doc.name  
                     },
                     callback: function (r) {
-                        // ✅ No HTML handling needed
-                        // Python already shows msgprint
                     }
                 });
 
