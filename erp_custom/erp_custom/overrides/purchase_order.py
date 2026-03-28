@@ -37,7 +37,7 @@ def send_purchase_email(purchase_order):
     po = frappe.get_doc("Purchase Order", purchase_order)
     company = frappe.get_doc("Company", po.company)
 
-    # 🔹 Get Company Address
+    # 🔹 Company Address
     company_address = frappe.db.get_value(
         "Dynamic Link",
         {"link_doctype": "Company", "link_name": company.name},
@@ -46,6 +46,20 @@ def send_purchase_email(purchase_order):
 
     address_doc = frappe.get_doc("Address", company_address) if company_address else None
     company_full_address = address_doc.get_display() if address_doc else ""
+
+    # 🔹 Company Email (from Contact)
+    company_email = frappe.db.get_value("Contact", {
+        "link_doctype": "Company",
+        "link_name": company.name,
+        "is_primary_contact": 1
+    }, "email_id") or ""
+
+    # 🔹 Company GST (from Address)
+    company_gstin = frappe.db.get_value(
+        "Address",
+        company_address,
+        "gstin"
+    ) if company_address else ""
 
     # 🔹 Supplier Address
     supplier_address = ""
@@ -57,68 +71,85 @@ def send_purchase_email(purchase_order):
     for i, item in enumerate(po.items, start=1):
         items_html += f"""
         <tr>
-            <td style="border:1px solid #ccc; padding:5px;">{i}</td>
-            <td style="border:1px solid #ccc; padding:5px;">{item.item_name}</td>
-            <td style="border:1px solid #ccc; padding:5px; text-align:right;">{item.qty}</td>
-            <td style="border:1px solid #ccc; padding:5px; text-align:right;">{item.rate}</td>
-            <td style="border:1px solid #ccc; padding:5px; text-align:right;">{item.amount}</td>
+            <td style="border:1px solid #ddd; padding:6px;">{i}</td>
+            <td style="border:1px solid #ddd; padding:6px;">{item.item_name}</td>
+            <td style="border:1px solid #ddd; padding:6px; text-align:right;">{item.qty}</td>
+            <td style="border:1px solid #ddd; padding:6px; text-align:right;">{item.rate}</td>
+            <td style="border:1px solid #ddd; padding:6px; text-align:right;">{item.amount}</td>
         </tr>
         """
 
-    # 🔹 Final HTML
+    # 🔹 FINAL HTML
     message = f"""
-    <div style="font-family: Arial; font-size: 13px;">
+    <div style="font-family:Arial; font-size:13px; color:#333; padding:20px; line-height:1.6;">
 
-        <!-- 🔰 TOP CENTER -->
-        <div style="text-align:center;">
-            <h2 style="color:green; margin-bottom:5px;">{company.name}</h2>
-            <div>{company_full_address}</div>
-            <h3 style="margin-top:10px;">Company Billing Address</h3>
+        <!-- HEADER -->
+        <div style="text-align:center; border-bottom:2px solid #2e7d32; padding-bottom:10px;">
+            <h1 style="color:#2e7d32; margin:0;">{company.name}</h1>
+
+            <div style="font-size:12px; color:#555; margin-top:5px;">
+                {company_full_address.replace("<br>", ", ")}
+            </div>
+
+            <div style="font-size:12px; margin-top:5px;">
+                <b>Email:</b> {company_email or "-"} &nbsp;&nbsp; | &nbsp;&nbsp;
+                <b>GST:</b> {company_gstin or "-"}
+            </div>
         </div>
 
-        <br>
+        <h2 style="text-align:center; margin:15px 0;">PURCHASE ORDER</h2>
 
-        <!-- 🔰 LEFT & RIGHT -->
-        <table width="100%" style="margin-top:10px;">
+        <!-- INFO -->
+        <table width="100%" style="border-collapse:collapse;">
             <tr>
+
                 <!-- LEFT -->
-                <td width="50%" valign="top">
+                <td width="50%" style="border:1px solid #ddd; padding:12px; vertical-align:top;">
                     <b>Purchase Order:</b> {po.name}<br>
                     <b>DAPL Job Reference:</b> {po.get("custom_job_reference") or ""}<br>
                     <b>Supplier Reference:</b> {po.get("supplier_reference") or ""}<br>
-                    <b>Supplier Name:</b> {po.supplier}<br>
-                    <b>Supplier Address:</b><br>{supplier_address}<br>
+                    <b>Supplier Name:</b> {po.supplier}<br><br>
+
+                    <b>Supplier Address:</b><br>
+                    <div style="margin-top:5px; color:#555;">
+                        {supplier_address}
+                    </div><br>
+
                     <b>Contact Name:</b> {po.contact_person or ""}<br>
-                    <b>Contact Mobile No:</b> {po.contact_mobile or ""}<br>
+                    <b>Contact Mobile:</b> {po.contact_mobile or ""}
                 </td>
 
                 <!-- RIGHT -->
-                <td width="50%" valign="top">
+                <td width="50%" style="border:1px solid #ddd; padding:12px; vertical-align:top;">
                     <b>Date:</b> {po.transaction_date}<br>
-                    <b>Required By:</b> {po.schedule_date or ""}<br>
+                    <b>Required By:</b> {po.schedule_date or ""}<br><br>
+
                     <b>Company Billing Address:</b><br>
-                    {company_full_address}
+                    <div style="margin-top:5px; color:#555;">
+                        {company_full_address}
+                    </div>
                 </td>
+
             </tr>
         </table>
 
         <br>
 
-        <!-- 🔰 ITEMS TABLE -->
-        <table width="100%" style="border-collapse: collapse;">
-            <tr style="background:#f2f2f2;">
-                <th style="border:1px solid #ccc; padding:5px;">S.No</th>
-                <th style="border:1px solid #ccc; padding:5px;">Description</th>
-                <th style="border:1px solid #ccc; padding:5px;">Qty</th>
-                <th style="border:1px solid #ccc; padding:5px;">Rate</th>
-                <th style="border:1px solid #ccc; padding:5px;">Amount</th>
+        <!-- ITEMS -->
+        <table width="100%" style="border-collapse:collapse;">
+            <tr style="background:#2e7d32; color:white;">
+                <th style="padding:8px; border:1px solid #ddd;">S.No</th>
+                <th style="padding:8px; border:1px solid #ddd;">Description</th>
+                <th style="padding:8px; border:1px solid #ddd;">Qty</th>
+                <th style="padding:8px; border:1px solid #ddd;">Rate</th>
+                <th style="padding:8px; border:1px solid #ddd;">Amount</th>
             </tr>
             {items_html}
         </table>
 
         <br>
 
-        <!-- 🔰 TOTAL SECTION -->
+        <!-- TOTAL -->
         <table width="100%">
             <tr>
                 <td width="50%">
@@ -136,12 +167,25 @@ def send_purchase_email(purchase_order):
     """
 
     frappe.sendmail(
+        sender="purchase@dynatherm.co.in", 
         recipients=["msk312508@gmail.com"],
         subject=f"Purchase Order - {po.name}",
         message=message
     )
 
-    return "Mail Sent"
+    return {
+        "company_name": company.name,
+        "company_address": company_full_address,
+        "company_email": company_email,
+        "company_gstin": company_gstin,
+        "po": po.name,
+        "job_ref": po.get("custom_job_reference"),
+        "supplier": po.supplier,
+        "contact_name": po.contact_person,
+        "date": po.transaction_date,
+        "required_by": po.schedule_date,
+        "billing_address": company_full_address
+    }
 
 # @frappe.whitelist()
 # def send_purchase_email(purchase_order):

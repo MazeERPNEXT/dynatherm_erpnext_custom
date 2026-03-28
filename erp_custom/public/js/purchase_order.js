@@ -35,34 +35,53 @@ frappe.ui.form.on("Purchase Order", {
                         let d = r.message;
 
                         let html = `
-                            <div style="text-align:center;">
-                                <h2 style="color:green;">${d.company_name}</h2>
-                                <div>${d.company_address || ""}</div>
+                        <div style="font-family: Arial; padding:20px; color:#333; line-height:1.6;">
+
+                            <!-- HEADER -->
+                            <div style="text-align:center; border-bottom:2px solid #2e7d32; padding-bottom:10px;">
+                                <h1 style="color:#2e7d32; margin:0;">${d.company_name}</h1>
+
+                                <div style="font-size:12px; color:#555; margin-top:5px;">
+                                    ${(d.company_address || "").replace(/<br>/g, ", ")}
+                                </div>
+
+                                <div style="font-size:12px; margin-top:5px;">
+                                    <b>Email:</b> ${d.company_email || "-"} &nbsp;&nbsp; | &nbsp;&nbsp;
+                                    <b>GST:</b> ${d.company_gstin || "-"}
+                                </div>
                             </div>
 
-                            <br>
+                            <h2 style="text-align:center; margin:15px 0;">PURCHASE ORDER</h2>
 
-                            <table style="width:100%">
+                            <!-- INFO -->
+                            <table style="width:100%; border-collapse:collapse;">
                                 <tr>
-                                    <td width="50%">
+
+                                    <td style="width:50%; border:1px solid #ddd; padding:12px;">
                                         <b>PO:</b> ${d.po}<br>
                                         <b>Job Ref:</b> ${d.job_ref || ""}<br>
-                                        <b>Supplier:</b> ${d.supplier}<br>
+                                        <b>Supplier:</b> ${d.supplier}<br><br>
                                         <b>Contact:</b> ${d.contact_name || ""}
                                     </td>
 
-                                    <td width="50%">
+                                    <td style="width:50%; border:1px solid #ddd; padding:12px;">
                                         <b>Date:</b> ${d.date}<br>
-                                        <b>Required By:</b> ${d.required_by || ""}<br>
-                                        <b>Billing Address:</b> ${d.billing_address || ""}
+                                        <b>Required By:</b> ${d.required_by || ""}<br><br>
+
+                                        <b>Billing Address:</b><br>
+                                        ${d.billing_address || ""}
                                     </td>
+
                                 </tr>
                             </table>
+
+                        </div>
                         `;
 
-                        let w = window.open("", "_blank");
-                        w.document.write(html);
-                        w.print();
+                        // let w = window.open("", "_blank");
+                        // w.document.write(html);
+                        // w.document.close();
+                        // w.print();
                     }
                 });
 
