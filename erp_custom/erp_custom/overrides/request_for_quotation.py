@@ -1,6 +1,6 @@
-
 import frappe
 from frappe.model.document import Document
+from frappe.utils import flt
 
 
 class RequestforQuotation(Document):
@@ -10,6 +10,9 @@ class RequestforQuotation(Document):
         pass
 
 
+# =========================================================
+# CUSTOM RFQ EMAIL
+# =========================================================
 def send_email_background(doc, method=None):
 
     # -------------------------------------------------
@@ -31,7 +34,7 @@ def send_email_background(doc, method=None):
         return
 
     # -------------------------------------------------
-    # Optional Columns Logic
+    # Optional Columns Logic (UNCHANGED)
     # -------------------------------------------------
     optional_fields = [
         ("Length", "custom_length"),
@@ -51,7 +54,7 @@ def send_email_background(doc, method=None):
                 break
 
     # -------------------------------------------------
-    # Table Header
+    # Table Header (UPDATED WITH NEW FIELDS)
     # -------------------------------------------------
     header_html = """
         <th>Item Code</th>
@@ -64,12 +67,14 @@ def send_email_background(doc, method=None):
         header_html += f"<th>{label}</th>"
 
     header_html += """
+        <th>Kgs Per Unit</th>
+        <th>Total Weight</th>
         <th>Rate</th>
         <th>Amount</th>
     """
 
     # -------------------------------------------------
-    # Table Rows
+    # Table Rows (UPDATED WITH NEW FIELDS)
     # -------------------------------------------------
     items_html = ""
 
@@ -86,7 +91,9 @@ def send_email_background(doc, method=None):
         for label, fieldname in visible_fields:
             row += f"<td>{d.get(fieldname) or ''}</td>"
 
-        row += """
+        row += f"""
+            <td>{flt(d.custom_kilogramskgs, 3) if d.custom_kilogramskgs else 0}</td>
+            <td>{flt(d.custom_total_weight, 3) if d.custom_total_weight else 0}</td>
             <td></td>
             <td></td>
         </tr>
@@ -106,17 +113,16 @@ def send_email_background(doc, method=None):
     <h2 style="color:#2c3e50;">Dear Supplier,</h2>
     <p>{doc.message_for_supplier or ""}</p><br>
 
-    <h3 style="border-bottom:2px solid #444; padding-bottom:4px;"> RFQ Details </h3>
+    <h3 style="border-bottom:2px solid #444; padding-bottom:4px;">RFQ Details</h3>
 
     <p style="margin-left:15px;"><b>RFQ No:</b> {doc.name}</p>
     <p style="margin-left:15px;"><b>Date:</b> {doc.transaction_date}</p>
     <p style="margin-left:15px;"><b>Schedule Date:</b> {doc.schedule_date}</p><br>
 
-    <h3 style="border-bottom:2px solid #444; padding-bottom:4px;"> Item Details </h3>
-    <table border="1"
-           cellpadding="8"
-           cellspacing="0"
-           style="border-collapse:collapse; width:100%; text-align:center;">
+    <h3 style="border-bottom:2px solid #444; padding-bottom:4px;">Item Details</h3>
+
+    <table border="1" cellpadding="8" cellspacing="0"
+        style="border-collapse:collapse; width:100%; text-align:center;">
 
         <tr style="background-color:#f2f2f2;">
             {header_html}
@@ -125,11 +131,12 @@ def send_email_background(doc, method=None):
         {items_html}
 
     </table>
+
     <br>
 
-    <p>Kindly submit your quotation at the earliest.</p> <br>
+    <p>Kindly submit your quotation at the earliest.</p><br>
 
-    <p><b>Regards,</b><br> Purchase Team </p>
+    <p><b>Regards,</b><br>Purchase Team</p>
     """
 
     # -------------------------------------------------
@@ -139,16 +146,16 @@ def send_email_background(doc, method=None):
         recipients=recipients,
         subject=subject,
         message=message,
-        sender="msk312508@gmail.com",
+        sender="purchase@dynatherm.co.in",
+        reply_to="purchase@dynatherm.co.in", 
         reference_doctype="Request for Quotation",
         reference_name=doc.name
     )
 
 
-# -----------------------------------------------------------------
+# =========================================================
 # BLOCK ERPNext CORE RFQ EMAIL
-# -----------------------------------------------------------------
-
+# =========================================================
 import erpnext.buying.doctype.request_for_quotation.request_for_quotation as rfq_core
 
 
