@@ -1,7 +1,6 @@
 frappe.ui.form.on("Purchase Invoice", {
     refresh(frm) {
-        calculate_total_amount(frm);
-        toggle_total_field(frm);
+        calculate_total(frm);
         // Filter for Supplier (already working for you)
         frm.set_query("supplier", () => {
             return {
@@ -19,6 +18,9 @@ frappe.ui.form.on("Purchase Invoice", {
                 }
             };
         };
+    },
+     validate(frm) {
+        calculate_total(frm);
     }
 });
 
@@ -29,20 +31,29 @@ frappe.ui.form.on("Purchase Invoice", {
 // ------------ PURCHASE Receipt ITEM -------------------
 // ----------------------------------------------------
 frappe.ui.form.on("Purchase Invoice Item", {
-    custom_amount_overall_weight_based(frm, cdt, cdn) {
-        calculate_total_amount(frm);
+    custom_rate_per_kg(frm, cdt, cdn) {
+        calculate_rate_from_weight(frm, cdt, cdn);
+        calculate_custom_amount(frm, cdt, cdn);
+    },
+    amount(frm, cdt, cdn) {
+        calculate_total(frm);
     },
 
     qty(frm, cdt, cdn) {
+        calculate_total(frm);
         calculate_total_weight(frm, cdt, cdn);
-        calculate_total_amount(frm);
-        toggle_total_field(frm);
     },
 
     rate(frm, cdt, cdn) {
+        calculate_total(frm);
         calculate_custom_amount(frm, cdt, cdn);
-        calculate_total_amount(frm);
-        toggle_total_field(frm); 
+    },
+    items_add(frm) {
+        calculate_total(frm);
+    },
+
+    items_remove(frm) {
+        calculate_total(frm);
     },
 
     item_code(frm, cdt, cdn) {
@@ -69,16 +80,16 @@ frappe.ui.form.on("Purchase Invoice Item", {
         });
     },
 
-    item_group(frm, cdt, cdn) {
-        toggle_total_field(frm);
-    },
+    // item_group(frm, cdt, cdn) {
+    //     toggle_total_field(frm);
+    // },
 
-    remove(frm, cdt, cdn) {
-        setTimeout(() => {
-            calculate_total_amount(frm);
-            toggle_total_field(frm);
-        }, 50);
-    },
+    // remove(frm, cdt, cdn) {
+    //     setTimeout(() => {
+    //         calculate_total_amount(frm);
+    //         toggle_total_field(frm);
+    //     }, 50);
+    // },
 
     custom_length: calculate_kgs,
     custom_width: calculate_kgs,
@@ -150,30 +161,30 @@ function calculate_total_weight(frm, cdt, cdn) {
     const row = locals[cdt][cdn];
     const total_weight = flt(row.qty) * flt(row.custom_kilogramskgs);
 
-    frappe.model.set_value(cdt, cdn,"custom_total_weights", flt(total_weight, 4));
+    frappe.model.set_value(cdt, cdn, "custom_total_weights", flt(total_weight, 4));
 
+    calculate_rate_from_weight(frm, cdt, cdn);
     calculate_custom_amount(frm, cdt, cdn);
     calculate_scrap_and_transport(frm, cdt, cdn);
 }
 
+
 // ====================================================
-// AMOUNT (₹) = Rate × Total Weight
+// AMOUNT
 // ====================================================
 function calculate_custom_amount(frm, cdt, cdn) {
     const row = locals[cdt][cdn];
 
-    const weight = flt(row.custom_total_weights);
-    const rate = flt(row.rate);
+    const qty = flt(row.qty) || 0;
+    const rate = flt(row.rate) || 0;
+    const amount = qty * rate;
 
-    let amount = 0;
+    // ✅ Update standard amount field (IMPORTANT)
+    frappe.model.set_value(cdt, cdn, "amount", flt(amount, 2));
 
-    if (weight > 0) {
-        amount = weight * rate;
-    } else {
-        amount = flt(row.qty) * rate;
-    }
+    // ✅ Keep your custom field also (no break)
+    // frappe.model.set_value(cdt, cdn, "custom_amount_overall_weight_based", flt(amount, 2));
 
-    frappe.model.set_value(cdt, cdn, "custom_amount_overall_weight_based", flt(amount, 2));
     calculate_total_amount(frm);
 }
 
@@ -195,74 +206,43 @@ function calculate_scrap_and_transport(frm, cdt, cdn) {
     frappe.model.set_value(cdt, cdn, "custom_transportation_cost_", flt(transport_cost, 2));
 }
 
-function calculate_total_amount(frm) {
+
+// =====================================================
+// RATE CALCULATION (NEW)
+// =====================================================
+function calculate_rate_from_weight(frm, cdt, cdn) {
+    const row = locals[cdt][cdn];
+
+    const rate_per_kg = flt(row.custom_rate_per_kg) || 0;
+    const weight = flt(row.custom_total_weights) || 0;
+
+    if (rate_per_kg && weight) {
+        const rate = rate_per_kg * weight;
+
+        frappe.model.set_value(cdt, cdn, "rate", flt(rate, 2));
+    }
+}
+
+
+function update_amount(frm, cdt, cdn) {
+    let row = locals[cdt][cdn];
+
+    row.amount = (flt(row.qty) * flt(row.rate));
+
+    frm.refresh_field('items');
+    calculate_total(frm);
+}
+
+
+// ===============================
+// CALCULATE PARENT TOTAL
+// ===============================
+function calculate_total(frm) {
     let total = 0;
 
     (frm.doc.items || []).forEach(row => {
-        total += flt(row.custom_amount_overall_weight_based || 0);
+        total += flt(row.amount);
     });
 
-    frm.set_value("custom_total_amount", flt(total, 2));
-}
-
-function toggle_total_field(frm) {
-    let has_special_item = false;
-
-    (frm.doc.items || []).forEach(row => {
-        let group = row.item_group || row.custom_item_group;
-        if (["Plates", "Pipes", "Tubes"].includes(group)) {
-            has_special_item = true;
-        }
-    });
-
-    setTimeout(() => {
-
-        // =====================================================
-        // 🔴 CASE 1: Plates / Pipes / Tubes EXISTS
-        // =====================================================
-        if (has_special_item) {
-
-            // 🔸 Hide ERP Totals
-            hide_field(frm, "total");
-            hide_field(frm, "base_total");
-            hide_field(frm, "net_total");
-            hide_field(frm, "base_net_total");
-            hide_field(frm, "total_net_weight");
-
-            // 🔸 Show Custom Total
-            frm.set_df_property("custom_total_amount", "hidden", 0);
-        }
-
-        // =====================================================
-        // 🟢 CASE 2: NORMAL ITEMS
-        // =====================================================
-        else {
-            // 🔸 Show ERP Totals
-            show_field(frm, "total");
-            show_field(frm, "base_total");
-            show_field(frm, "net_total");
-            show_field(frm, "base_net_total");
-            show_field(frm, "total_net_weight");
-
-            // 🔸 Hide Custom Total
-            frm.set_df_property("custom_total_amount", "hidden", 1);
-        }
-
-    }, 50);
-}
-
-
-// =====================================================
-// 🔧 COMMON HELPERS (IMPORTANT - NO ERROR)
-// =====================================================
-function hide_field(frm, fieldname) {
-    if (frm.fields_dict[fieldname]) {
-        frm.fields_dict[fieldname].$wrapper.hide();
-    }
-}
-
-function show_field(frm, fieldname) {
-    if (frm.fields_dict[fieldname]) {
-        frm.fields_dict[fieldname].$wrapper.show();
-    }
+    frm.set_value('total', total);
 }

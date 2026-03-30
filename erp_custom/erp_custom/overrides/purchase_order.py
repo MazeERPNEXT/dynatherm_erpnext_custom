@@ -72,36 +72,36 @@ def sent_po_supplier(doc):
     frappe.msgprint(f"✅ Purchase Order sent to {supplier_email}")
 
 
-# =========================================================
-# WEIGHT BASED AMOUNT (FINAL OVERRIDE)
-# =========================================================
-def apply_weight_amount(doc):
-    conversion_rate = flt(doc.conversion_rate or 1)
+# # =========================================================
+# # WEIGHT BASED AMOUNT (FINAL OVERRIDE)
+# # =========================================================
+# def apply_weight_amount(doc):
+#     conversion_rate = flt(doc.conversion_rate or 1)
 
-    for item in doc.get("items", []):
-        weight = flt(item.custom_total_weights)
-        rate = flt(item.rate)
+#     for item in doc.get("items", []):
+#         weight = flt(item.custom_total_weights)
+#         rate = flt(item.rate)
 
-        if not weight or not rate:
-            continue
+#         if not weight or not rate:
+#             continue
 
-        try:
-            new_amount = flt(weight * rate, 2)
+#         try:
+#             new_amount = flt(weight * rate, 2)
 
-            item.amount = new_amount
-            item.base_amount = flt(new_amount * conversion_rate, 2)
+#             item.amount = new_amount
+#             item.base_amount = flt(new_amount * conversion_rate, 2)
 
-            item.net_amount = new_amount
-            item.base_net_amount = flt(new_amount * conversion_rate, 2)
+#             item.net_amount = new_amount
+#             item.base_net_amount = flt(new_amount * conversion_rate, 2)
 
-            if hasattr(item, "custom_amount_inr"):
-                item.custom_amount_inr = new_amount
+#             if hasattr(item, "custom_amount_inr"):
+#                 item.custom_amount_inr = new_amount
 
-        except Exception:
-            frappe.log_error(
-                frappe.get_traceback(),
-                "Weight Amount Override Error"
-            )
+#         except Exception:
+#             frappe.log_error(
+#                 frappe.get_traceback(),
+#                 "Weight Amount Override Error"
+#             )
 
-def purchase_order_before_save(doc, method=None):
-    apply_weight_amount(doc)
+# def purchase_order_before_save(doc, method=None):
+#     apply_weight_amount(doc)

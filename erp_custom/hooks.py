@@ -405,7 +405,7 @@ doc_events = {
     },
      "Purchase Order": {
         # "validate": "erp_custom.erp_custom.overrides.purchase_order.purchase_order_validate",
-        "before_save": "erp_custom.erp_custom.overrides.purchase_order.purchase_order_before_save",
+        # "before_save": "erp_custom.erp_custom.overrides.purchase_order.purchase_order_before_save",
     }
 }
 
