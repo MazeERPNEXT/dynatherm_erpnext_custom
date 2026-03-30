@@ -115,6 +115,20 @@ frappe.ui.form.on("Material Request Item", {
         // });
     },
 
+    custom_material_type(frm, cdt, cdn) {
+        const row = locals[cdt][cdn];
+        if (!row.custom_material_type) return;
+
+        // Fetch material_value (density) from Material Type doctype
+        frappe.db.get_value("Material Type", row.custom_material_type,
+            ["material_value"]).then(r => {
+            if (!r || !r.message) return;
+
+            frappe.model.set_value(cdt, cdn, "custom_density", r.message.material_value || 0);
+            calculate_kgs(frm, cdt, cdn);
+        });
+    },
+
     // =========================================================
     // TRIGGERS
     // =========================================================

@@ -64,7 +64,7 @@
    "fieldtype": "Float",
    "in_list_view": 1,
    "in_preview": 1,
-   "label": "Length",
+   "label": "Length (mm)",
    "precision": "2"
   },
   {
@@ -72,7 +72,7 @@
    "fieldtype": "Float",
    "in_list_view": 1,
    "in_preview": 1,
-   "label": "Width",
+   "label": "Width (mm)",
    "precision": "2"
   },
   {
@@ -80,7 +80,7 @@
    "fieldtype": "Float",
    "in_list_view": 1,
    "in_preview": 1,
-   "label": "Thickness",
+   "label": "Thickness (mm)",
    "precision": "2"
   },
   {
@@ -91,7 +91,7 @@
   {
    "fieldname": "density",
    "fieldtype": "Float",
-   "label": "Density",
+   "label": "Density (kg/m\u00b3)",
    "precision": "2"
   },
   {
@@ -131,19 +131,19 @@
   {
    "fieldname": "outer_diameter",
    "fieldtype": "Float",
-   "label": "Outer Diameter",
+   "label": "Outer Diameter (mm)",
    "precision": "2"
   },
   {
    "fieldname": "inner_diameter",
    "fieldtype": "Float",
-   "label": "Inner Diameter",
+   "label": "Inner Diameter (mm)",
    "precision": "2"
   },
   {
    "fieldname": "wall_thickness",
    "fieldtype": "Float",
-   "label": "Wall Thickness",
+   "label": "Wall Thickness (mm)",
    "precision": "2"
   },
   {
@@ -171,7 +171,7 @@
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2026-03-18 17:55:49.774309",
+ "modified": "2026-03-30 13:06:28.520218",
  "modified_by": "Administrator",
  "module": "ERP Custom",
  "name": "Cutting Plan Item",

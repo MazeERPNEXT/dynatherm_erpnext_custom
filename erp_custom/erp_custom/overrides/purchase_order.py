@@ -45,26 +45,21 @@ def sent_po_supplier(doc):
 
     # Print Format
     print_format_name = "Purchase Order Standard"
-
-    pdf_data = frappe.get_print(
-        "Purchase Order",
-        doc.name,
-        print_format=print_format_name,
-        as_pdf=True
-    )
-
+    pdf_data = frappe.get_print("Purchase Order", doc.name, print_format=print_format_name, as_pdf=True)
     file_name = f"{doc.name}.pdf"
 
     subject = f"Purchase Order {doc.name}"
-
     message = f"""
     <p>Dear {doc.supplier},</p>
     <p>Please find attached the Purchase Order <b>{doc.name}</b>.</p>
-    <p><a href="{frappe.utils.get_url_to_form('Purchase Order', doc.name)}">View PO</a></p>
-    <p>Thanks</p>
+    <p><a href="{frappe.utils.get_url_to_form('Purchase Order', doc.name)}">View Purchase Order</a></p><br>
+    <p>Kindly submit your quotation at the earliest.</p><br>
+    <p><b>Regards,</b><br>Purchase Team</p>
     """
 
     frappe.sendmail(
+        sender="purchase@dynatherm.co.in",
+        reply_to="purchase@dynatherm.co.in", 
         recipients=[supplier_email],
         subject=subject,
         message=message,
