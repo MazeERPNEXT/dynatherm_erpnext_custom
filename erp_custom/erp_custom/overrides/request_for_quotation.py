@@ -84,7 +84,7 @@ def send_email_background(doc, method=None):
         row = f"""
         <tr>
             <td>{d.item_code or ""}</td>
-            <td>{d.custom_item_brand or ""}</td>
+            <td>{d.brand or ""}</td>
             <td>{d.schedule_date or ""}</td>
             <td>{d.qty or ""}</td>
             <td>{d.uom or ""}</td>

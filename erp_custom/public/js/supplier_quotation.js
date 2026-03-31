@@ -304,12 +304,12 @@
 // SUPPLIER QUOTATION (PARENT)
 // =====================================================
 frappe.ui.form.on("Supplier Quotation", {
-    onload(frm) {
-        sync_rate_from_sq(frm);
-    },
+    // onload(frm) {
+    //     sync_rate_from_sq(frm);
+    // },
     refresh(frm) {
         calculate_total(frm);
-        sync_rate_from_sq(frm);
+        // sync_rate_from_sq(frm);
         if (frm.doc.docstatus === 1) {
             frm.remove_custom_button("Quotation", "Create");
             setTimeout(() => {
@@ -555,33 +555,33 @@ function calculate_total(frm) {
 }
 
 
-function sync_rate_from_sq(frm) {
+// function sync_rate_from_sq(frm) {
 
-    // ✅ Only run if created from Supplier Quotation
-    if (!frm.doc.items || !frm.doc.items.length) return;
+//     // ✅ Only run if created from Supplier Quotation
+//     if (!frm.doc.items || !frm.doc.items.length) return;
 
-    let has_sq = frm.doc.items.some(row => row.supplier_quotation);
-    if (!has_sq) return;
+//     let has_sq = frm.doc.items.some(row => row.supplier_quotation);
+//     if (!has_sq) return;
 
-    (frm.doc.items || []).forEach(row => {
+//     (frm.doc.items || []).forEach(row => {
 
-        if (row.supplier_quotation && row.supplier_quotation_item) {
+//         if (row.supplier_quotation && row.supplier_quotation_item) {
 
-            frappe.db.get_value(
-                "Supplier Quotation Item",
-                row.supplier_quotation_item,
-                "custom_rate_per_kg"
-            ).then(r => {
+//             frappe.db.get_value(
+//                 "Supplier Quotation Item",
+//                 row.supplier_quotation_item,
+//                 "custom_rate_per_kg"
+//             ).then(r => {
 
-                if (r && r.message) {
+//                 if (r && r.message) {
 
-                    frappe.model.set_value(row.doctype, row.name, "custom_rate_per_kg", r.message.custom_rate_per_kg);
+//                     frappe.model.set_value(row.doctype, row.name, "custom_rate_per_kg", r.message.custom_rate_per_kg);
 
-                }
-            });
-        }
+//                 }
+//             });
+//         }
 
-    });
+//     });
 
-    frm.refresh_field("items");
-}
+//     frm.refresh_field("items");
+// }

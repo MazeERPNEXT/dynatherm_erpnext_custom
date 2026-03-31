@@ -6,7 +6,7 @@ frappe.ui.form.on("Purchase Order", {
 
     refresh(frm) {
         calculate_total(frm);
-        sync_fields_from_sq_to_po(frm);
+        // sync_fields_from_sq_to_po(frm);
         if (frm.doc.docstatus === 1) {
             frm.add_custom_button("Send Email for Purchase", function () {
                 frappe.call({
@@ -257,40 +257,40 @@ function calculate_total(frm) {
 }
 
 
-function sync_fields_from_sq_to_po(frm) {
+// function sync_fields_from_sq_to_po(frm) {
 
-    if (!frm.doc.items || !frm.doc.items.length) return;
+//     if (!frm.doc.items || !frm.doc.items.length) return;
 
-    (frm.doc.items || []).forEach(row => {
+//     (frm.doc.items || []).forEach(row => {
 
-        if (row.supplier_quotation && row.supplier_quotation_item) {
+//         if (row.supplier_quotation && row.supplier_quotation_item) {
 
-            frappe.db.get_value(
-                "Supplier Quotation Item",
-                row.supplier_quotation_item,
-                ["custom_rate_per_kg", "custom_item_brand"]   // ✅ BOTH FIELDS
-            ).then(r => {
+//             frappe.db.get_value(
+//                 "Supplier Quotation Item",
+//                 row.supplier_quotation_item,
+//                 ["custom_rate_per_kg", "custom_item_brand"]   // ✅ BOTH FIELDS
+//             ).then(r => {
 
-                if (r && r.message) {
+//                 if (r && r.message) {
 
-                    frappe.model.set_value(
-                        row.doctype,
-                        row.name,
-                        "custom_rate_per_kg",
-                        r.message.custom_rate_per_kg || 0
-                    );
+//                     frappe.model.set_value(
+//                         row.doctype,
+//                         row.name,
+//                         "custom_rate_per_kg",
+//                         r.message.custom_rate_per_kg || 0
+//                     );
 
-                    frappe.model.set_value(
-                        row.doctype,
-                        row.name,
-                        "custom_item_brand",
-                        r.message.custom_item_brand || ""
-                    );
-                }
-            });
-        }
+//                     frappe.model.set_value(
+//                         row.doctype,
+//                         row.name,
+//                         "custom_item_brand",
+//                         r.message.custom_item_brand || ""
+//                     );
+//                 }
+//             });
+//         }
 
-    });
+//     });
 
-    frm.refresh_field("items");
-}
+//     frm.refresh_field("items");
+// }
