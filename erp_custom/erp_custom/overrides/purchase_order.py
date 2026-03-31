@@ -1,5 +1,11 @@
 import frappe
 from frappe.utils import flt
+from erpnext.buying.doctype.purchase_order.purchase_order import PurchaseOrder
+
+class CustomPurchaseOrder(PurchaseOrder):
+    
+    def validate_fg_item_for_subcontracting(self):
+        return
 
 @frappe.whitelist()
 def validate_item_workflow(item_code=None, supplier=None):
@@ -53,7 +59,7 @@ def sent_po_supplier(doc):
     <p>Dear {doc.supplier},</p>
     <p>Please find attached the Purchase Order <b>{doc.name}</b>.</p>
     <p><a href="{frappe.utils.get_url_to_form('Purchase Order', doc.name)}">View Purchase Order</a></p><br>
-    <p>Kindly submit your quotation at the earliest.</p><br>
+    <p>Kindly acknowledge receipt of this Purchase Order and confirm the delivery schedule at the earliest.</p><br>
     <p><b>Regards,</b><br>Purchase Team</p>
     """
 
