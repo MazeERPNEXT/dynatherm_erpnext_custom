@@ -575,12 +575,7 @@ function sync_rate_from_sq(frm) {
 
                 if (r && r.message) {
 
-                    frappe.model.set_value(
-                        row.doctype,
-                        row.name,
-                        "custom_rate_per_kg",
-                        r.message.custom_rate_per_kg
-                    );
+                    frappe.model.set_value(row.doctype, row.name, "custom_rate_per_kg", r.message.custom_rate_per_kg);
 
                 }
             });
