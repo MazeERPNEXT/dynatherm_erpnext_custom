@@ -72,7 +72,7 @@ frappe.ui.form.on("BOM", {
                     item.custom_kilogramskgs = row.custom_kilogramskgs;
                     item.custom_total_weight = row.custom_total_weight;
 
-                    item.custom_rate_inr = row.custom_rate_inr;
+                    // item.custom_rate_inr = row.custom_rate_inr;
                     item.custom_last_purchase_price = row.custom_last_purchase_price;
 
                     item.custom_material_type = row.custom_material_type;
@@ -95,10 +95,9 @@ frappe.ui.form.on("BOM", {
 
 
 frappe.ui.form.on("BOM Item", {
-
-    // =========================================================
-    // ITEM CODE SELECT
-    // =========================================================
+    custom_rate_per_kg: update_rate_from_weight,
+    custom_total_weight: update_rate_from_weight,
+    qty: update_rate_from_weight,
     item_code(frm, cdt, cdn) {
     const row = locals[cdt][cdn];
 
@@ -134,51 +133,40 @@ frappe.ui.form.on("BOM Item", {
     });
 
     // ---- Last Purchase Price
-    frappe.db.get_list("Item Price", {
-        filters: { item_code: row.item_code, buying: 1 },
-        fields: ["price_list_rate"],
-        order_by: "modified desc",
-        limit: 1
-    }).then(res => {
-        const rate = res?.length ? res[0].price_list_rate : 0;
-        frappe.model.set_value(cdt, cdn, "custom_last_purchase_price", rate);
+    // frappe.db.get_list("Item Price", {
+    //     filters: { item_code: row.item_code, buying: 1 },
+    //     fields: ["price_list_rate"],
+    //     order_by: "modified desc",
+    //     limit: 1
+    // }).then(res => {
+    //     const rate = res?.length ? res[0].price_list_rate : 0;
+    //     frappe.model.set_value(cdt, cdn, "custom_last_purchase_price", rate);
+    // });
+
+    frappe.call({
+        method: "frappe.client.get_list",
+        args: {
+            doctype: "Item Price",
+            filters: {
+                item_code: row.item_code,
+                buying: 1
+            },
+            fields: ["price_list_rate", "price_list"],
+            order_by: "modified desc",
+            limit_page_length: 1
+        },
+        callback: function(r) {
+            let rate = 0;
+            if (r.message && r.message.length) {
+                rate = flt(r.message[0].price_list_rate);
+            }
+
+            // console.log("Item Price Fetch:", row.item_code, rate);
+
+            frappe.model.set_value(cdt, cdn, "custom_last_purchase_price", rate);
+        }
     });
-},
-
-    // item_code(frm, cdt, cdn) {
-    //     const row = locals[cdt][cdn];
-    //     if (!row.item_code) return;
-
-    //     // ---- Fetch from Item Master
-    //     frappe.db.get_value(
-    //         "Item",
-    //         row.item_code,
-    //         ["item_group", "default_bom", "custom_material_type", "custom_density","custom_thickness"]
-    //     ).then(r => {
-    //         if (!r || !r.message) return;
-
-    //         const item = r.message;
-
-    //         frappe.model.set_value(cdt, cdn, "custom_item_group", item.item_group || "");
-    //         frappe.model.set_value(cdt, cdn, "bom_no", item.default_bom || "");
-    //         frappe.model.set_value(cdt, cdn, "custom_material_type", item.custom_material_type || "");
-    //         frappe.model.set_value(cdt, cdn, "custom_density", item.custom_density || 0);
-    //         frappe.model.set_value(cdt, cdn, "custom_thickness", item.custom_thickness || 0);
-
-    //         calculate_kgs(frm, cdt, cdn);
-    //     });
-
-    //     // // ---- Last Purchase Price
-    //     frappe.db.get_list("Item Price", {
-    //         filters: { item_code: row.item_code, buying: 1 },
-    //         fields: ["price_list_rate"],
-    //         order_by: "modified desc",
-    //         limit: 1
-    //     }).then(res => {
-    //         const rate = res?.length ? res[0].price_list_rate : 0;
-    //         frappe.model.set_value(cdt, cdn, "custom_last_purchase_price", rate);
-    //     });
-    // },
+    },
 
     // =========================================================
     // TRIGGERS
@@ -219,46 +207,27 @@ function calculate_kgs(frm, cdt, cdn) {
     }
 
     if (type === "Plates") {
-        base_weight =
-            (flt(row.custom_length) *
-             flt(row.custom_width) *
-             flt(row.custom_thickness) *
-             density) / 1_000_000;
+        base_weight = (flt(row.custom_length) * flt(row.custom_width) * flt(row.custom_thickness) * density) / 1_000_000;
     }
 
     else if (["Tubes", "Pipes"].includes(type)) {
         const R = flt(row.custom_outer_diameter) / 2;
         const r = Math.max(R - flt(row.custom_wall_thickness), 0);
-        base_weight =
-            (π * (R ** 2 - r ** 2) *
-             flt(row.custom_length) *
-             density) / 1_000_000;
+        base_weight = (π * (R ** 2 - r ** 2) * flt(row.custom_length) * density) / 1_000_000;
     }
 
     else if (["Flanges", "Rings"].includes(type)) {
-        base_weight =
-            (π *
-            ((flt(row.custom_outer_diameter) / 2) ** 2 -
-             (flt(row.custom_inner_diameter) / 2) ** 2) *
-             flt(row.custom_thickness) *
-             density) / 1_000_000;
+        base_weight = (π * ((flt(row.custom_outer_diameter) / 2) ** 2 - (flt(row.custom_inner_diameter) / 2) ** 2) * flt(row.custom_thickness) * density) / 1_000_000;
     }
 
     else if (type === "Rods") {
-        base_weight =
-            (π *
-            (flt(row.custom_outer_diameter) / 2) ** 2 *
-            flt(row.custom_length) *
-            density) / 1_000_000;
+        base_weight = (π * (flt(row.custom_outer_diameter) / 2) ** 2 * flt(row.custom_length) * density) / 1_000_000;
     }
 
     else if (type === "Forgings") {
         const R = flt(row.custom_outer_diameter) / 2;
         const r = Math.max(R - flt(row.custom_wall_thickness), 0);
-        base_weight =
-            (π * (R ** 2 - r ** 2) *
-             flt(row.custom_length) *
-             density) / 1_000_000;
+        base_weight = (π * (R ** 2 - r ** 2) * flt(row.custom_length) * density) / 1_000_000;
     }
 
     frappe.model.set_value(cdt, cdn, "custom_kilogramskgs", flt(base_weight, 4));
@@ -278,6 +247,7 @@ function calculate_total_weight(frm, cdt, cdn) {
 
     calculate_custom_amount(frm, cdt, cdn);
     calculate_scrap_and_transport(frm, cdt, cdn);
+    update_rate_from_weight(frm, cdt, cdn);
 }
 
 
@@ -314,6 +284,29 @@ function calculate_scrap_and_transport(frm, cdt, cdn) {
 }
 
 
+function update_rate_from_weight(frm, cdt, cdn) {
+
+    const row = locals[cdt][cdn];
+
+    const rate_per_kg = flt(row.custom_rate_per_kg);
+    const total_weight = flt(row.custom_total_weight);
+    const qty = flt(row.qty) || 1;
+
+    if (!rate_per_kg || !total_weight) return;
+
+    const new_rate = rate_per_kg * total_weight;
+
+    // ✅ SET RATE
+    row.rate = flt(new_rate, 2);
+    row.base_rate = row.rate;
+
+    const amount = qty * row.rate;
+
+    row.amount = flt(amount, 2);
+    row.base_amount = row.amount;
+
+    frm.refresh_field("items");
+}
 
 // =========================================================
 // FORCE RATE OVERRIDE (SERVER CONFIRMED)
