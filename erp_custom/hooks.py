@@ -345,7 +345,7 @@ doctype_js = {
     "Estimate Item": "public/js/estimate_item.js",
     "Item": "public/js/item.js",
     "BOM": "public/js/bom.js",
-    "BOM Item": "public/js/bom_item.js",
+    "BOM Creator": "public/js/bom_creator.js",
     
     "Cutting Plan": "public/js/cutting_plan.js",
     "Quotation": "public/js/quotation.js",
@@ -393,7 +393,8 @@ override_whitelisted_methods = {
 
 override_doctype_class = {
     "BOM": "erp_custom.erp_custom.overrides.bom.CustomBOM",
-    "Purchase Order": "erp_custom.erp_custom.overrides.purchase_order.CustomPurchaseOrder"
+    "Purchase Order": "erp_custom.erp_custom.overrides.purchase_order.CustomPurchaseOrder",
+    "BOM Creator":"erp_custom.erp_custom.overrides.bom_creator.CustomBOMCreator"  
 }
 
 
