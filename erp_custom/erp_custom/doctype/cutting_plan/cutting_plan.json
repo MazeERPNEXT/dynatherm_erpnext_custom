@@ -26,7 +26,10 @@
   "cutting_plan_plate_details",
   "section_break_esfk",
   "cutting_plan_item",
-  "amended_from"
+  "amended_from",
+  "attachment_tab",
+  "cutting_diagram",
+  "diagram_preview"
  ],
  "fields": [
   {
@@ -135,13 +138,28 @@
    "fieldtype": "Table",
    "label": "Cutting Plan Plate Details",
    "options": "Cutting Plan Plate Details"
+  },
+  {
+   "fieldname": "attachment_tab",
+   "fieldtype": "Tab Break",
+   "label": "Attachment"
+  },
+  {
+   "fieldname": "cutting_diagram",
+   "fieldtype": "Attach",
+   "label": "Cutting Diagram"
+  },
+  {
+   "fieldname": "diagram_preview",
+   "fieldtype": "HTML",
+   "label": "Diagram Preview"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2026-03-24 14:25:01.380793",
+ "modified": "2026-04-04 16:37:45.842538",
  "modified_by": "Administrator",
  "module": "ERP Custom",
  "name": "Cutting Plan",
