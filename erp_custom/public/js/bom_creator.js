@@ -123,17 +123,6 @@ function calculate_scrap_and_transport(frm, cdt, cdn) {
     const scrap_pct = flt(row.custom_scrap_margin_percentage) || 0;
     const transport_rate = flt(row.custom_transportation_cost) || 0;
 
-    frappe.model.set_value(
-        cdt,
-        cdn,
-        "custom_scrap_margin_kgs",
-        flt(total_weight * (scrap_pct / 100), 4)
-    );
-
-    frappe.model.set_value(
-        cdt,
-        cdn,
-        "custom_transportation_cost_kgs",
-        flt(total_weight * transport_rate, 2)
-    );
+    frappe.model.set_value(cdt, cdn, "custom_scrap_margin_kgs", flt(total_weight * (scrap_pct / 100), 4));
+    frappe.model.set_value(cdt, cdn, "custom_transportation_cost_kgs", flt(total_weight * transport_rate, 2));
 }

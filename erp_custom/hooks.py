@@ -378,6 +378,12 @@ override_whitelisted_methods = {
     "erpnext.manufacturing.doctype.work_order.work_order.make_work_order":
         "erp_custom.erp_custom.overrides.work_order.make_work_order",
         
+    "erpnext.manufacturing.doctype.bom.bom.get_bom_items":
+        "erp_custom.erp_custom.overrides.material_request.get_bom_items_custom"
+        
+    # "erpnext.stock.doctype.material_request.material_request.get_items_from_bom":
+    #     "erp_custom.erp_custom.overrides.material_request.get_items_from_bom_custom"
+        
     # "erpnext.manufacturing.doctype.bom.bom.make_variant_bom":
     #     "erp_custom.erp_custom.overrides.bom.make_variant_bom",
         

@@ -7,7 +7,7 @@ from erpnext.manufacturing.doctype.bom_creator.bom_creator import BOMCreator
 
 
 # =========================================================
-# 🔥 COMMON CALCULATION FUNCTION (FROM bom.js LOGIC)
+# COMMON CALCULATION FUNCTION (FROM bom.js LOGIC)
 # =========================================================
 def calculate_values(item):
 
@@ -54,9 +54,7 @@ def calculate_values(item):
 
     # Flanges / Rings
     elif item_group in ["Flanges", "Rings"]:
-        base_weight = (
-            math.pi * ((od / 2) ** 2 - (id_ / 2) ** 2) * thickness * density
-        ) / 1_000_000
+        base_weight = (math.pi * ((od / 2) ** 2 - (id_ / 2) ** 2) * thickness * density) / 1_000_000
 
     # Rods
     elif item_group == "Rods":
@@ -155,18 +153,20 @@ def upload_bom_excel(file_url):
 
             child[frappe_field] = value
 
-        # 🔥 AUTO CALCULATION HERE
+        # AUTO CALCULATION HERE
         child = calculate_values(child)
-
         data.append(child)
-
     return data
 
 
 # =========================================================
-# 🔥 CUSTOM BOM CREATOR
+# CUSTOM BOM CREATOR
 # =========================================================
 class CustomBOMCreator(BOMCreator):
+    # def validate(self):
+    #     super().validate()
+    #     for item in self.items:
+    #         calculate_values(item)
 
     def create_bom(self, row, production_item_wise_rm):
 
@@ -215,7 +215,7 @@ class CustomBOMCreator(BOMCreator):
 
         for item in production_item_wise_rm[(row.item_code, row.name)]["items"]:
 
-            # 🔥 AUTO CALCULATION AGAIN (SAFETY)
+            # AUTO CALCULATION AGAIN (SAFETY)
             calculate_values(item)
 
             bom_no = ""

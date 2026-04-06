@@ -1,4 +1,7 @@
+
 frappe.ui.form.on("Material Request", {
+    after_save(frm) {},
+
     refresh(frm) {
         if (frm.doc.docstatus !== 0) return;
 
@@ -9,8 +12,120 @@ frappe.ui.form.on("Material Request", {
             },
             __("Get Items From") 
         );
+    
+        override_bom_fetch(frm);
     }
 });
+
+function override_bom_fetch(frm) {
+    const original = frm.events.get_items_from_bom;
+
+    if (!original || frm.__bom_patched) return;
+
+    frm.__bom_patched = true;
+
+    frm.events.get_items_from_bom = function (frm) {
+
+        let d = new frappe.ui.Dialog({
+            title: __("Get Items from BOM"),
+            fields: [
+                {
+                    fieldname: "bom",
+                    fieldtype: "Link",
+                    label: __("BOM"),
+                    options: "BOM",
+                    reqd: 1
+                },
+                {
+                    fieldname: "warehouse",
+                    fieldtype: "Link",
+                    label: __("Warehouse"),
+                    options: "Warehouse",
+                    reqd: 1
+                },
+                {
+                    fieldname: "qty",
+                    fieldtype: "Float",
+                    label: __("Qty"),
+                    default: 1,
+                    reqd: 1
+                },
+                {
+                    fieldname: "fetch_exploded",
+                    fieldtype: "Check",
+                    label: __("Exploded"),
+                    default: 1
+                }
+            ],
+
+            primary_action_label: __("Get Items"),
+
+            primary_action(values) {
+
+                frappe.call({
+                    method: "erp_custom.erp_custom.overrides.material_request.get_bom_items_custom",
+                    args: {
+                        ...values,
+                        company: frm.doc.company
+                    },
+                    callback(r) {
+
+                        if (!r.message) return;
+
+                        erpnext.utils.remove_empty_first_row(frm, "items");
+
+                        r.message.forEach(item => {
+
+                            let row = frm.add_child("items");
+
+                            row.item_code = item.item_code;
+                            row.item_name = item.item_name;
+                            row.description = item.description;
+                            row.uom = item.stock_uom;
+                            row.stock_uom = item.stock_uom;
+                            row.qty = item.qty;
+                            row.warehouse = values.warehouse;
+
+                            // ✅ SAFE ASSIGN (NO undefined)
+                            row.item_group = item.item_group || "";
+
+                            row.custom_length = item.custom_length || 0;
+                            row.custom_width = item.custom_width || 0;
+                            row.custom_thickness = item.custom_thickness || 0;
+                            row.custom_density = item.custom_density || 0;
+
+                            row.custom_outer_diameter = item.custom_outer_diameter || 0;
+                            row.custom_inner_diameter = item.custom_inner_diameter || 0;
+                            row.custom_wall_thickness = item.custom_wall_thickness || 0;
+
+                            row.custom_kilogramskgs = item.custom_kilogramskgs || 0;
+                            row.custom_total_weight = item.custom_total_weight || 0;
+                        });
+
+                        frm.refresh_field("items");
+                    }
+                });
+            }
+        });
+
+        d.show();
+    };
+}
+
+
+// frappe.ui.form.on("Material Request", {
+//     refresh(frm) {
+//         if (frm.doc.docstatus !== 0) return;
+
+//         frm.add_custom_button(
+//             __("Cutting Plan"),
+//             function () {
+//                 open_cutting_plan_dialog(frm);
+//             },
+//             __("Get Items From") 
+//         );
+//     }
+// });
 
 function open_cutting_plan_dialog(frm) {
     let d = new frappe.ui.Dialog({
