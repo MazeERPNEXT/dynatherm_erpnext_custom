@@ -416,7 +416,10 @@ doc_events = {
      "Purchase Order": {
         # "validate": "erp_custom.erp_custom.overrides.purchase_order.purchase_order_validate",
         # "before_save": "erp_custom.erp_custom.overrides.purchase_order.purchase_order_before_save",
-    }
+    },
+    #  "Project": {
+    #     "onload": "erp_custom.erp_custom.overrides.projects_dashboard.project_onload"
+    # }
 }
 
 override_doctype_dashboards = {
