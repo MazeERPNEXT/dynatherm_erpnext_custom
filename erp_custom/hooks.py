@@ -344,6 +344,8 @@ doctype_js = {
     "Estimate": "public/js/estimate.js",
     "Estimate Item": "public/js/estimate_item.js",
     "Item": "public/js/item.js",
+    "Item": "public/js/item_list.js",
+    
     "BOM": "public/js/bom.js",
     "BOM Creator": "public/js/bom_creator.js",
     
@@ -379,7 +381,10 @@ override_whitelisted_methods = {
         "erp_custom.erp_custom.overrides.work_order.make_work_order",
         
     "erpnext.manufacturing.doctype.bom.bom.get_bom_items":
-        "erp_custom.erp_custom.overrides.material_request.get_bom_items_custom"
+        "erp_custom.erp_custom.overrides.material_request.get_bom_items_custom",
+        
+     "erpnext.selling.doctype.sales_order.sales_order.make_project":
+        "erp_custom.erp_custom.overrides.sales_order.make_project"
         
     # "erpnext.stock.doctype.material_request.material_request.get_items_from_bom":
     #     "erp_custom.erp_custom.overrides.material_request.get_items_from_bom_custom"
@@ -412,6 +417,10 @@ doc_events = {
         # "validate": "erp_custom.erp_custom.overrides.purchase_order.purchase_order_validate",
         # "before_save": "erp_custom.erp_custom.overrides.purchase_order.purchase_order_before_save",
     }
+}
+
+override_doctype_dashboards = {
+    "Project": "erp_custom.erp_custom.overrides.projects_dashboard.get_data"
 }
 
 # doc_events = {
