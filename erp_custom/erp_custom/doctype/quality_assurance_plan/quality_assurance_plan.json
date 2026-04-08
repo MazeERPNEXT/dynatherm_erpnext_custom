@@ -12,13 +12,14 @@
   "qap_id",
   "date",
   "tag_no",
+  "item_code",
+  "item_name",
   "qty",
   "column_break_dkiq",
   "project",
+  "sales_order_no",
   "purchase_order_no",
   "purchase_order_date",
-  "item_code",
-  "item_name",
   "item_label",
   "drg_no",
   "status",
@@ -50,6 +51,7 @@
   {
    "fieldname": "qap_id",
    "fieldtype": "Data",
+   "hidden": 1,
    "in_filter": 1,
    "in_list_view": 1,
    "label": "QAP ID",
@@ -61,6 +63,7 @@
    "label": "Tag No"
   },
   {
+   "fetch_from": "sales_order_no.po_no",
    "fieldname": "purchase_order_no",
    "fieldtype": "Data",
    "label": "Purchase Order No"
@@ -95,6 +98,7 @@
    "label": "QAP Date"
   },
   {
+   "fetch_from": "sales_order_no.po_date",
    "fieldname": "purchase_order_date",
    "fieldtype": "Date",
    "label": "Purchase Order Date"
@@ -104,6 +108,7 @@
    "fieldtype": "Section Break"
   },
   {
+   "default": "Dynatherm Alloys Pvt Ltd",
    "fieldname": "vendor",
    "fieldtype": "Link",
    "label": "Vendor",
@@ -171,12 +176,18 @@
    "fieldtype": "Link",
    "label": "Project",
    "options": "Project"
+  },
+  {
+   "fieldname": "sales_order_no",
+   "fieldtype": "Link",
+   "label": "Sales Order No",
+   "options": "Sales Order"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-03-24 14:23:07.690198",
+ "modified": "2026-04-08 12:39:25.322501",
  "modified_by": "Administrator",
  "module": "ERP Custom",
  "name": "Quality Assurance Plan",

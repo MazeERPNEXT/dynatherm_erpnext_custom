@@ -86,7 +86,6 @@
 // });
 
 
-
 frappe.ui.form.on('Project', {
     onload(frm) {
         // ✅ Auto set Financial Year only if empty
@@ -115,34 +114,34 @@ frappe.ui.form.on('Project', {
             });
         }, __('Create'));
 
-        // ✅ QAP Button (WORKING)
+        // ✅ QAP Button
         frm.add_custom_button(__('Quality Assurance Plan'), () => {
 
             frappe.new_doc('Quality Assurance Plan', {}, (qap) => {
 
                 // ✅ Parent Fields
                 qap.project = frm.doc.name;
+                qap.sales_order_no = frm.doc.project_name;
+                qap.date = frm.doc.expected_start_date;
                 qap.customer = frm.doc.customer;
                 qap.purchase_order_date = frm.doc.expected_start_date;
 
-                // ✅ Clear child table (safety)
+                // ✅ Ensure child table exists
                 qap.project_item = [];
 
-                // ✅ Map Child Table
+                // ✅ Map Project Child Table → QAP Child Table
                 (frm.doc.custom_project_detail || []).forEach(row => {
 
                     let child = frappe.model.add_child(
                         qap,
-                        'Project Item',      // Child Doctype Name
-                        'project_item'       // Fieldname in QAP
+                        'custom_project_detail', // ✅ Correct Child Doctype
+                        'project_item'           // ✅ Fieldname in QAP
                     );
 
                     child.item_code = row.item_code;
                     child.item_name = row.item_name;
-                    // child.custom_tag_no = row.tag_no;
-                    child.tag_no = row.custom_tag_no;
+                    child.tag_no = row.tag_no;
                     child.qty = row.qty;
-
                 });
 
             });

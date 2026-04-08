@@ -13,8 +13,8 @@ from frappe.model.document import Document
 
 
 class CuttingPlan(Document):
-    def validate(self):
-        self.sync_job_no_from_child()
+    # def validate(self):
+    #     self.sync_job_no_from_child()
 
     def sync_job_no_from_child(self):
         job_nos = set()
