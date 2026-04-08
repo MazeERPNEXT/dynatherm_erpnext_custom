@@ -3,7 +3,7 @@
 
 # def get_data():
 # 	return {
-# 		"fieldname": "project",
+# 		"fieldname": "prevdoc_docname",
 # 		"non_standard_fieldnames": {
 # 			"Auto Repeat": "reference_document",
 # 		},
@@ -30,20 +30,3 @@
 #         ],
 #     }
 
-
-from frappe import _
-
-def get_data():
-    return {
-        "fieldname": "project",
-        # "non_standard_fieldnames": {
-        #     # "Auto Repeat": "reference_document",
-        #     "Project": "name"
-        # },
-        "transactions": [
-            {
-                "label": _("Project"),
-                "items": ["Project"]
-            }
-        ],
-    }
