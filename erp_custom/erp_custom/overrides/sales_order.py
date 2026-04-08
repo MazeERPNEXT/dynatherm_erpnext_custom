@@ -23,13 +23,13 @@ def make_project(source_name, target_doc=None):
         
     project.set("custom_project_detail", [])  # clear first
 
-    for item in so.items:
-        project.append("custom_project_detail", {
-            "item_code": item.item_code,
-            "item_name": item.item_name,
-            "tag_no": item.custom_tag_no,
-            "qty": item.qty,
-            "uom": item.uom
-        })
+    # for item in so.items:
+    #     project.append("custom_project_detail", {
+    #         "item_code": item.item_code,
+    #         "item_name": item.item_name,
+    #         "tag_no": item.custom_tag_no,
+    #         "qty": item.qty,
+    #         "uom": item.uom
+    #     })
 
     return project
