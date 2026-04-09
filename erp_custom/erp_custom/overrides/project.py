@@ -28,10 +28,6 @@
 
 import frappe
 
-def autoname(self):
-    if self.project_name:
-        self.name = f"{self.project_name}"
-
 def on_update(doc, method):
     """
     After Project is saved, update Sales Order Item.project
@@ -56,44 +52,44 @@ def on_update(doc, method):
     so.save(ignore_permissions=True)
     
     
-# def on_trash(doc, method):
-#     """
-#     Before deleting Project:
-#     remove links from Sales Order & Purchase Order
-#     """
+def on_trash(doc, method):
+    """
+    Before deleting Project:
+    remove links from Sales Order & Purchase Order
+    """
 
-#     # -------------------------
-#     # 🔹 SALES ORDER
-#     # -------------------------
-#     so_list = frappe.get_all(
-#         "Sales Order Item",
-#         filters={"project": doc.name},
-#         fields=["name", "parent"]
-#     )
+    # -------------------------
+    # 🔹 SALES ORDER
+    # -------------------------
+    so_list = frappe.get_all(
+        "Sales Order Item",
+        filters={"project": doc.name},
+        fields=["name", "parent"]
+    )
 
-#     for row in so_list:
-#         so = frappe.get_doc("Sales Order", row.parent)
+    for row in so_list:
+        so = frappe.get_doc("Sales Order", row.parent)
 
-#         for item in so.items:
-#             if item.project == doc.name:
-#                 item.project = None
+        for item in so.items:
+            if item.project == doc.name:
+                item.project = None
 
-#         so.save(ignore_permissions=True)
+        so.save(ignore_permissions=True)
 
-#     # -------------------------
-#     # 🔹 PURCHASE ORDER
-#     # -------------------------
-#     po_list = frappe.get_all(
-#         "Purchase Order Item",
-#         filters={"project": doc.name},
-#         fields=["name", "parent"]
-#     )
+    # -------------------------
+    # 🔹 PURCHASE ORDER
+    # -------------------------
+    po_list = frappe.get_all(
+        "Purchase Order Item",
+        filters={"project": doc.name},
+        fields=["name", "parent"]
+    )
 
-#     for row in po_list:
-#         po = frappe.get_doc("Purchase Order", row.parent)
+    for row in po_list:
+        po = frappe.get_doc("Purchase Order", row.parent)
 
-#         for item in po.items:
-#             if item.project == doc.name:
-#                 item.project = None
+        for item in po.items:
+            if item.project == doc.name:
+                item.project = None
 
-#         po.save(ignore_permissions=True)
+        po.save(ignore_permissions=True)

@@ -112,10 +112,8 @@ function show_pdf_preview(frm) {
     if (frm.doc.cutting_diagram) {
         let file_url = frm.doc.cutting_diagram;
         frm.fields_dict.diagram_preview.$wrapper.html(`
-            <iframe 
-                src="${file_url}#zoom=100" 
-                width="100%" 
-                height="600px"
+            <iframe src="${file_url}#zoom=100" 
+                width="100%" height="600px"
                 style="border:1px solid #ccc; border-radius:8px;">
             </iframe>
         `);

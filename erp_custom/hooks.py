@@ -420,7 +420,7 @@ doc_events = {
      
      "Project": {
         "on_update": "erp_custom.erp_custom.overrides.project.on_update",
-        # "on_trash": "erp_custom.erp_custom.overrides.project.on_trash"
+        "on_trash": "erp_custom.erp_custom.overrides.project.on_trash"
     },
 
     #  "Project": {
