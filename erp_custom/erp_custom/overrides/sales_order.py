@@ -29,7 +29,9 @@ def make_project(source_name, target_doc=None):
             "item_name": item.item_name,
             "tag_no": item.custom_tag_no,
             "qty": item.qty,
-            "uom": item.uom
+            "uom": item.uom,
+            "description": item.description,
+            "certificate_type": item.custom_certificate_type,
         })
 
     return project

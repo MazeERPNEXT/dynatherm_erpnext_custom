@@ -108,7 +108,7 @@
    "fieldtype": "Section Break"
   },
   {
-   "default": "Dynatherm Alloys Pvt Ltd",
+   "default": "Dynatherm Alloys Private  Limited",
    "fieldname": "vendor",
    "fieldtype": "Link",
    "label": "Vendor",
@@ -187,7 +187,7 @@
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-04-08 12:39:25.322501",
+ "modified": "2026-04-08 16:50:09.853270",
  "modified_by": "Administrator",
  "module": "ERP Custom",
  "name": "Quality Assurance Plan",
