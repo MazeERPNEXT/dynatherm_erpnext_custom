@@ -113,3 +113,19 @@ def make_request_for_quotation(cutting_plan):
 
     rfq.insert(ignore_permissions=True)
     return rfq.name
+
+
+
+@frappe.whitelist()
+def get_cutting_plans(project):
+    data = frappe.db.sql("""
+        SELECT 
+            cp.name AS cutting_plan_no,
+            cp.date
+        FROM `tabCutting Plan` cp
+        INNER JOIN `tabCutting Plan Item` cpi
+            ON cpi.parent = cp.name
+        WHERE cpi.project = %s
+    """, (project,), as_dict=1)
+
+    return data

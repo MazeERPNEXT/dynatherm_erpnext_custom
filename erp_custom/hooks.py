@@ -417,6 +417,12 @@ doc_events = {
         # "validate": "erp_custom.erp_custom.overrides.purchase_order.purchase_order_validate",
         # "before_save": "erp_custom.erp_custom.overrides.purchase_order.purchase_order_before_save",
     },
+     
+     "Project": {
+        "on_update": "erp_custom.erp_custom.overrides.project.on_update",
+        # "on_trash": "erp_custom.erp_custom.overrides.project.on_trash"
+    },
+
     #  "Project": {
     #     "onload": "erp_custom.erp_custom.overrides.projects_dashboard.project_onload"
     # }

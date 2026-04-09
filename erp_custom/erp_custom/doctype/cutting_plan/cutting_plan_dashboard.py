@@ -17,16 +17,15 @@
 
 
 
-# from frappe import _
+from frappe import _
 
-# def get_data():
-#     return {
-#         "fieldname": "project",
-#         "transactions": [
-#             {
-#                 "label": _("Project"),
-#                 "items": ["Project"]
-#             }
-#         ],
-#     }
-
+def get_data():
+    return {
+        "fieldname": "project",
+        "transactions": [
+            {
+                "label": _("Project"),
+                "items": ["Project"]
+            }
+        ],
+    }

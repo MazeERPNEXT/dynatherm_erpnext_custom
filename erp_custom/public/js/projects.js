@@ -147,5 +147,36 @@ frappe.ui.form.on('Project', {
             });
 
         }, __('Create'));
+
+        fetch_cutting_plans(frm);
     }
 });
+
+
+
+function fetch_cutting_plans(frm) {
+
+    frappe.call({
+        method: "erp_custom.erp_custom.doctype.cutting_plan.cutting_plan.get_cutting_plans",
+        args: {
+            project: frm.doc.name
+        },
+        callback: function(r) {
+
+            if (r.message) {
+
+                // ✅ Clear old data
+                frm.clear_table("custom_cutting_plan_project");
+
+                r.message.forEach(d => {
+                    let row = frm.add_child("custom_cutting_plan_project");
+
+                    row.cutting_plan_no = d.cutting_plan_no;
+                    row.date = d.date;
+                });
+
+                frm.refresh_field("custom_cutting_plan_project");
+            }
+        }
+    });
+}
