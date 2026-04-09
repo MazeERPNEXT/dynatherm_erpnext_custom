@@ -131,43 +131,65 @@ frappe.ui.form.on("Sales Order", {
         // ✅ Prevent duplicate button
         if (!frm.custom_project_btn_added) {
 
+            // frm.add_custom_button(__('Project'), () => {
+
+            //     // 🔥 Create Project (default ERPNext mapping)
+            //     frappe.model.open_mapped_doc({
+            //         method: "erpnext.selling.doctype.sales_order.sales_order.make_project",
+            //         frm: frm
+            //     });
+
+            //     // 🔥 After Project loads → map certificates
+            //     frappe.after_ajax(() => {
+
+            //         let project_frm = cur_frm;
+
+            //         // safety check
+            //         if (!project_frm || project_frm.doctype !== "Project") return;
+
+            //         console.log("Mapping certificates...");
+
+            //         // ✅ CLEAR existing rows
+            //         project_frm.clear_table("custom_certificates");
+
+            //         // ✅ MAP from Sales Order → Project
+            //         if (frm.doc.custom_certificate_type?.length) {
+
+            //             frm.doc.custom_certificate_type.forEach(row => {
+
+            //                 let child = project_frm.add_child("custom_certificates");
+
+            //                 child.certificate_type = row.certificate_type;
+            //             });
+
+            //             project_frm.refresh_field("custom_certificates");
+            //         }
+
+            //     });
+
+            // }, __('Create'));
+
             frm.add_custom_button(__('Project'), () => {
 
-                // 🔥 Create Project (default ERPNext mapping)
-                frappe.model.open_mapped_doc({
-                    method: "erpnext.selling.doctype.sales_order.sales_order.make_project",
-                    frm: frm
+            // ✅ Check remaining items
+            let pending = frm.doc.items.filter(row => !row.project);
+
+            if (pending.length === 0) {
+                frappe.msgprint({
+                    title: __('No Pending Items'),
+                    message: 'All items already have Projects',
+                    indicator: 'red'
                 });
+                return;
+            }
 
-                // 🔥 After Project loads → map certificates
-                frappe.after_ajax(() => {
+            // ✅ Create Project for remaining items only
+            frappe.model.open_mapped_doc({
+                method: "erp_custom.erp_custom.overrides.sales_order.make_project",
+                frm: frm
+            });
 
-                    let project_frm = cur_frm;
-
-                    // safety check
-                    if (!project_frm || project_frm.doctype !== "Project") return;
-
-                    console.log("Mapping certificates...");
-
-                    // ✅ CLEAR existing rows
-                    project_frm.clear_table("custom_certificates");
-
-                    // ✅ MAP from Sales Order → Project
-                    if (frm.doc.custom_certificate_type?.length) {
-
-                        frm.doc.custom_certificate_type.forEach(row => {
-
-                            let child = project_frm.add_child("custom_certificates");
-
-                            child.certificate_type = row.certificate_type;
-                        });
-
-                        project_frm.refresh_field("custom_certificates");
-                    }
-
-                });
-
-            }, __('Create'));
+        });
 
             frm.custom_project_btn_added = true;
         }

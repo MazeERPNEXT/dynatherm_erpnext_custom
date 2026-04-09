@@ -28,29 +28,51 @@
 
 import frappe
 
+# def on_update(doc, method):
+#     """
+#     After Project is saved, update Sales Order Item.project
+#     """
+
+#     if not doc.sales_order:
+#         return
+
+#     so = frappe.get_doc("Sales Order", doc.sales_order)
+
+#     for proj_row in doc.custom_project_detail:
+
+#         for so_item in so.items:
+
+#             # ✅ Match logic (use tag_no if available)
+#             if (
+#                 so_item.item_code == proj_row.item_code
+#                 and not so_item.project
+#             ):
+#                 so_item.project = doc.name
+
+#     so.save(ignore_permissions=True)
+   
 def on_update(doc, method):
-    """
-    After Project is saved, update Sales Order Item.project
-    """
 
     if not doc.sales_order:
         return
 
     so = frappe.get_doc("Sales Order", doc.sales_order)
 
+    updated = False
+
     for proj_row in doc.custom_project_detail:
 
         for so_item in so.items:
 
-            # ✅ Match logic (use tag_no if available)
             if (
                 so_item.item_code == proj_row.item_code
                 and not so_item.project
             ):
                 so_item.project = doc.name
+                updated = True
 
-    so.save(ignore_permissions=True)
-    
+    if updated:
+        so.save(ignore_permissions=True) 
     
 def on_trash(doc, method):
     """
