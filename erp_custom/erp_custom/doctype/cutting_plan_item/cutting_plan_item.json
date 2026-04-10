@@ -14,7 +14,7 @@
   "column_break_adhv",
   "drawing_no",
   "scale",
-  "part_name_manual",
+  "part_name",
   "dimensions_section",
   "length",
   "width",
@@ -162,7 +162,7 @@
    "label": "Item Tag No (FG)"
   },
   {
-   "fieldname": "part_name_manual",
+   "fieldname": "part_name",
    "fieldtype": "Small Text",
    "label": "Part Name (Manual)"
   }
@@ -171,7 +171,7 @@
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2026-04-06 16:23:35.787978",
+ "modified": "2026-04-10 10:49:56.180749",
  "modified_by": "Administrator",
  "module": "ERP Custom",
  "name": "Cutting Plan Item",

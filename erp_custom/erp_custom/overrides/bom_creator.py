@@ -27,7 +27,7 @@ def calculate_values(item):
     qty = get_val("qty")
 
     if not density:
-        set_val("custom_kilogramskgs", 0)
+        # set_val("custom_kilogramskgs", 0)
         set_val("custom_total_weight", 0)
         set_val("custom_scrap_margin_kgs", 0)
         set_val("custom_transportation_cost_kgs", 0)
@@ -66,7 +66,8 @@ def calculate_values(item):
         r = max(R - wall, 0)
         base_weight = (math.pi * (R**2 - r**2) * length * density) / 1_000_000
 
-    set_val("custom_kilogramskgs", flt(base_weight, 4))
+    if density:
+         set_val("custom_kilogramskgs", flt(base_weight, 4))
 
     total_weight = flt(qty * base_weight, 4)
     set_val("custom_total_weight", total_weight)
@@ -112,6 +113,7 @@ def upload_bom_excel(file_url):
         "UOM": "uom",
         "Parent Row No": "parent_row_no",
 
+        "Part Number": "custom_part_number",
         "Length (mm)": "custom_length",
         "Width (mm)": "custom_width",
         "Thickness (mm)": "custom_thickness",
@@ -158,15 +160,24 @@ def upload_bom_excel(file_url):
         data.append(child)
     return data
 
-
 # =========================================================
 # CUSTOM BOM CREATOR
 # =========================================================
+
 class CustomBOMCreator(BOMCreator):
-    # def validate(self):
-    #     super().validate()
-    #     for item in self.items:
-    #         calculate_values(item)
+    @frappe.whitelist()
+    def process_item_selection(self, item_idx=None):
+        pass
+    
+    def validate_duplicate_item(self):
+        pass
+    
+    def validate(self):
+        super().validate()
+
+        # your calculations
+        for item in self.items:
+            calculate_values(item)
 
     def create_bom(self, row, production_item_wise_rm):
 
@@ -241,6 +252,7 @@ class CustomBOMCreator(BOMCreator):
             }
 
             CUSTOM_FIELDS = [
+                "custom_part_number",
                 "custom_length",
                 "custom_width",
                 "custom_thickness",
@@ -272,3 +284,4 @@ class CustomBOMCreator(BOMCreator):
         bom.submit()
 
         production_item_wise_rm[(row.item_code, row.name)].bom_no = bom.name
+

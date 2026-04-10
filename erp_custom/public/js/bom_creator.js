@@ -62,7 +62,19 @@ frappe.ui.form.on('BOM Creator Item', {
     custom_scrap_margin_percentage: trigger_all,
     custom_transportation_cost: trigger_all,
     item_group: trigger_all,
-    custom_item_group: trigger_all
+    custom_item_group: trigger_all,
+    
+    custom_shape(frm, cdt, cdn) {
+    let row = locals[cdt][cdn];
+
+    // reset all
+    row.custom_width = 0;
+    row.custom_thickness = 0;
+    row.custom_inner_diameter = 0;
+    row.custom_wall_thickness = 0;
+
+    frm.refresh_field("items");
+}
 });
 
 
@@ -90,15 +102,53 @@ function calculate_kgs(frm, cdt, cdn) {
         return;
     }
 
+    // if (type === "Plates" && custom_shape ===  "rectangle") {
+    //     base_weight = (flt(row.custom_length) * flt(row.custom_width) * flt(row.custom_thickness) * density) / 1000000;
+    // }
     if (type === "Plates") {
+
+    const shape = row.custom_shape;
+
+    // 🔷 Rectangle
+    if (shape === "Rectangle") {
         base_weight = (flt(row.custom_length) * flt(row.custom_width) * flt(row.custom_thickness) * density) / 1000000;
     }
+
+    // 🔷 Circle (solid)
+    else if (shape === "Circle") {
+        const R = flt(row.custom_outer_diameter) / 2;
+
+        base_weight = (Math.PI * R * R * flt(row.custom_length) * density) / 1000000;
+    }
+
+    // 🔷 Hollow
+    else if (shape === "Hollow") {
+        const R = flt(row.custom_outer_diameter) / 2;
+        const r = Math.max(R - flt(row.custom_wall_thickness), 0);
+
+        base_weight = (Math.PI * (R*R - r*r) * flt(row.custom_length) * density) / 1000000;
+    }
+}
 
     else if (["Tubes", "Pipes"].includes(type)) {
         const R = flt(row.custom_outer_diameter) / 2;
         const r = Math.max(R - flt(row.custom_wall_thickness), 0);
 
         base_weight = (π * (R**2 - r**2) * flt(row.custom_length) * density) / 1000000;
+    }
+
+    else if (["Flanges", "Rings"].includes(type)) {
+        base_weight = (π * ((flt(row.custom_outer_diameter) / 2) ** 2 - (flt(row.custom_inner_diameter) / 2) ** 2) * flt(row.custom_thickness) * density) / 1_000_000;
+    }
+
+    else if (type === "Rods") {
+        base_weight = (π * (flt(row.custom_outer_diameter) / 2) ** 2 * flt(row.custom_length) * density) / 1_000_000;
+    }
+
+    else if (type === "Forgings") {
+        const R = flt(row.custom_outer_diameter) / 2;
+        const r = Math.max(R - flt(row.custom_wall_thickness), 0);
+        base_weight = (π * (R ** 2 - r ** 2) * flt(row.custom_length) * density) / 1_000_000;
     }
 
     frappe.model.set_value(cdt, cdn, "custom_kilogramskgs", flt(base_weight, 4));
