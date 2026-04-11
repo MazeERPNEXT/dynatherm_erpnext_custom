@@ -42,9 +42,28 @@ def calculate_values(item):
     id_ = get_val("custom_inner_diameter")
     wall = get_val("custom_wall_thickness")
 
-    # Plates
+    # Plates (SHAPE BASED)
     if item_group == "Plates":
-        base_weight = (length * width * thickness * density) / 1_000_000
+        shape = item.get("custom_shape") if isinstance(item, dict) else getattr(item, "custom_shape", None)
+
+        if not shape:
+            base_weight = 0
+
+        # Rectangle
+        elif shape == "Rectangle":
+            if length and width and thickness:
+                base_weight = (length * width * thickness * density) / 1_000_000
+
+        # Circle
+        elif shape == "Circle":
+            if length and od:
+                base_weight = ((math.pi / 4) * (od ** 2) * length * density) / 1_000_000
+
+        # Hollow
+        elif shape == "Hollow":
+            if length and id_ and thickness:
+                OD = id_ + (2 * thickness)
+                base_weight = ((math.pi / 4) * ((OD ** 2) - (id_ ** 2)) * length * density) / 1_000_000
 
     # Tubes / Pipes
     elif item_group in ["Tubes", "Pipes"]:
@@ -84,7 +103,7 @@ def calculate_values(item):
 
 
 # =========================================================
-# 🔥 EXCEL UPLOAD METHOD
+# EXCEL UPLOAD METHOD
 # =========================================================
 @frappe.whitelist()
 def upload_bom_excel(file_url):
@@ -105,6 +124,7 @@ def upload_bom_excel(file_url):
         "Item Code": "item_code",
         "Item Name": "item_name",
         "Item Group": "item_group",
+        "Shape": "custom_shape",
         "Finished Goods Item": "fg_item",
         "Is Expandable": "is_expandable",
         "BOM Created": "bom_created",
@@ -253,6 +273,7 @@ class CustomBOMCreator(BOMCreator):
 
             CUSTOM_FIELDS = [
                 "custom_part_number",
+                "custom_shape",
                 "custom_length",
                 "custom_width",
                 "custom_thickness",
