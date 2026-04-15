@@ -1,0 +1,454 @@
+<style>
+        {% include "erp_custom/erp_custom/print_format/po_format/po_format.css" %}
+</style>
+{% set company_doc = frappe.get_doc("Company", doc.company) %}
+{% set supplier_doc = frappe.get_doc("Supplier", doc.supplier) %}
+{% set row_limit = 5 %}
+{% set total_items = doc.items|length %}
+
+<!-- ================= ITEMS PAGES ================= -->
+{% for i in range(0, total_items if total_items > 0 else 1, row_limit) %}
+{% set items = doc.items[i:i+row_limit] if total_items > 0 else [] %}
+
+<div class="page">
+
+<!-- HEADER -->
+<div class="header">
+<table>
+
+<tr>
+
+<td class="no-border" style="width:50%; vertical-align:top;">
+
+    {% if company_doc.company_logo %}
+    <img src="{{ company_doc.company_logo }}"
+         style="max-height:60px; float:left; margin-right:12px;">
+    {% endif %}
+
+    <div style="line-height:1.4;">
+        <b style="font-size:16px;">
+        No.1, 1st Floor, 4th Cross Street, Devaraj Nagar, Sholinganallur,
+        Chennai - 600119<br></b>
+        <b style="font-size:16px;">GSTIN: {{ company_doc.gstin }}</b>
+    </div>
+
+</td>
+
+<td class="no-border" style="width:50%; padding-left:12px !important; font-size:14px; line-height:1.2;">
+
+    <b style="display:inline-block; width:140px;">ORDER No</b> :
+    <b style="font-size:13px;">{{ doc.name }}</b><br>
+
+    <b style="display:inline-block; width:140px;">ORDER Date</b> :
+    {{ frappe.format(doc.transaction_date, {'fieldtype':'Date'}) }}<br>
+    <b style="display:inline-block; width:140px;">Required Date</b> :
+    {{ frappe.format(doc.schedule_date, {'fieldtype':'Date'}) or '' }}<br>
+    
+    {% if doc.items[i].supplier_quotation %}
+    
+    {% set sq = frappe.get_doc("Supplier Quotation", doc.items[i].supplier_quotation) %}
+
+    <div>
+        
+        
+        <b style="display:inline-block; width:140px;">Supplier Ref no</b> :
+    {{ frappe.format(sq.quotation_number) or "" }}<br>
+        <b style="display:inline-block; width:140px;">Supplier Ref Date</b> :{{ frappe.format(sq.transaction_date) or "" }}
+    
+        
+    </div>
+{% endif %}
+<b style="display:inline-block; width:140px;">DAPL Job Reference</b> : {{doc.custom_dapl_reference or "" }}
+</td>
+
+</tr>
+
+{% if i == 0 %}
+
+<tr>
+<td colspan="2" class="header-title">
+
+{% if supplier_doc and supplier_doc.get("is_transporter") %}
+    TRANSPORT ORDER
+
+{% elif (supplier_doc and supplier_doc.get("is_inspection_agency")) or doc.is_subcontracted %}
+    WORK ORDER
+
+{% else %}
+    PURCHASE ORDER
+{% endif %}
+
+</td>
+</tr>
+
+<tr>
+<td>
+<h3>Supplier</h3>
+{{ doc.supplier_name }}<br>
+{{ doc.address_display }}
+</td>
+
+<td>
+<h3>Ship To</h3>
+{{ doc.shipping_address_name or company_doc.company_name }}<br>
+{{ doc.shipping_address_display or "" }}
+</td>
+</tr>
+
+{% endif %}
+
+</table>
+</div>
+
+<!-- CONTENT -->
+<div class="content {{ 'empty' if items|length == 0 else '' }}">
+{% if items|length == 0 %}
+<div><b>No Items Available</b></div>
+{% else %}
+
+<table>
+<thead>
+<tr>
+    <th style="width:4%">Sl</th>
+    <th style="width:28%">Description</th>
+    <th style="width:21%">Dimension</th>
+    <th style="width:10%">Qty</th>
+    <th style="width:8%">UOM</th>
+    <th style="width:14%">Rate</th>
+    <th style="width:15%">Amount</th>
+</tr>
+</thead>
+
+<tbody>
+{% for item in items %}
+<tr>
+
+<td class="center">{{ loop.index + i }}</td>
+<td>
+    <b>{{ item.item_name }}</b>
+
+    {% if item.description %}
+        <span>{{ item.description }}</span><br>
+    {% endif %}
+
+    {% if item.custom_item_brand %}
+        <span><b>Brand:</b> {{ item.custom_item_brand }}</span><br>
+    {% endif %}
+
+    {% if item.gst_hsn_code or item.hsn_code %}
+        <span><b>HSN:</b> {{ item.gst_hsn_code or item.hsn_code }}</span>
+    {% endif %}
+</td>
+
+<td class="center">
+
+{% if item.item_group == "Plates" %}
+    {{ item.custom_length or 0 }} x {{ item.custom_width or 0 }} x {{ item.custom_thickness or 0 }} mm<br>
+    <b>
+    Wt/Pc: {{ frappe.utils.flt(item.custom_kilogramskgs, 2) }} Kg<br>
+    Total: {{ frappe.utils.flt(item.custom_total_weights, 2) }} Kg
+    </b>
+
+{% elif item.item_group == "Pipes" %}
+    OD {{ item.custom_outer_diameter or 0 }} x {{ item.custom_wall_thickness or 0 }} mm<br>
+    <b>
+    {{ frappe.utils.flt(item.custom_kilogramskgs, 2) }} Kg / Pc<br>
+    {{ frappe.utils.flt(item.custom_total_weights, 2) }} Kg Total
+    </b>
+
+{% elif item.item_group == "Fasteners" %}
+    M {{ item.custom_outer_diameter or 0 }} x {{ item.custom_length or 0 }} LG <br>
+
+{% elif item.item_group == "Forgings" %}
+    M{{ item.custom_outer_diameter or 0 }} x {{ item.custom_length or 0 }} LG<br>
+    <b>
+    {{ frappe.utils.flt(item.custom_kilogramskgs, 2) }} Kg / Pc<br>
+    {{ frappe.utils.flt(item.custom_total_weights, 2) }} Kg Total
+    </b>
+
+{% elif item.item_group == "Rods" %}
+    {{ item.custom_outer_diameter or 0 }} x {{ item.custom_length or 0 }} mm<br>
+    <b>
+    {{ frappe.utils.flt(item.custom_kilogramskgs, 2) }} Kg / Pc<br>
+    {{ frappe.utils.flt(item.custom_total_weights, 2) }} Kg Total
+    </b>
+
+{% else %}
+    {{ item.dimension or "" }}
+{% endif %}
+
+</td>
+
+<td class="center">{{ item.qty }}</td>
+<td class="center">{{ item.uom }}</td>
+
+{# ✅ Rate Logic #}
+{% if item.item_group in ["Plates", "Pipes"] %}
+    {% set rate = item.custom_rate_per_kg or item.rate %}
+    {% set is_kg = true %}
+{% else %}
+    {% set rate = item.rate %}
+    {% set is_kg = false %}
+{% endif %}
+
+<td class="right">
+    {{ frappe.format_value(rate, {"fieldtype": "Currency"}) }}
+    {% if is_kg %} / Kg{% endif %}
+</td>
+
+{# ✅ Amount Logic (IMPORTANT FIX) #}
+<td class="right">
+{% if item.item_group in ["Plates", "Pipes"] %}
+    {{ frappe.format_value((item.amount), {"fieldtype": "Currency"}) }}
+{% else %}
+    {{ frappe.format_value(item.amount, {"fieldtype": "Currency"}) }}
+{% endif %}
+</td>
+
+</tr>
+{% endfor %}
+
+{% for _ in range(row_limit - items|length) %}
+<tr>
+<td>&nbsp;</td><td></td><td></td><td></td><td></td><td></td><td></td>
+</tr>
+{% endfor %}
+</tbody>
+</table>
+
+{% endif %}
+</div>
+
+<!-- FOOTER -->
+<div class="footer">
+<table>
+
+{% if total_items > 0 and i + row_limit >= total_items %}
+
+<tr>
+    <td colspan="4">
+        <b>IN WORDS: {{ doc.in_words }}</b>
+    </td>
+
+    <td colspan="3">
+        <table>
+            <tr>
+                <td>Subtotal</td>
+                <td class="right">
+                    {{ frappe.format_value(doc.total, {"fieldtype":"Currency"}) }}
+                </td>
+            </tr>
+               <tr>
+                <td>Total Taxes</td>
+                <td class="right">
+                    {{ frappe.format_value(doc.total_taxes_and_charges, {"fieldtype":"Currency"}) }}
+                </td>
+            </tr>
+            <tr>
+                <td><b>Total</b></td>
+                <td class="right">
+                    <b>{{ frappe.format_value(doc.grand_total, {"fieldtype":"Currency"}) }}</b>
+                </td>
+            </tr>
+        </table>
+    </td>
+</tr>
+
+{% endif %}
+
+<tr>
+    
+<td colspan="7" class="right">
+<table style="width:100%;"> 
+
+    <tr align="center"class="footer">
+        <td>Prepared By</td>
+        <td>Checked By</td>
+        <td>Verified By</td>
+        <td>Approved By</td>
+        <td>Approved By</td>
+    </tr>
+
+    <tr align="center">
+        <td>Purchase Executive</td>
+        <td>Purchase Manager</td>
+        <td>Finance Manager</td>
+        <td>Plant Head</td>
+        <td>Finance Head</td>
+    </tr>
+
+    {# ---------- FUNCTION STYLE REUSE ---------- #}
+    {% macro get_dt(state) %}
+        {% set rec = frappe.get_list(
+            "Workflow Action",
+            fields=["modified"],
+            filters={"reference_name": doc.name, "workflow_state": state},
+            order_by="modified desc",
+            limit_page_length=1
+        ) %}
+        {% if rec %}
+            {% set dt = frappe.utils.get_datetime(rec[0].modified) %}
+            {{ dt.strftime("%d-%m-%Y") }}||{{ dt.strftime("%H:%M:%S") }}
+        {% else %}
+            ||
+        {% endif %}
+    {% endmacro %}
+
+    {# ---------- FETCH VALUES ---------- #}
+    {% set chk = get_dt("Approval Pending By Purchase Manager").split("||") %}
+    {% set ver = get_dt("Approval Pending by Finance Manager").split("||") %}
+    {% set app = get_dt("Approval Pending by Plant Head").split("||") %}
+    {% set fin = get_dt("Approval pending by Finance Head").split("||") %}
+
+    <tr align="left" >
+        <td >Date : {{ frappe.utils.get_datetime(doc.creation).strftime("%d-%m-%Y") }}</td>
+        <td>Date : {{ chk[0] }}</td>
+        <td>Date : {{ ver[0] }}</td>
+        <td>Date : {{ app[0] }}</td>
+        <td>Date : {{ fin[0] }}</td>
+    </tr>
+
+    <tr align="left">
+        <td>Time : {{ frappe.utils.get_datetime(doc.creation).strftime("%H:%M:%S") }}</td>
+        <td>Time : {{ chk[1] }}</td>
+        <td>Time : {{ ver[1] }}</td>
+        <td>Time : {{ app[1] }}</td>
+        <td>Time : {{ fin[1] }}</td>
+    </tr>
+
+</table>
+</td>
+</tr>
+
+</table>
+</div>
+<p align="center">This is a Computer-Generated Document and does not require any Signature/Seal</p>
+</div>
+
+{% if not loop.last %}
+<div class="page-break"></div>
+{% endif %}
+
+{% endfor %}
+
+<!-- ================= TERMS PAGE ================= -->
+{% if total_items > 0 %}
+<div class="page-break"></div>
+
+<div class="page">
+
+<div class="header">
+<table>
+
+<tr>
+
+<td class="no-border" style="width:50%; vertical-align:top;">
+
+    {% if company_doc.company_logo %}
+    <img src="{{ company_doc.company_logo }}"
+         style="max-height:60px; float:left; margin-right:12px;">
+    {% endif %}
+
+    <div style="line-height:1.4;">
+        <b style="font-size:16px;"><br>
+        No.1, 1st Floor, 4th Cross Street, Devaraj Nagar, Sholinganallur,
+        Chennai - 600119<br></b>
+        <b style="font-size:16px;">GSTIN: {{ company_doc.gstin }}</b>
+    </div>
+
+</td>
+
+<td class="no-border" style="width:50%; padding-left:12px !important; font-size:16px; line-height:1.6;">
+
+    <b style="display:inline-block; width:140px;">ORDER No</b> :
+    <b style="font-size:13px;">{{ doc.name }}</b><br>
+
+    <b style="display:inline-block; width:140px;">ORDER Date</b> :
+    {{ frappe.format(doc.transaction_date, {'fieldtype':'Date'}) }}<br>
+    <b style="display:inline-block; width:140px;">Required Date</b> :
+    {{ frappe.format(doc.schedule_date, {'fieldtype':'Date'}) or '' }}<br>
+
+    <b style="display:inline-block; width:140px;">Supplier Ref No</b> :
+    {{ doc.supplier_ref_no or "" }}<br>
+
+    <b style="display:inline-block; width:140px;">Supplier Ref Date</b> :
+    {{ frappe.format(doc.supplier_ref_date, {'fieldtype':'Date'}) or "" }}<br>
+</td>
+
+</tr>
+
+<!-- 🔥 TITLE (ONLY CHANGE) -->
+<tr>
+<td colspan="2" class="header-title">
+    TERMS & CONDITIONS
+</td>
+</tr>
+
+
+
+</table>
+</div>
+
+<div class="content" style="line-height:1.6; font-size:11px;">
+    
+    <p>
+        {{ doc.terms or "Standard terms and conditions apply." }}
+    </p>
+
+</div>
+
+<div class="footer">
+<table style="width:100%;"> 
+                <tr class="footer">
+                    <td>Prepared By</td>
+                    <td>Checked By</td>
+                    <td>Verified By</td>
+                    <td>Approved By</td>
+                    <td>Approved By</td>
+                </tr>
+                <tr>
+                    <td>Purchase Executive</td>
+                    <td>Purchase Manager</td>
+                    <td>Finance Manager</td>
+                    <td>Plant Head</td>
+                    <td>Finance Head</td>
+                </tr>
+                {% set checker_by_list = frappe.get_list("Workflow Action",fields=["modified"],filters={"reference_name": doc.name, "workflow_state": "Approval Pending By Purchase Manager"}) %}
+                {% set checker = checker_by_list | map(attribute="modified") | join(", ") %}
+                {% set date = frappe.utils.get_datetime(checker).strftime("%d-%m-%Y") if checker else "" %}
+                {% set time = frappe.utils.get_datetime(checker).strftime("%H:%M:%S") if checker else "" %}
+    
+                {% set verified_by_list = frappe.get_list("Workflow Action",fields=["modified"],filters={"reference_name": doc.name, "workflow_state": "Approval Pending by Finance Manager"}) %}
+                {% set verified = verified_by_list | map(attribute="modified") | join(", ") %}
+                {% set verified_date = frappe.utils.get_datetime(verified).strftime("%d-%m-%Y") if verified else "" %}
+                {% set verified_time = frappe.utils.get_datetime(verified).strftime("%H:%M:%S") if verified else ""%}
+                
+                {% set Approve_by_list = frappe.get_list("Workflow Action",fields=["modified"],filters={"reference_name": doc.name, "workflow_state": "Approval Pending by Plant Head"}) %}
+                {% set Approve = Approve_by_list | map(attribute="modified") | join(", ") %}
+                {% set Approve_date = frappe.utils.get_datetime(Approve).strftime("%d-%m-%Y") if Approve else "" %}
+                {% set Approve_time = frappe.utils.get_datetime(Approve).strftime("%H:%M:%S") if Approve else "" %}
+                
+                {% set Approved_by_list = frappe.get_list("Workflow Action",fields=["modified"],filters={"reference_name": doc.name, "workflow_state": "Approval pending by Finance Head"}) %}
+                {% set Approved = Approved_by_list | map(attribute="modified") | join(", ") %}
+                {% set Approved_date = frappe.utils.get_datetime(Approved).strftime("%d-%m-%Y") if Approved else "" %}
+                {% set Approved_time = frappe.utils.get_datetime(Approved).strftime("%H:%M:%S") if Approved else "" %}
+                <tr>
+                    <td>Date : {{ frappe.utils.get_datetime(doc.creation).strftime("%d-%m-%Y") }} </td>
+                    <td>Date : {{ date}} </td>
+                    <td>Date : {{verified_date}}</td>
+                    <td>Date : {{Approve_date}}</td>
+                    <td>Date : {{Approved_date}}</td>
+                </tr>
+                
+                <tr>
+                    <td>Time: {{ frappe.utils.get_datetime(doc.creation).strftime("%H:%M:%S") }}</td>
+                    <td>Time: {{time}} </td>
+                    <td>Time: {{verified_time}}</td>
+                    <td>Time: {{Approve_time}}</td>
+                    <td>Time: {{Approved_time}}</td>
+                </tr>
+            </table>
+</div>
+<p>This is a Computer-Generated Document and does not require any Signature/Seal</p>
+</div>
+{% endif %}
