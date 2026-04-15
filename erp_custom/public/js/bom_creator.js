@@ -106,10 +106,92 @@ function trigger_all(frm, cdt, cdn) {
 // ===============================
 // SAME AS BOM.JS LOGIC
 // ===============================
+// function calculate_kgs(frm, cdt, cdn) {
+
+//     const row = locals[cdt][cdn];
+//     const type = row.item_group || row.custom_item_group;
+//     const density = flt(row.custom_density) || 0;
+//     const π = Math.PI;
+
+//     let base_weight = 0;
+
+//     if (!density) {
+//         frappe.model.set_value(cdt, cdn, "custom_kilogramskgs", 0);
+//         return;
+//     }
+
+//     // if (type === "Plates" && custom_shape ===  "rectangle") {
+//     //     base_weight = (flt(row.custom_length) * flt(row.custom_width) * flt(row.custom_thickness) * density) / 1000000;
+//     // }
+    
+//     if (type === "Plates") {
+//     const shape = row.custom_shape;
+//     if (shape === "N/A")   return;
+//     // Rectangle
+//     if (shape === "Rectangle") {
+//         // Formula: L * b * t * den
+//         base_weight = (flt(row.custom_length) * flt(row.custom_width) * flt(row.custom_thickness) * density) / 1000000;
+//     }
+
+//     // Circle (solid)
+//     else if (shape === "Circle") {
+//     const OD = flt(row.custom_outer_diameter);
+//     console.log("OD:", OD, "Length:", row.custom_length, "Density:", density);
+    
+//    // base_weight = (Math.PI / 4) * (OD * OD) * flt(row.custom_outer_diameter) * density / 1000000;
+//    // Formula: pi * (OD/2)² * t * den || W=π⋅(2OD​)2⋅t⋅ρ
+//    base_weight = (Math.PI/ 4)  * (OD * OD) * flt(row.custom_thickness) * density / 1000000;
+//   // pi * (OD/2)² * t * den
+//     console.log("Calculated Base Weight:", base_weight);
+//     }
+
+//     // Hollow
+//     else if (shape === "Hollow") {
+//     const ID = flt(row.custom_inner_diameter);
+//     const t = flt(row.custom_thickness);
+
+//     if (!row.custom_length || !ID || !t) return;
+//     const OD = ID + (2 * t);
+//     base_weight = (Math.PI / 4) * ((OD * OD) - (ID * ID)) * flt(row.custom_length) * density / 1000000;
+//     }
+//     }
+
+//     else if (["Tubes", "Pipes"].includes(type)) {
+//         if (shape === "N/A")   return;
+//         const R = flt(row.custom_outer_diameter) / 2;
+//         const r = Math.max(R - flt(row.custom_wall_thickness), 0);
+//         base_weight = (π * (R**2 - r**2) * flt(row.custom_length) * density) / 1000000;
+//     }
+
+//     else if (["Flanges", "Rings"].includes(type)) {
+//         if (shape === "N/A")   return;
+//         base_weight = (π * ((flt(row.custom_outer_diameter) / 2) ** 2 - (flt(row.custom_inner_diameter) / 2) ** 2) * flt(row.custom_thickness) * density) / 1000000;
+//     }
+
+//     else if (type === "Rods") {
+//         if (shape === "N/A")   return;
+//         if (shape === "Circle"){
+//         base_weight = (π * (flt(row.custom_outer_diameter) / 2) ** 2 * flt(row.custom_length) * density) / 1000000;
+//     }
+//     }
+
+//     else if (type === "Forgings") {
+//         if (shape === "N/A")   return;
+//         if (shape === "Circle"){
+//         const R = flt(row.custom_outer_diameter) / 2;
+//         const r = Math.max(R - flt(row.custom_wall_thickness), 0);
+//         base_weight = (π * (R ** 2 - r ** 2) * flt(row.custom_length) * density) / 1000000;
+// }
+//     }
+
+//     frappe.model.set_value(cdt, cdn, "custom_kilogramskgs", flt(base_weight, 4));
+// }
+
 function calculate_kgs(frm, cdt, cdn) {
 
     const row = locals[cdt][cdn];
     const type = row.item_group || row.custom_item_group;
+    const shape = row.custom_shape; // ✅ FIX
     const density = flt(row.custom_density) || 0;
     const π = Math.PI;
 
@@ -120,68 +202,113 @@ function calculate_kgs(frm, cdt, cdn) {
         return;
     }
 
-    // if (type === "Plates" && custom_shape ===  "rectangle") {
-    //     base_weight = (flt(row.custom_length) * flt(row.custom_width) * flt(row.custom_thickness) * density) / 1000000;
-    // }
-    
+    // Plates
     if (type === "Plates") {
-    const shape = row.custom_shape;
-    if (shape === "N/A")   return;
-    // Rectangle
-    if (shape === "Rectangle") {
-        // Formula: L * b * t * den
-        base_weight = (flt(row.custom_length) * flt(row.custom_width) * flt(row.custom_thickness) * density) / 1000000;
+
+        if (shape === "N/A") return;
+
+        if (shape === "Rectangle") {
+            if (!row.custom_length || !row.custom_width || !row.custom_thickness) return;
+
+            base_weight = (flt(row.custom_length) * flt(row.custom_width) * flt(row.custom_thickness) * density) / 1000000;
+        }
+
+        else if (shape === "Circle") {
+            const OD = flt(row.custom_outer_diameter);
+            const t = flt(row.custom_thickness);
+
+            if (!OD || !t) return;
+
+            base_weight = (π / 4) * (OD * OD) * t * density / 1000000;
+        }
+
+        else if (shape === "Hollow") {
+            const ID = flt(row.custom_inner_diameter);
+            const t = flt(row.custom_thickness);
+
+            if (!row.custom_length || !ID || !t) return;
+
+            const OD = ID + (2 * t);
+            base_weight = (π / 4) * ((OD * OD) - (ID * ID)) * flt(row.custom_length) * density / 1000000;
+        }
     }
 
-    // Circle (solid)
-    else if (shape === "Circle") {
+    // Tubes / Pipes (FIXED)
+    // else if (["Tubes", "Pipes"].includes(type)) {
+
+    //     if (shape === "N/A") return;
+
+    //     const OD = flt(row.custom_outer_diameter);
+    //     const wall = flt(row.custom_wall_thickness);
+    //     const length = flt(row.custom_length);
+
+    //     if (!OD || !wall || !length) return;
+
+    //     const R = OD / 2;
+    //     const r = Math.max(R - wall, 0);
+
+    //     base_weight = (π * (R**2 - r**2) * length * density) / 1000000;
+    // }
+    else if (["Pipes", "Tubes"].includes(type) || (type === "Forgings" && shape === "Hollow")) {
+
     const OD = flt(row.custom_outer_diameter);
-    console.log("OD:", OD, "Length:", row.custom_length, "Density:", density);
-    
-   // base_weight = (Math.PI / 4) * (OD * OD) * flt(row.custom_outer_diameter) * density / 1000000;
-   // Formula: pi * (OD/2)² * t * den || W=π⋅(2OD​)2⋅t⋅ρ
-   base_weight = (Math.PI/ 4)  * (OD * OD) * flt(row.custom_thickness) * density / 1000000;
-  // pi * (OD/2)² * t * den
-    console.log("Calculated Base Weight:", base_weight);
-    }
+    const wall = flt(row.custom_wall_thickness);
+    const length = flt(row.custom_length);
 
-    // Hollow
-    else if (shape === "Hollow") {
-    const ID = flt(row.custom_inner_diameter);
-    const t = flt(row.custom_thickness);
-
-    if (!row.custom_length || !ID || !t) return;
-    const OD = ID + (2 * t);
-    base_weight = (Math.PI / 4) * ((OD * OD) - (ID * ID)) * flt(row.custom_length) * density / 1000000;
-    }
-    }
-
-    else if (["Tubes", "Pipes"].includes(type)) {
-        if (shape === "N/A")   return;
-        const R = flt(row.custom_outer_diameter) / 2;
-        const r = Math.max(R - flt(row.custom_wall_thickness), 0);
-        base_weight = (π * (R**2 - r**2) * flt(row.custom_length) * density) / 1000000;
-    }
-
-    else if (["Flanges", "Rings"].includes(type)) {
-        if (shape === "N/A")   return;
-        base_weight = (π * ((flt(row.custom_outer_diameter) / 2) ** 2 - (flt(row.custom_inner_diameter) / 2) ** 2) * flt(row.custom_thickness) * density) / 1000000;
-    }
-
-    else if (type === "Rods") {
-        if (shape === "N/A")   return;
-        if (shape === "Circle"){
-        base_weight = (π * (flt(row.custom_outer_diameter) / 2) ** 2 * flt(row.custom_length) * density) / 1000000;
-    }
-    }
-
-    else if (type === "Forgings") {
-        if (shape === "N/A")   return;
-        if (shape === "Circle"){
-        const R = flt(row.custom_outer_diameter) / 2;
-        const r = Math.max(R - flt(row.custom_wall_thickness), 0);
-        base_weight = (π * (R ** 2 - r ** 2) * flt(row.custom_length) * density) / 1000000;
+    if (!OD || !wall || !length) return;
+    const ID = OD - (2 * wall);
+    base_weight = (Math.PI * ((OD / 2) ** 2 - (ID / 2) ** 2) * length * density) / 1000000;
 }
+
+    // Flanges / Rings
+    else if (["Flanges", "Rings"].includes(type)) {
+
+        if (shape === "N/A") return;
+
+        const OD = flt(row.custom_outer_diameter);
+        const ID = flt(row.custom_inner_diameter);
+        const t = flt(row.custom_thickness);
+
+        if (!OD || !ID || !t) return;
+
+        base_weight = (π * ((OD / 2) ** 2 - (ID / 2) ** 2) * t * density) / 1000000;
+    }
+
+    // Rods (FIXED)
+    else if (type === "Rods") {
+
+        if (shape === "N/A") return;
+
+        const OD = flt(row.custom_outer_diameter);
+        const length = flt(row.custom_length);
+
+        if (shape === "Circle" && OD && length) {
+            base_weight = (π * (OD / 2) ** 2 * length * density) / 1000000;
+        }
+    }
+
+    // Forgings (FIXED)
+    else if (type === "Forgings") {
+
+        if (shape === "N/A") return;
+
+        // const OD = flt(row.custom_outer_diameter);
+        // const wall = flt(row.custom_wall_thickness);
+        // const length = flt(row.custom_length);
+
+        // if (shape === "Circle" && OD && wall && length) {
+        //     const R = OD / 2;
+        //     const r = Math.max(R - wall, 0);
+
+        //     base_weight = (π * (R ** 2 - r ** 2) * length * density) / 1000000;
+        // }
+        const OD = flt(row.custom_outer_diameter);
+        const THK = flt(row.custom_thickness);
+
+    // Circle (SOLID)
+    if (shape === "Circle" && OD && THK) {
+        base_weight = (Math.PI * (OD / 2) ** 2 * THK * density) / 1000000;
+    }
     }
 
     frappe.model.set_value(cdt, cdn, "custom_kilogramskgs", flt(base_weight, 4));
