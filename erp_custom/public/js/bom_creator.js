@@ -68,39 +68,92 @@ frappe.ui.form.on('BOM Creator', {
 
 frappe.ui.form.on('BOM Creator Item', {
 
-    qty: trigger_all,
-    custom_length: trigger_all,
-    custom_width: trigger_all,
-    custom_thickness: trigger_all,
-    custom_density: trigger_all,
-    custom_outer_diameter: trigger_all,
-    custom_inner_diameter: trigger_all,
-    custom_wall_thickness: trigger_all,
-    custom_scrap_margin_percentage: trigger_all,
-    custom_transportation_cost: trigger_all,
-    item_group: trigger_all,
-    custom_item_group: trigger_all,
-    
+    qty: trigger_calc,
+    custom_length: trigger_calc,
+    custom_width: trigger_calc,
+    custom_thickness: trigger_calc,
+    custom_density: trigger_calc,
+    custom_outer_diameter: trigger_calc,
+    custom_inner_diameter: trigger_calc,
+    custom_wall_thickness: trigger_calc,
+    custom_scrap_margin_percentage: trigger_calc,
+    custom_transportation_cost: trigger_calc,
+    item_group: trigger_calc,
+    custom_shape: trigger_calc,
+
+
     custom_shape(frm, cdt, cdn) {
-    let row = locals[cdt][cdn];
+        let row = locals[cdt][cdn];
 
-    // reset all
-    row.custom_width = 0;
-    row.custom_thickness = 0;
-    row.custom_inner_diameter = 0;
-    row.custom_wall_thickness = 0;
+        // reset shape-dependent fields
+        row.custom_width = 0;
+        row.custom_thickness = 0;
+        row.custom_inner_diameter = 0;
+        row.custom_wall_thickness = 0;
 
-    frm.refresh_field("items");
-    trigger_all(frm, cdt, cdn);
-}
+        frm.refresh_field("items");
+
+        trigger_calc(frm, cdt, cdn);
+    }
 });
 
 
-function trigger_all(frm, cdt, cdn) {
-    calculate_kgs(frm, cdt, cdn);
-    calculate_total_weight(frm, cdt, cdn);
-    calculate_scrap_and_transport(frm, cdt, cdn);
+// =====================================================
+// MAIN TRIGGER (CALL PYTHON)
+// =====================================================
+function trigger_calc(frm, cdt, cdn) {
+
+    let row = locals[cdt][cdn];
+
+    frappe.call({
+        method: "erp_custom.erp_custom.overrides.bom_creator.recalc_item",
+        args: {
+            item: JSON.stringify(row) 
+        },
+        callback: function(r) {
+            if (r.message) {
+                Object.assign(row, r.message);
+                frm.refresh_field("items");
+            }
+        }
+    });
 }
+
+// frappe.ui.form.on('BOM Creator Item', {
+
+//     qty: trigger_all,
+//     custom_length: trigger_all,
+//     custom_width: trigger_all,
+//     custom_thickness: trigger_all,
+//     custom_density: trigger_all,
+//     custom_outer_diameter: trigger_all,
+//     custom_inner_diameter: trigger_all,
+//     custom_wall_thickness: trigger_all,
+//     custom_scrap_margin_percentage: trigger_all,
+//     custom_transportation_cost: trigger_all,
+//     item_group: trigger_all,
+//     custom_item_group: trigger_all,
+    
+//     custom_shape(frm, cdt, cdn) {
+//     let row = locals[cdt][cdn];
+
+//     // reset all
+//     row.custom_width = 0;
+//     row.custom_thickness = 0;
+//     row.custom_inner_diameter = 0;
+//     row.custom_wall_thickness = 0;
+
+//     frm.refresh_field("items");
+//     trigger_all(frm, cdt, cdn);
+// }
+// });
+
+
+// function trigger_all(frm, cdt, cdn) {
+//     calculate_kgs(frm, cdt, cdn);
+//     calculate_total_weight(frm, cdt, cdn);
+//     calculate_scrap_and_transport(frm, cdt, cdn);
+// }
 
 
 // ===============================
@@ -187,150 +240,150 @@ function trigger_all(frm, cdt, cdn) {
 //     frappe.model.set_value(cdt, cdn, "custom_kilogramskgs", flt(base_weight, 4));
 // }
 
-function calculate_kgs(frm, cdt, cdn) {
+// function calculate_kgs(frm, cdt, cdn) {
 
-    const row = locals[cdt][cdn];
-    const type = row.item_group || row.custom_item_group;
-    const shape = row.custom_shape; // ✅ FIX
-    const density = flt(row.custom_density) || 0;
-    const π = Math.PI;
+//     const row = locals[cdt][cdn];
+//     const type = row.item_group || row.custom_item_group;
+//     const shape = row.custom_shape;
+//     const density = flt(row.custom_density) || 0;
+//     const π = Math.PI;
 
-    let base_weight = 0;
+//     let base_weight = 0;
 
-    if (!density) {
-        frappe.model.set_value(cdt, cdn, "custom_kilogramskgs", 0);
-        return;
-    }
+//     if (!density) {
+//         frappe.model.set_value(cdt, cdn, "custom_kilogramskgs", 0);
+//         return;
+//     }
 
-    // Plates
-    if (type === "Plates") {
+//     // Plates
+//     if (type === "Plates") {
 
-        if (shape === "N/A") return;
+//         if (shape === "N/A") return;
 
-        if (shape === "Rectangle") {
-            if (!row.custom_length || !row.custom_width || !row.custom_thickness) return;
+//         if (shape === "Rectangle") {
+//             if (!row.custom_length || !row.custom_width || !row.custom_thickness) return;
 
-            base_weight = (flt(row.custom_length) * flt(row.custom_width) * flt(row.custom_thickness) * density) / 1000000;
-        }
+//             base_weight = (flt(row.custom_length) * flt(row.custom_width) * flt(row.custom_thickness) * density) / 1000000;
+//         }
 
-        else if (shape === "Circle") {
-            const OD = flt(row.custom_outer_diameter);
-            const t = flt(row.custom_thickness);
+//         else if (shape === "Circle") {
+//             const OD = flt(row.custom_outer_diameter);
+//             const t = flt(row.custom_thickness);
 
-            if (!OD || !t) return;
+//             if (!OD || !t) return;
 
-            base_weight = (π / 4) * (OD * OD) * t * density / 1000000;
-        }
+//             base_weight = (π / 4) * (OD * OD) * t * density / 1000000;
+//         }
 
-        else if (shape === "Hollow") {
-            const ID = flt(row.custom_inner_diameter);
-            const t = flt(row.custom_thickness);
+//         else if (shape === "Hollow") {
+//             const ID = flt(row.custom_inner_diameter);
+//             const t = flt(row.custom_thickness);
 
-            if (!row.custom_length || !ID || !t) return;
+//             if (!row.custom_length || !ID || !t) return;
 
-            const OD = ID + (2 * t);
-            base_weight = (π / 4) * ((OD * OD) - (ID * ID)) * flt(row.custom_length) * density / 1000000;
-        }
-    }
+//             const OD = ID + (2 * t);
+//             base_weight = (π / 4) * ((OD * OD) - (ID * ID)) * flt(row.custom_length) * density / 1000000;
+//         }
+//     }
 
-    // Tubes / Pipes (FIXED)
-    // else if (["Tubes", "Pipes"].includes(type)) {
+//     // Tubes / Pipes (FIXED)
+//     // else if (["Tubes", "Pipes"].includes(type)) {
 
-    //     if (shape === "N/A") return;
+//     //     if (shape === "N/A") return;
 
-    //     const OD = flt(row.custom_outer_diameter);
-    //     const wall = flt(row.custom_wall_thickness);
-    //     const length = flt(row.custom_length);
+//     //     const OD = flt(row.custom_outer_diameter);
+//     //     const wall = flt(row.custom_wall_thickness);
+//     //     const length = flt(row.custom_length);
 
-    //     if (!OD || !wall || !length) return;
+//     //     if (!OD || !wall || !length) return;
 
-    //     const R = OD / 2;
-    //     const r = Math.max(R - wall, 0);
+//     //     const R = OD / 2;
+//     //     const r = Math.max(R - wall, 0);
 
-    //     base_weight = (π * (R**2 - r**2) * length * density) / 1000000;
-    // }
-    else if (["Pipes", "Tubes"].includes(type) || (type === "Forgings" && shape === "Hollow")) {
+//     //     base_weight = (π * (R**2 - r**2) * length * density) / 1000000;
+//     // }
+//     else if (["Pipes", "Tubes"].includes(type) || (type === "Forgings" && shape === "Hollow")) {
 
-    const OD = flt(row.custom_outer_diameter);
-    const wall = flt(row.custom_wall_thickness);
-    const length = flt(row.custom_length);
+//     const OD = flt(row.custom_outer_diameter);
+//     const wall = flt(row.custom_wall_thickness);
+//     const length = flt(row.custom_length);
 
-    if (!OD || !wall || !length) return;
-    const ID = OD - (2 * wall);
-    base_weight = (Math.PI * ((OD / 2) ** 2 - (ID / 2) ** 2) * length * density) / 1000000;
-}
+//     if (!OD || !wall || !length) return;
+//     const ID = OD - (2 * wall);
+//     base_weight = (Math.PI * ((OD / 2) ** 2 - (ID / 2) ** 2) * length * density) / 1000000;
+// }
 
-    // Flanges / Rings
-    else if (["Flanges", "Rings"].includes(type)) {
+//     // Flanges / Rings
+//     else if (["Flanges", "Rings"].includes(type)) {
 
-        if (shape === "N/A") return;
+//         if (shape === "N/A") return;
 
-        const OD = flt(row.custom_outer_diameter);
-        const ID = flt(row.custom_inner_diameter);
-        const t = flt(row.custom_thickness);
+//         const OD = flt(row.custom_outer_diameter);
+//         const ID = flt(row.custom_inner_diameter);
+//         const t = flt(row.custom_thickness);
 
-        if (!OD || !ID || !t) return;
+//         if (!OD || !ID || !t) return;
 
-        base_weight = (π * ((OD / 2) ** 2 - (ID / 2) ** 2) * t * density) / 1000000;
-    }
+//         base_weight = (π * ((OD / 2) ** 2 - (ID / 2) ** 2) * t * density) / 1000000;
+//     }
 
-    // Rods (FIXED)
-    else if (type === "Rods") {
+//     // Rods (FIXED)
+//     else if (type === "Rods") {
 
-        if (shape === "N/A") return;
+//         if (shape === "N/A") return;
 
-        const OD = flt(row.custom_outer_diameter);
-        const length = flt(row.custom_length);
+//         const OD = flt(row.custom_outer_diameter);
+//         const length = flt(row.custom_length);
 
-        if (shape === "Circle" && OD && length) {
-            base_weight = (π * (OD / 2) ** 2 * length * density) / 1000000;
-        }
-    }
+//         if (shape === "Circle" && OD && length) {
+//             base_weight = (π * (OD / 2) ** 2 * length * density) / 1000000;
+//         }
+//     }
 
-    // Forgings (FIXED)
-    else if (type === "Forgings") {
+//     // Forgings (FIXED)
+//     else if (type === "Forgings") {
 
-        if (shape === "N/A") return;
+//         if (shape === "N/A") return;
 
-        // const OD = flt(row.custom_outer_diameter);
-        // const wall = flt(row.custom_wall_thickness);
-        // const length = flt(row.custom_length);
+//         // const OD = flt(row.custom_outer_diameter);
+//         // const wall = flt(row.custom_wall_thickness);
+//         // const length = flt(row.custom_length);
 
-        // if (shape === "Circle" && OD && wall && length) {
-        //     const R = OD / 2;
-        //     const r = Math.max(R - wall, 0);
+//         // if (shape === "Circle" && OD && wall && length) {
+//         //     const R = OD / 2;
+//         //     const r = Math.max(R - wall, 0);
 
-        //     base_weight = (π * (R ** 2 - r ** 2) * length * density) / 1000000;
-        // }
-        const OD = flt(row.custom_outer_diameter);
-        const THK = flt(row.custom_thickness);
+//         //     base_weight = (π * (R ** 2 - r ** 2) * length * density) / 1000000;
+//         // }
+//         const OD = flt(row.custom_outer_diameter);
+//         const THK = flt(row.custom_thickness);
 
-    // Circle (SOLID)
-    if (shape === "Circle" && OD && THK) {
-        base_weight = (Math.PI * (OD / 2) ** 2 * THK * density) / 1000000;
-    }
-    }
+//     // Circle (SOLID)
+//     if (shape === "Circle" && OD && THK) {
+//         base_weight = (Math.PI * (OD / 2) ** 2 * THK * density) / 1000000;
+//     }
+//     }
 
-    frappe.model.set_value(cdt, cdn, "custom_kilogramskgs", flt(base_weight, 4));
-}
-
-
-function calculate_total_weight(frm, cdt, cdn) {
-
-    const row = locals[cdt][cdn];
-    const total_weight = flt(row.qty) * flt(row.custom_kilogramskgs);
-
-    frappe.model.set_value(cdt, cdn, "custom_total_weight", flt(total_weight, 4));
-}
+//     frappe.model.set_value(cdt, cdn, "custom_kilogramskgs", flt(base_weight, 4));
+// }
 
 
-function calculate_scrap_and_transport(frm, cdt, cdn) {
+// function calculate_total_weight(frm, cdt, cdn) {
 
-    const row = locals[cdt][cdn];
-    const total_weight = flt(row.custom_total_weight) || 0;
-    const scrap_pct = flt(row.custom_scrap_margin_percentage) || 0;
-    const transport_rate = flt(row.custom_transportation_cost) || 0;
+//     const row = locals[cdt][cdn];
+//     const total_weight = flt(row.qty) * flt(row.custom_kilogramskgs);
 
-    frappe.model.set_value(cdt, cdn, "custom_scrap_margin_kgs", flt(total_weight * (scrap_pct / 100), 4));
-    frappe.model.set_value(cdt, cdn, "custom_transportation_cost_kgs", flt(total_weight * transport_rate, 2));
-}
+//     frappe.model.set_value(cdt, cdn, "custom_total_weight", flt(total_weight, 4));
+// }
+
+
+// function calculate_scrap_and_transport(frm, cdt, cdn) {
+
+//     const row = locals[cdt][cdn];
+//     const total_weight = flt(row.custom_total_weight) || 0;
+//     const scrap_pct = flt(row.custom_scrap_margin_percentage) || 0;
+//     const transport_rate = flt(row.custom_transportation_cost) || 0;
+
+//     frappe.model.set_value(cdt, cdn, "custom_scrap_margin_kgs", flt(total_weight * (scrap_pct / 100), 4));
+//     frappe.model.set_value(cdt, cdn, "custom_transportation_cost_kgs", flt(total_weight * transport_rate, 2));
+// }

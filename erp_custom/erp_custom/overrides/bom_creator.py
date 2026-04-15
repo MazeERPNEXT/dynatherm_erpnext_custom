@@ -9,160 +9,128 @@ from erpnext.manufacturing.doctype.bom_creator.bom_creator import BOMCreator
 # =========================================================
 # COMMON CALCULATION FUNCTION (FROM bom.js LOGIC)
 # =========================================================
+@frappe.whitelist()
+def recalc_item(item):
+
+    import json
+
+    if isinstance(item, str):
+        item = json.loads(item)
+
+    return calculate_values(item)
+
 def calculate_values(item):
 
-    def get_val(key):
-        return flt(item.get(key) if isinstance(item, dict) else getattr(item, key, 0))
+    import math
+    from frappe.utils import flt
 
-    def set_val(key, value):
+    def get(key):
+        if isinstance(item, dict):
+            return flt(item.get(key))
+        return flt(getattr(item, key, 0))
+
+    def setv(key, value):
         if isinstance(item, dict):
             item[key] = value
         else:
             setattr(item, key, value)
 
-    density = get_val("custom_density")
-    item_group = item.get("item_group") if isinstance(item, dict) else getattr(item, "item_group", None)
-    item_group = item_group or (item.get("custom_item_group") if isinstance(item, dict) else getattr(item, "custom_item_group", None))
+    density = flt(get("custom_density"))
+    qty = flt(get("qty"))
 
-    qty = get_val("qty")
+    item_group = (
+        item.get("item_group") if isinstance(item, dict)
+        else getattr(item, "item_group", None)
+    )
+
+    shape = (
+        item.get("custom_shape") if isinstance(item, dict)
+        else getattr(item, "custom_shape", None)
+    )
+
+    L = flt(get("custom_length"))
+    W = flt(get("custom_width"))
+    T = flt(get("custom_thickness"))
+    OD = flt(get("custom_outer_diameter"))
+    ID = flt(get("custom_inner_diameter"))
+    WALL = flt(get("custom_wall_thickness"))
+
+    π = math.pi
+    base = 0
 
     if not density:
-        # set_val("custom_kilogramskgs", 0)
-        set_val("custom_total_weight", 0)
-        set_val("custom_scrap_margin_kgs", 0)
-        set_val("custom_transportation_cost_kgs", 0)
+        setv("custom_kilogramskgs", 0)
+        setv("custom_total_weight", 0)
         return item
 
-    base_weight = 0
-
-    length = get_val("custom_length")
-    width = get_val("custom_width")
-    thickness = get_val("custom_thickness")
-    od = get_val("custom_outer_diameter")
-    id_ = get_val("custom_inner_diameter")
-    wall = get_val("custom_wall_thickness")
-
-    # Plates (SHAPE BASED)
-    # if item_group == "Plates":
-    #     shape = item.get("custom_shape") if isinstance(item, dict) else getattr(item, "custom_shape", None)
-    #     if shape == "N/A":
-    #         return item
-    #     if not shape:
-    #         base_weight = 0
-
-    #     # Rectangle
-    #     elif shape == "Rectangle":
-    #         if length and width and thickness:
-    #             base_weight = (length * width * thickness * density) / 1_000_000
-
-    #     # Circle
-    #     elif shape == "Circle":
-    #         if od:
-    #             base_weight = (math.pi/ 4)  * (od * od) * thickness * density / 1_000_000
-
-    #     # Hollow
-    #     elif shape == "Hollow":
-    #         if length and id_ and thickness:
-    #             OD = id_ + (2 * thickness)
-    #             base_weight = ((math.pi / 4) * ((OD ** 2) - (id_ ** 2)) * length * density) / 1_000_000
-
-    # # Tubes / Pipes
-    # elif item_group in ["Tubes", "Pipes"]:
-    #     R = od / 2
-    #     r = max(R - wall, 0)
-    #     base_weight = (math.pi * (R**2 - r**2) * length * density) / 1_000_000
-
-    # # Flanges / Rings
-    # elif item_group in ["Flanges", "Rings"]:
-    #     base_weight = (math.pi * ((od / 2) ** 2 - (id_ / 2) ** 2) * thickness * density) / 1_000_000
-
-    # # Rods
-    # elif item_group == "Rods":
-    #     base_weight = (math.pi * (od / 2) ** 2 * length * density) / 1_000_000
-
-    # # Forgings
-    # elif item_group == "Forgings":
-    #     if shape == "N/A":
-    #         return item
-    #     shape = item.get("custom_shape") if isinstance(item, dict) else getattr(item, "custom_shape", None)
-    #     if shape == "Circle":
-    #         R = od / 2
-    #         r = max(R - wall, 0)
-    #         base_weight = (math.pi * (R**2 - r**2) * length * density) / 1_000_000
-    
-    # Get shape ONCE (FIX)
-    shape = item.get("custom_shape") if isinstance(item, dict) else getattr(item, "custom_shape", None)
-
-    # Plates
+    # ================= PLATES =================
     if item_group == "Plates":
-        if shape == "N/A":
-            return item
 
-        elif shape == "Rectangle":
-            if length and width and thickness:
-                base_weight = (length * width * thickness * density) / 1_000_000
+        if shape == "Rectangle" and L and W and T:
+            base = (L * W * T * density) / 1_000_000
 
-        elif shape == "Circle":
-            if od and thickness:
-                base_weight = (math.pi / 4) * (od ** 2) * thickness * density / 1_000_000
+        elif shape == "Circle" and OD and T:
+            base = (π * (OD / 2) ** 2 * T * density) / 1_000_000
 
         elif shape == "Hollow":
-            if length and id_ and thickness:
-                OD = id_ + (2 * thickness)
-                base_weight = ((math.pi / 4) * (OD**2 - id_**2) * length * density) / 1_000_000
+            if ID and T and L:
 
+                OD_calc = OD if OD else (ID + 2 * T)
+                outer = (OD_calc / 2) ** 2
+                inner = (ID / 2) ** 2
+                base = (π * (outer - inner) * L * density) / 1_000_000
 
-    # Tubes / Pipes (FIX validation)
-    # elif item_group in ["Tubes", "Pipes"]:
-    #     if od and wall and length:
-    #         R = od / 2
-    #         r = max(R - wall, 0)
-    #         base_weight = (math.pi * (R**2 - r**2) * length * density) / 1_000_000
-    
-    elif item_group in ["Pipes", "Tubes"] or (item_group == "Forgings" and shape == "Hollow"):
-        if od and wall and length:
-            ID = od - (2 * wall)
-            base_weight = (math.pi * ((od / 2) ** 2 - (ID / 2) ** 2) * length * density) / 1_000_000
+    # ================= PIPES / TUBES =================
+    # elif item_group in ["Pipes", "Tubes"]:
 
+    #     if OD and WALL and L:
+    #         R = OD / 2
+    #         r = max(R - WALL, 0)
+    #         base = (π * (R**2 - r**2) * L * density) / 1_000_000
+    elif item_group in ["Pipes", "Tubes"]:
 
-    # Flanges / Rings
-    elif item_group in ["Flanges", "Rings"]:
-        if od and id_ and thickness:
-            base_weight = (math.pi * ((od / 2) ** 2 - (id_ / 2) ** 2) * thickness * density) / 1_000_000
+        if shape == "Hollow" and OD and T and L:
+            ID_calc = OD - (2 * T)
 
-    # Forgings (FIXED ORDER)
+            if ID_calc > 0:
+                base = (π * ((OD / 2) ** 2 - (ID_calc / 2) ** 2) * L * density) / 1_000_000
+
+    # ================= FORGINGS =================
     elif item_group == "Forgings":
-        if shape == "N/A":
-            return item
 
-        # if shape == "Circle" and od and wall and length:
-        #     R = od / 2
-        #     r = max(R - wall, 0)
-        #     base_weight = (math.pi * (R**2 - r**2) * length * density) / 1_000_000
-        if shape == "Circle" and od and thickness:
-            base_weight = (math.pi * (od / 2) ** 2 * thickness * density) / 1_000_000
-            
-    # Rods (FIXED)
+        if shape == "Hollow" and OD and T and L:
+            ID_calc = OD - (2 * T)
+            base = (π * ((OD/2)**2 - (ID_calc/2)**2) * L * density) / 1_000_000
+
+        elif shape == "Circle" and OD and T:
+            base = (π * (OD / 2) ** 2 * T * density) / 1_000_000
+
+    # ================= RODS =================
     elif item_group == "Rods":
-        if shape == "Circle" and od and length:
-            base_weight = (math.pi * (od / 2) ** 2 * length * density) / 1_000_000
 
-    if density:
-         set_val("custom_kilogramskgs", flt(base_weight, 4))
+        if shape == "Circle" and OD and L:
+            base = (π * (OD / 2) ** 2 * L * density) / 1_000_000
 
-    total_weight = flt(qty * base_weight, 4)
-    set_val("custom_total_weight", total_weight)
+    # ================= FLANGES =================
+    elif item_group in ["Flanges", "Rings"]:
 
-    scrap_pct = get_val("custom_scrap_margin_percentage")
-    scrap_kgs = total_weight * (scrap_pct / 100)
-    set_val("custom_scrap_margin_kgs", flt(scrap_kgs, 4))
+        if OD and ID and T:
+            base = (π * ((OD/2)**2 - (ID/2)**2) * T * density) / 1_000_000
 
-    transport_rate = get_val("custom_transportation_cost")
-    transport_cost = total_weight * transport_rate
-    set_val("custom_transportation_cost_kgs", flt(transport_cost, 2))
+    # ================= FINAL =================
+    kg_per_unit = flt(base, 4)
+    total = flt(qty * kg_per_unit, 4)
+
+    setv("custom_kilogramskgs", kg_per_unit)
+    setv("custom_total_weight", total)
+
+    scrap_pct = flt(get("custom_scrap_margin_percentage"))
+    transport_rate = flt(get("custom_transportation_cost"))
+
+    setv("custom_scrap_margin_kgs", flt(total * scrap_pct / 100, 4))
+    setv("custom_transportation_cost_kgs", flt(total * transport_rate, 2))
 
     return item
-
 
 # =========================================================
 # EXCEL UPLOAD METHOD
