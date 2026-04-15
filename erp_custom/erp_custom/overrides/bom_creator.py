@@ -45,7 +45,8 @@ def calculate_values(item):
     # Plates (SHAPE BASED)
     if item_group == "Plates":
         shape = item.get("custom_shape") if isinstance(item, dict) else getattr(item, "custom_shape", None)
-
+        if shape == "N/A":
+            return item
         if not shape:
             base_weight = 0
 
@@ -56,8 +57,8 @@ def calculate_values(item):
 
         # Circle
         elif shape == "Circle":
-            if length and od:
-                base_weight = ((math.pi / 4) * (od ** 2) * length * density) / 1_000_000
+            if od:
+                base_weight = (math.pi/ 4)  * (od * od) * thickness * density / 1_000_000
 
         # Hollow
         elif shape == "Hollow":
@@ -81,9 +82,13 @@ def calculate_values(item):
 
     # Forgings
     elif item_group == "Forgings":
-        R = od / 2
-        r = max(R - wall, 0)
-        base_weight = (math.pi * (R**2 - r**2) * length * density) / 1_000_000
+        if shape == "N/A":
+            return item
+        shape = item.get("custom_shape") if isinstance(item, dict) else getattr(item, "custom_shape", None)
+        if shape == "Circle":
+            R = od / 2
+            r = max(R - wall, 0)
+            base_weight = (math.pi * (R**2 - r**2) * length * density) / 1_000_000
 
     if density:
          set_val("custom_kilogramskgs", flt(base_weight, 4))

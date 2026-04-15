@@ -2,49 +2,66 @@
 frappe.ui.form.on('BOM Creator', {
     refresh(frm) {
 
-        if (frm.is_new()) return;
+        if (frm.is_new() || frm.doc.docstatus !== 0) return;
 
-        frm.add_custom_button(__('Upload BOM'), () => {
+    let btn = frm.add_custom_button('Upload BOM', () => {
 
-            new frappe.ui.FileUploader({
-                allow_multiple: false,
+        new frappe.ui.FileUploader({
+            allow_multiple: false,
 
-                on_success(file) {
+            on_success(file) {
 
-                    frappe.call({
-                        method: "erp_custom.erp_custom.overrides.bom_creator.upload_bom_excel",
-                        args: {
-                            file_url: file.file_url
-                        },
-                        freeze: true,
+                frappe.call({
+                    method: "erp_custom.erp_custom.overrides.bom_creator.upload_bom_excel",
+                    args: {
+                        file_url: file.file_url
+                    },
+                    freeze: true,
 
-                        callback: function (r) {
+                    callback: function (r) {
 
-                            if (!r.message) return;
+                        if (!r.message) return;
 
-                            frm.clear_table("items");
+                        frm.clear_table("items");
 
-                            r.message.forEach(row => {
-                                let child = frm.add_child("items");
+                        r.message.forEach(row => {
+                            let child = frm.add_child("items");
 
-                                for (let key in row) {
-                                    child[key] = row[key];
-                                }
-                            });
+                            for (let key in row) {
+                                child[key] = row[key];
+                            }
+                        });
 
-                            frm.refresh_field("items");
+                        frm.refresh_field("items");
 
-                            frappe.show_alert({
-                                message: "BOM Excel Imported Successfully",
-                                indicator: "green"
-                            });
-                        }
-                    });
+                        frappe.show_alert({
+                            message: "BOM Excel Imported Successfully",
+                            indicator: "green"
+                        });
+                    }
+                });
 
-                }
-            });
+            }
+        });
 
-        }, __('Actions'));
+    });
+
+    // ✅ Proper styling
+    btn.removeClass('btn-default btn-danger ')
+       .addClass('btn-primary ')
+       .html('<svg class="icon icon-sm"><use href="#icon-upload"></use></svg>')
+       .attr('title', 'Upload BOM')
+       .css({
+           'border-radius': '50%',
+           'width': '38px',
+           'height': '38px',
+           'display': 'inline-flex',
+           'align-items': 'center',
+           'justify-content': 'center',
+           'padding': '0',
+           
+       });
+
     }
 });
 
@@ -106,20 +123,26 @@ function calculate_kgs(frm, cdt, cdn) {
     // if (type === "Plates" && custom_shape ===  "rectangle") {
     //     base_weight = (flt(row.custom_length) * flt(row.custom_width) * flt(row.custom_thickness) * density) / 1000000;
     // }
+    
     if (type === "Plates") {
     const shape = row.custom_shape;
-
+    if (shape === "N/A")   return;
     // Rectangle
     if (shape === "Rectangle") {
+        // Formula: L * b * t * den
         base_weight = (flt(row.custom_length) * flt(row.custom_width) * flt(row.custom_thickness) * density) / 1000000;
     }
 
     // Circle (solid)
     else if (shape === "Circle") {
     const OD = flt(row.custom_outer_diameter);
-
-    if (!row.custom_length || !OD) return;
-    base_weight = (Math.PI / 4) * (OD * OD) * flt(row.custom_length) * density / 1000000;
+    console.log("OD:", OD, "Length:", row.custom_length, "Density:", density);
+    
+   // base_weight = (Math.PI / 4) * (OD * OD) * flt(row.custom_outer_diameter) * density / 1000000;
+   // Formula: pi * (OD/2)² * t * den || W=π⋅(2OD​)2⋅t⋅ρ
+   base_weight = (Math.PI/ 4)  * (OD * OD) * flt(row.custom_thickness) * density / 1000000;
+  // pi * (OD/2)² * t * den
+    console.log("Calculated Base Weight:", base_weight);
     }
 
     // Hollow
@@ -134,23 +157,31 @@ function calculate_kgs(frm, cdt, cdn) {
     }
 
     else if (["Tubes", "Pipes"].includes(type)) {
+        if (shape === "N/A")   return;
         const R = flt(row.custom_outer_diameter) / 2;
         const r = Math.max(R - flt(row.custom_wall_thickness), 0);
         base_weight = (π * (R**2 - r**2) * flt(row.custom_length) * density) / 1000000;
     }
 
     else if (["Flanges", "Rings"].includes(type)) {
+        if (shape === "N/A")   return;
         base_weight = (π * ((flt(row.custom_outer_diameter) / 2) ** 2 - (flt(row.custom_inner_diameter) / 2) ** 2) * flt(row.custom_thickness) * density) / 1000000;
     }
 
     else if (type === "Rods") {
+        if (shape === "N/A")   return;
+        if (shape === "Circle"){
         base_weight = (π * (flt(row.custom_outer_diameter) / 2) ** 2 * flt(row.custom_length) * density) / 1000000;
+    }
     }
 
     else if (type === "Forgings") {
+        if (shape === "N/A")   return;
+        if (shape === "Circle"){
         const R = flt(row.custom_outer_diameter) / 2;
         const r = Math.max(R - flt(row.custom_wall_thickness), 0);
         base_weight = (π * (R ** 2 - r ** 2) * flt(row.custom_length) * density) / 1000000;
+}
     }
 
     frappe.model.set_value(cdt, cdn, "custom_kilogramskgs", flt(base_weight, 4));
