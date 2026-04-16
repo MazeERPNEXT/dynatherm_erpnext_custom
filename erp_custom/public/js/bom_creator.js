@@ -47,7 +47,7 @@ frappe.ui.form.on('BOM Creator', {
     });
 
     // ✅ Proper styling
-    btn.removeClass('btn-default btn-danger ')
+    btn.removeClass('btn-default btn-danger')
        .addClass('btn-primary ')
        .html('<svg class="icon icon-sm"><use href="#icon-upload"></use></svg>')
        .attr('title', 'Upload BOM')

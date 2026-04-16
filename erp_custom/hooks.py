@@ -349,7 +349,7 @@ doctype_js = {
     "BOM": "public/js/bom.js",
     "BOM Creator": "public/js/bom_creator.js",
     
-    "Cutting Plan": "public/js/cutting_plan.js",
+    # "Cutting Plan": "public/js/cutting_plan.js",
     "Quotation": "public/js/quotation.js",
     
     "Work Order": "public/js/work_order.js",

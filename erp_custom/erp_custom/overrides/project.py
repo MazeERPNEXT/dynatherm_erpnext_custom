@@ -26,7 +26,7 @@
 #     so.save(ignore_permissions=True)
 
 
-import frappe
+
 
 # def on_update(doc, method):
 #     """
@@ -51,6 +51,8 @@ import frappe
 
 #     so.save(ignore_permissions=True)
    
+import frappe
+
 def on_update(doc, method):
 
     if not doc.sales_order:

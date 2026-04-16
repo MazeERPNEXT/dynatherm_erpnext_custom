@@ -105,6 +105,7 @@ frappe.ui.form.on('Project', {
     },
 
     refresh(frm) {
+        
         if (frm.is_new()) return;
 
         // ✅ BOM Button
@@ -116,43 +117,35 @@ frappe.ui.form.on('Project', {
 
         // ✅ QAP Button
         frm.add_custom_button(__('Quality Assurance Plan'), () => {
+             frappe.new_doc('Quality Assurance Plan', {}, (qap) => {
 
-            frappe.new_doc('Quality Assurance Plan', {}, (qap) => {
+        // ✅ Parent Fields
+        qap.project = frm.doc.name;
+        qap.sales_order_no = frm.doc.project_name;
+        qap.date = frm.doc.expected_start_date;
+        qap.customer = frm.doc.customer;
+        qap.purchase_order_date = frm.doc.expected_start_date;
+        qap.sales_order_no = frm.doc.sales_order;
 
-                // ✅ Parent Fields
-                qap.project = frm.doc.name;
-                qap.sales_order_no = frm.doc.project_name;
-                qap.date = frm.doc.expected_start_date;
-                qap.customer = frm.doc.customer;
-                qap.purchase_order_date = frm.doc.expected_start_date;
+        // ✅ Child Table Mapping
+        let row = (frm.doc.custom_project_detail || [])[0];
 
-                // ✅ Ensure child table exists
-                qap.project_item = [];
+        if (row) {
+            qap.item_code = row.item_code;
+            qap.item_name = row.item_name;
+            qap.qty = row.qty;
+            qap.tag_no = row.tag_no;
+        }
+    });
 
-                // ✅ Map Project Child Table → QAP Child Table
-                (frm.doc.custom_project_detail || []).forEach(row => {
-
-                    let child = frappe.model.add_child(
-                        qap,
-                        'custom_project_detail', // ✅ Correct Child Doctype
-                        'project_item'           // ✅ Fieldname in QAP
-                    );
-
-                    child.item_code = row.item_code;
-                    child.item_name = row.item_name;
-                    child.tag_no = row.tag_no;
-                    child.qty = row.qty;
-                });
-
-            });
-
-        }, __('Create'));
+    }, __('Create'));
 
         fetch_cutting_plans(frm);
     }
 });
 
-
+// frappe.ui.form.on('Project Item', {
+// });
 
 function fetch_cutting_plans(frm) {
 
