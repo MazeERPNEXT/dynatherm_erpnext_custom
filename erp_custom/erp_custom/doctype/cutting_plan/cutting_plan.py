@@ -13,7 +13,7 @@ from frappe.model.document import Document
 from openpyxl import load_workbook
 from frappe.utils import flt
 import math
-
+    
 class CuttingPlan(Document):
     # def validate(self):
     #     self.sync_job_no_from_child()
@@ -322,7 +322,7 @@ def get_part_details(bom_no, part_number):
             "parent": bom_no,
             "custom_part_number": part_number
         },
-        ["item_code", "qty", "custom_kilogramskgs", "custom_total_weight"],
+        ["item_code", "qty", "uom", "custom_item_group", "custom_shape", "custom_length", "custom_width", "custom_thickness", "custom_density", "custom_outer_diameter", "custom_inner_diameter", "custom_kilogramskgs", "custom_total_weight"],
         as_dict=True
     )
 
@@ -332,6 +332,15 @@ def get_part_details(bom_no, part_number):
     return {
         "item_code":item.item_code,
         "qty":item.qty,
+        "uom":item.uom,
+        "item_group":item.custom_item_group,
+        "shape":item.custom_shape,
+        "length":item.custom_length,
+        "width":item.custom_width,
+        "thickness":item.custom_thickness,
+        "density":item.custom_density,
+        "outer_diameter":item.custom_outer_diameter,
+        "inner_diameter":item.custom_inner_diameter,
         "kgs_per_unit": item.custom_kilogramskgs,
         "total_weight": item.custom_total_weight
     }

@@ -2,7 +2,7 @@
  "actions": [],
  "allow_import": 1,
  "allow_rename": 1,
- "autoname": "field:cutting_no",
+ "autoname": "DAPL-CP-.###./.YY",
  "creation": "2026-01-19 18:52:49.822088",
  "doctype": "DocType",
  "engine": "InnoDB",
@@ -36,7 +36,7 @@
   {
    "fieldname": "cutting_no",
    "fieldtype": "Data",
-   "label": "Cutting No",
+   "label": "Cutting Plan ID",
    "unique": 1
   },
   {
@@ -64,12 +64,13 @@
   {
    "fieldname": "approved_by",
    "fieldtype": "Data",
+   "hidden": 1,
    "label": "Approved By"
   },
   {
    "fieldname": "drawn_by",
    "fieldtype": "Data",
-   "label": "Drawn By"
+   "label": "Uploaded By"
   },
   {
    "fieldname": "responsibility_section",
@@ -102,12 +103,13 @@
   {
    "fieldname": "approved_date",
    "fieldtype": "Date",
+   "hidden": 1,
    "label": "Approved Date"
   },
   {
    "fieldname": "drawn_date",
    "fieldtype": "Date",
-   "label": "Drawn Date"
+   "label": "Uploaded Date"
   },
   {
    "fieldname": "checked_date",
@@ -165,11 +167,11 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2026-04-08 15:59:29.777486",
+ "modified": "2026-04-17 16:48:48.080240",
  "modified_by": "Administrator",
  "module": "ERP Custom",
  "name": "Cutting Plan",
- "naming_rule": "By fieldname",
+ "naming_rule": "By \"Naming Series\" field",
  "owner": "Administrator",
  "permissions": [
   {
