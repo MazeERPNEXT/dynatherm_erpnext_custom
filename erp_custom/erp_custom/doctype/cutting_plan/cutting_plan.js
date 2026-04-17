@@ -267,38 +267,87 @@ frappe.ui.form.on("Cutting Plan Item", {
 
     part_number(frm, cdt, cdn) {
 
-        let row = locals[cdt][cdn];
+    let row = locals[cdt][cdn];
 
-        if (!row.bom_no || !row.part_number) return;
+    if (!row.bom_no || !row.part_number) return;
 
-        frappe.call({
-            method: "erp_custom.erp_custom.doctype.cutting_plan.cutting_plan.get_part_details",
-            args: {
-                bom_no: row.bom_no,
-                part_number: row.part_number
-            },
-            callback: function (r) {
+    frappe.call({
+        method: "erp_custom.erp_custom.doctype.cutting_plan.cutting_plan.get_part_details",
+        args: {
+            bom_no: row.bom_no,
+            part_number: row.part_number
+        },
+        callback: function (r) {
 
-                if (!r.message) return;
+            if (!r.message) return;
 
-                frappe.model.set_value(cdt, cdn, {
-                    item_code: r.message.item_code,
-                    qty: r.message.qty,
-                    uom: r.message.uom,
-                    item_group: r.message.item_group,
-                    shape: r.message.shape,
-                    length: r.message.length,
-                    width: r.message.width,
-                    thickness: r.message.thickness,
-                    density: r.message.density,
-                    outer_diameter: r.message.outer_diameter,
-                    inner_diameter: r.message.inner_diameter,
-                    kgs_per_unit: r.message.kgs_per_unit,
-                    total_weight: r.message.total_weight,
+            let plate_rows = frm.doc.cutting_plan_plate_details || [];
+
+            let plate = plate_rows.find(p => 
+                p.plate_number === row.plate_number
+            );
+
+            let plate_thickness = plate ? flt(plate.thickness) : 0;
+            let item_thickness  = flt(r.message.thickness);
+
+            // ===============================
+            // ❌ MISMATCH → CLEAR FULL ROW
+            // ===============================
+            if (plate && plate_thickness !== item_thickness) {
+
+                frappe.msgprint({
+                    title: __('Thickness Mismatch'),
+                    message: `
+                        <b>Plate Number:</b> ${row.plate_number}<br><br>
+                        <b>Plate Thickness:</b> ${plate_thickness}<br>
+                        <b>Item Thickness:</b> ${item_thickness}<br><br>
+                        ❌ Row cleared due to mismatch
+                    `,
+                    indicator: 'red'
                 });
+
+                // 🔥 CLEAR FULL ROW (except plate_number if you want)
+                frappe.model.set_value(cdt, cdn, {
+                    part_number: "",
+                    item_code: "",
+                    qty: "",
+                    uom: "",
+                    item_group: "",
+                    shape: "",
+                    length: "",
+                    width: "",
+                    thickness: "",
+                    density: "",
+                    outer_diameter: "",
+                    inner_diameter: "",
+                    kgs_per_unit: "",
+                    total_weight: ""
+                });
+
+                return;
             }
-        });
-    }
+
+            // ===============================
+            // ✅ MATCH → SET VALUES
+            // ===============================
+            frappe.model.set_value(cdt, cdn, {
+                item_code: r.message.item_code,
+                qty: r.message.qty,
+                uom: r.message.uom,
+                item_group: r.message.item_group,
+                shape: r.message.shape,
+                length: r.message.length,
+                width: r.message.width,
+                thickness: r.message.thickness,
+                density: r.message.density,
+                outer_diameter: r.message.outer_diameter,
+                inner_diameter: r.message.inner_diameter,
+                kgs_per_unit: r.message.kgs_per_unit,
+                total_weight: r.message.total_weight,
+            });
+        }
+    });
+}
 });
 
 function set_plate_reference(frm, cdt, cdn) {
@@ -324,33 +373,70 @@ function calculate_balance_weight(frm) {
     let plate_rows = frm.doc.cutting_plan_plate_details || [];
     let item_rows = frm.doc.cutting_plan_item || [];
 
-    let exceeded_rows = [];
-
-    // ✅ STEP 1: Reset ALL plates first
+    // ✅ STEP 1: Reset plate balances
     plate_rows.forEach(plate => {
         plate.balance_weight = flt(plate.total_weight);
     });
 
-    // ✅ STEP 2: Apply deductions fresh
+    // ✅ STEP 2: Apply deductions
     item_rows.forEach(item => {
 
         if (!item.plate_reference_number) return;
 
         let plate = plate_rows.find(p => p.idx == item.plate_reference_number);
 
-        if (plate) {
-            plate.balance_weight -= flt(item.total_weight);
+        if (!plate) return;
 
-            if (plate.balance_weight < 0) {
-                plate.balance_weight = 0;
-                exceeded_rows.push(plate.idx);
-            }
+        let before = flt(plate.balance_weight, 2);
+        let deduct = flt(item.total_weight, 2);
+
+        let after = before - deduct;
+
+        // ===============================
+        // ❌ EXCEEDED → CLEAR ROW
+        // ===============================
+        if (after < 0) {
+
+            frappe.msgprint({
+                title: __('Exceeded Weight'),
+                message: `
+                    <b>Plate Row:</b> ${plate.idx}<br><br>
+                    <b>Available Weight:</b> ${before.toFixed(2)}<br>
+                    <b>Trying to Use:</b> ${deduct.toFixed(2)}<br><br>
+                    ❌ Row cleared due to exceeding weight
+                `,
+                indicator: 'red'
+            });
+
+            // 🔥 CLEAR ITEM ROW
+            frappe.model.set_value(item.doctype, item.name, {
+                plate_number: "",
+                plate_reference_number: "",
+                part_number: "",
+                item_code: "",
+                qty: "",
+                uom: "",
+                item_group: "",
+                shape: "",
+                length: "",
+                width: "",
+                thickness: "",
+                density: "",
+                outer_diameter: "",
+                inner_diameter: "",
+                kgs_per_unit: "",
+                total_weight: ""
+            });
+
+            return; // skip deduction
         }
+
+        // ✅ VALID → APPLY
+        plate.balance_weight = after;
     });
 
     // ✅ STEP 3: Percentage
     plate_rows.forEach(plate => {
-
         let total = flt(plate.total_weight);
 
         if (total > 0) {
@@ -360,15 +446,6 @@ function calculate_balance_weight(frm) {
             plate.balance_percentage = 0;
         }
     });
-
-    // ✅ STEP 4: Warning
-    if (exceeded_rows.length) {
-        frappe.msgprint({
-            title: __('Warning'),
-            message: `Plate Row(s) ${[...new Set(exceeded_rows)].join(", ")} exceeded weight!`,
-            indicator: 'red'
-        });
-    }
 
     frm.refresh_field('cutting_plan_plate_details');
 }

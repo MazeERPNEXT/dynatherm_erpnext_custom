@@ -96,6 +96,7 @@ frappe.ui.form.on("BOM", {
 
 
 frappe.ui.form.on("BOM Item", {
+    
     custom_rate_per_kg: update_rate_from_weight,
     custom_total_weight: update_rate_from_weight,
     qty: update_rate_from_weight,
