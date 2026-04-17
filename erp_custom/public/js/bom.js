@@ -1,6 +1,7 @@
 
 frappe.ui.form.on("BOM", {
     refresh(frm) {
+        hide_index(frm);
                 if (frm.doc.docstatus === 1) {
             frm.add_custom_button(__("Cutting Plan"), () => {
                 frappe.new_doc("Cutting Plan", {
@@ -307,7 +308,16 @@ function update_rate_from_weight(frm, cdt, cdn) {
 
     frm.refresh_field("items");
 }
-
+//=================
+//ITEMS TABLE LOGIC UI hide_index
+//=================
+function hide_index(frm) {
+    setTimeout(() => {
+        let $wrapper = $(frm.fields_dict['items'].grid.wrapper);
+        $wrapper.find('.grid-heading-row .row-index').hide();
+        $wrapper.find('.row-index').hide();
+    }, 200);
+}
 // =========================================================
 // FORCE RATE OVERRIDE (SERVER CONFIRMED)
 // =========================================================
