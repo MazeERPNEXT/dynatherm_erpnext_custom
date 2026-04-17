@@ -177,8 +177,32 @@ function trigger(frm, cdt, cdn) {
 }
 
 frappe.ui.form.on("Cutting Plan Item", {
+     plate_number(frm, cdt, cdn) {
+        set_plate_reference(frm, cdt, cdn);
+    },
+
+    tag_no(frm, cdt, cdn) {
+        set_plate_reference(frm, cdt, cdn);
+    },
+
     form_render(frm, cdt, cdn) {
         set_plate_number_options(frm);   // ensure options available
+    },
+
+    total_weight(frm) {
+        calculate_balance_weight(frm);
+    },
+
+    plate_reference_number(frm) {
+        calculate_balance_weight(frm);
+    },
+
+    cutting_plan_item_add(frm) {
+        calculate_balance_weight(frm);
+    },
+
+    cutting_plan_item_remove(frm) {
+        calculate_balance_weight(frm);
     },
 
     project(frm, cdt, cdn) {
@@ -255,6 +279,7 @@ frappe.ui.form.on("Cutting Plan Item", {
 
                 frappe.model.set_value(cdt, cdn, {
                     item_code:r.message.item_code,
+                    qty:r.message.qty,
                     kgs_per_unit: r.message.kgs_per_unit,
                     total_weight: r.message.total_weight
                 });
@@ -262,6 +287,54 @@ frappe.ui.form.on("Cutting Plan Item", {
         });
     }
 });
+
+function set_plate_reference(frm, cdt, cdn) {
+
+    let row = locals[cdt][cdn];
+
+    if (!row.plate_number) return;
+
+    let plate_rows = frm.doc.cutting_plan_plate_details || [];
+
+    let match = plate_rows.find(p => 
+        p.plate_number === row.plate_number
+    );
+
+    if (match) {
+        row.plate_reference_number = match.idx;  // ✅ assign idx
+        frm.refresh_field('cutting_plan_item');  // ⚠️ replace with your fieldname
+    }
+}
+
+function calculate_balance_weight(frm) {
+
+    let plate_rows = frm.doc.cutting_plan_plate_details || [];
+    let item_rows = frm.doc.cutting_plan_item || [];
+
+    plate_rows.forEach(plate => {
+
+        let total_used = 0;
+
+        item_rows.forEach(item => {
+            if (item.plate_reference_number == plate.idx) {
+                total_used += flt(item.total_weight);
+            }
+        });
+
+        let balance = flt(plate.total_weight) - total_used;
+
+        // ✅ Proper condition
+        if (balance >= 0) {
+            plate.balance_weight = balance;
+        } else {
+            frappe.msgprint(
+                `Plate Row ${plate.idx}: Exceeded weight!`
+            );
+        }
+    });
+
+    frm.refresh_field('cutting_plan_plate_details');
+}
 
 function set_plate_number_options(frm) {
 

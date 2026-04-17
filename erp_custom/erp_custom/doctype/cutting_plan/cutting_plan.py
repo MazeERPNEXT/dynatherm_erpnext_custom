@@ -229,7 +229,7 @@ def upload_cutting_plan_excel(file_url):
         "Shape": "shape",
         "Tag No": "tag_no",
         "Qty": "qty",
-        "UOM": "uom",
+        # "UOM": "uom",
         "Job No": "job_no",
         "Material Availability": "material_availability",
 
@@ -322,7 +322,7 @@ def get_part_details(bom_no, part_number):
             "parent": bom_no,
             "custom_part_number": part_number
         },
-        ["item_code","custom_kilogramskgs", "custom_total_weight"],
+        ["item_code", "qty", "custom_kilogramskgs", "custom_total_weight"],
         as_dict=True
     )
 
@@ -331,6 +331,7 @@ def get_part_details(bom_no, part_number):
 
     return {
         "item_code":item.item_code,
+        "qty":item.qty,
         "kgs_per_unit": item.custom_kilogramskgs,
         "total_weight": item.custom_total_weight
     }

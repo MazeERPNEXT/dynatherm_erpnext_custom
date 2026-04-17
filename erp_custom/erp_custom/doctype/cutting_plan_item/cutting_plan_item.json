@@ -13,6 +13,7 @@
   "tag_no",
   "qty",
   "uom",
+  "plate_reference_number",
   "column_break_adhv",
   "drawing_no",
   "scale",
@@ -186,13 +187,18 @@
    "fieldtype": "Link",
    "label": "BOM No",
    "options": "BOM"
+  },
+  {
+   "fieldname": "plate_reference_number",
+   "fieldtype": "Data",
+   "label": "Plate Reference Number"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2026-04-16 16:59:35.797845",
+ "modified": "2026-04-17 11:22:03.860336",
  "modified_by": "Administrator",
  "module": "ERP Custom",
  "name": "Cutting Plan Item",
