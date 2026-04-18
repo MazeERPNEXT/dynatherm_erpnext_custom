@@ -1,7 +1,11 @@
 
 frappe.ui.form.on("BOM", {
+    onload(frm) {
+        inject_hide_idx_css();
+    },
     refresh(frm) {
-        hide_index(frm);
+        remove_idx_space(frm);
+        // hide_index(frm);
                 if (frm.doc.docstatus === 1) {
             frm.add_custom_button(__("Cutting Plan"), () => {
                 frappe.new_doc("Cutting Plan", {
@@ -94,6 +98,24 @@ frappe.ui.form.on("BOM", {
     }
 });
 
+function inject_hide_idx_css() {
+    if (!document.getElementById("hide-idx-style")) {
+        let style = document.createElement("style");
+        style.id = "hide-idx-style";
+        style.innerHTML = `
+            .grid-row-index,
+            .row-index {
+                display: none !important;
+            }
+        `;
+        document.head.appendChild(style);
+    }
+}
+
+function remove_idx_space(frm) {
+    let $wrapper = $(frm.fields_dict.items.grid.wrapper);
+    $wrapper.find('.grid-heading-row').css('padding-left', '0px');
+}
 
 frappe.ui.form.on("BOM Item", {
     
@@ -312,13 +334,14 @@ function update_rate_from_weight(frm, cdt, cdn) {
 //=================
 //ITEMS TABLE LOGIC UI hide_index
 //=================
-function hide_index(frm) {
-    setTimeout(() => {
-        let $wrapper = $(frm.fields_dict['items'].grid.wrapper);
-        $wrapper.find('.grid-heading-row .row-index').hide();
-        $wrapper.find('.row-index').hide();
-    }, 200);
-}
+// function hide_index(frm) {
+//     setTimeout(() => {
+//         let $wrapper = $(frm.fields_dict['items'].grid.wrapper);
+//         $wrapper.find('.grid-heading-row .row-index').hide();
+//         $wrapper.find('.row-index').hide();
+//     }, 200);
+// }
+
 // =========================================================
 // FORCE RATE OVERRIDE (SERVER CONFIRMED)
 // =========================================================
