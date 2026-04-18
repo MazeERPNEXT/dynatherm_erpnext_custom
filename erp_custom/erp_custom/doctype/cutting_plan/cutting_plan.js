@@ -14,6 +14,7 @@ frappe.ui.form.on("Cutting Plan", {
     refresh(frm) {
 
         // ================= EXISTING CODE (UNCHANGED) =================
+        // set_plate_number_options(frm)
         show_pdf_preview(frm);
 
         if (frm.doc.docstatus === 1) {
@@ -190,7 +191,7 @@ frappe.ui.form.on("Cutting Plan Item", {
     },
 
     form_render(frm, cdt, cdn) {
-        set_plate_number_options(frm);   // ensure options available
+        set_plate_number_options(frm);
     },
 
     total_weight(frm) {
@@ -266,11 +267,9 @@ frappe.ui.form.on("Cutting Plan Item", {
     },
 
     part_number(frm, cdt, cdn) {
-
     let row = locals[cdt][cdn];
 
     if (!row.bom_no || !row.part_number) return;
-
     frappe.call({
         method: "erp_custom.erp_custom.doctype.cutting_plan.cutting_plan.get_part_details",
         args: {
@@ -282,7 +281,6 @@ frappe.ui.form.on("Cutting Plan Item", {
             if (!r.message) return;
 
             let plate_rows = frm.doc.cutting_plan_plate_details || [];
-
             let plate = plate_rows.find(p => 
                 p.plate_number === row.plate_number
             );
@@ -290,23 +288,42 @@ frappe.ui.form.on("Cutting Plan Item", {
             let plate_thickness = plate ? flt(plate.thickness) : 0;
             let item_thickness  = flt(r.message.thickness);
 
+            let plate_density = plate ? flt(plate.density) : 0;
+            let item_density  = flt(r.message.density);
+
+            // Check mismatches
+            let thickness_mismatch = plate_thickness !== item_thickness;
+            let density_mismatch = Math.abs(plate_density - item_density) > 0.001;
+
             // ===============================
             // ❌ MISMATCH → CLEAR FULL ROW
             // ===============================
-            if (plate && plate_thickness !== item_thickness) {
+            if (plate && (thickness_mismatch || density_mismatch)) {
 
-                frappe.msgprint({
-                    title: __('Thickness Mismatch'),
-                    message: `
-                        <b>Plate Number:</b> ${row.plate_number}<br><br>
+                let message = `<b>Plate Number:</b> ${row.plate_number}<br><br>`;
+
+                if (thickness_mismatch) {
+                    message += `
                         <b>Plate Thickness:</b> ${plate_thickness}<br>
                         <b>Item Thickness:</b> ${item_thickness}<br><br>
-                        ❌ Row cleared due to mismatch
-                    `,
+                    `;
+                }
+
+                if (density_mismatch) {
+                    message += `
+                        <b>Plate Density:</b> ${plate_density}<br>
+                        <b>Item Density:</b> ${item_density}<br><br>
+                    `;
+                }
+
+                message += `❌ Row cleared due to mismatch`;
+
+                frappe.msgprint({
+                    title: __('Mismatch'),
+                    message: message,
                     indicator: 'red'
                 });
 
-                // 🔥 CLEAR FULL ROW (except plate_number if you want)
                 frappe.model.set_value(cdt, cdn, {
                     part_number: "",
                     item_code: "",
@@ -369,7 +386,6 @@ function set_plate_reference(frm, cdt, cdn) {
 }
 
 function calculate_balance_weight(frm) {
-
     let plate_rows = frm.doc.cutting_plan_plate_details || [];
     let item_rows = frm.doc.cutting_plan_item || [];
 

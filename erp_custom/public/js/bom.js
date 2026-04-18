@@ -95,7 +95,10 @@ frappe.ui.form.on("BOM", {
                 frappe.set_route("Form", "Material Request", mr.name);
             }, __("Create"));  
 
-    }
+    setTimeout(() => {
+        show_pdf_preview(frm);
+    }, 200);
+    },
 });
 
 function inject_hide_idx_css() {
@@ -331,6 +334,7 @@ function update_rate_from_weight(frm, cdt, cdn) {
 
     frm.refresh_field("items");
 }
+
 //=================
 //ITEMS TABLE LOGIC UI hide_index
 //=================
@@ -341,6 +345,25 @@ function update_rate_from_weight(frm, cdt, cdn) {
 //         $wrapper.find('.row-index').hide();
 //     }, 200);
 // }
+
+
+function show_pdf_preview(frm) {
+    let wrapper = frm.fields_dict.custom_diagram_preview?.$wrapper;
+    if (!wrapper) return; // safety
+    if (frm.doc.custom_bom_diagram) {
+        let file_url = frm.doc.custom_bom_diagram;
+
+        wrapper.html(`
+            <iframe src="${file_url}#zoom=100" 
+                width="100%" height="600px"
+                style="border:1px solid #ccc; border-radius:8px;">
+            </iframe>
+        `);
+
+    } else {
+        wrapper.html(`<p>No File uploaded</p>`);
+    }
+}
 
 // =========================================================
 // FORCE RATE OVERRIDE (SERVER CONFIRMED)

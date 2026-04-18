@@ -37,6 +37,7 @@
    "fieldname": "cutting_no",
    "fieldtype": "Data",
    "label": "Cutting Plan ID",
+   "read_only": 1,
    "unique": 1
   },
   {
@@ -167,7 +168,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2026-04-17 16:48:48.080240",
+ "modified": "2026-04-18 12:18:47.101816",
  "modified_by": "Administrator",
  "module": "ERP Custom",
  "name": "Cutting Plan",

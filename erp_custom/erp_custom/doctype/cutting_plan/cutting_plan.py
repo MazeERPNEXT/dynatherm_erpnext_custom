@@ -17,6 +17,10 @@ import math
 class CuttingPlan(Document):
     # def validate(self):
     #     self.sync_job_no_from_child()
+    
+    def after_insert(self):
+        if not self.cutting_no:
+            self.db_set("cutting_no", self.name)
 
     def sync_job_no_from_child(self):
         job_nos = set()
@@ -60,8 +64,8 @@ def make_material_request(cutting_plan):
 
     # Loop Cutting Plan Plate Details
     for row in cp.cutting_plan_plate_details:
-         # ✅ Only send items where material is NOT available
-        if row.material_availability != "Not Available":
+         # ✅ Only send items where material is To Be Ordered
+        if row.material_availability != "To Be Ordered":
             continue
         
         mr.append("items", {
@@ -73,6 +77,10 @@ def make_material_request(cutting_plan):
             "custom_length": row.length,
             "custom_width": row.width,
             "custom_thickness": row.thickness,
+            "custom_density": row.density,
+            "custom_kilogramskgs": row.kgs_per_unit,
+            "custom_total_weight": row.total_weight,
+            
         })
 
     mr.insert(ignore_permissions=True)
@@ -95,7 +103,7 @@ def make_request_for_quotation(cutting_plan):
 
     for row in cp.cutting_plan_plate_details:
 
-        if row.material_availability != "Not Available":
+        if row.material_availability != "To Be Ordered":
             continue
 
         rfq.append("items", {
