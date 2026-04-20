@@ -1,4 +1,20 @@
 frappe.listview_settings['Quality Assurance Plan'] = {
+    onload: function(listview) {
+
+        // ✅ ADD BUTTON IN LIST VIEW
+        listview.page.add_inner_button('Download Template', function () {
+
+            frappe.call({
+                method: "erp_custom.erp_custom.doctype.quality_assurance_plan.quality_assurance_plan.download_qap_template",
+                callback: function (r) {
+                    if (r.message) {
+                        window.open(r.message);
+                    }
+                }
+            });
+
+        });
+    },
 
     refresh: function(listview) {
 

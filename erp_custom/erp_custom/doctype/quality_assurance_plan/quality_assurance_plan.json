@@ -23,6 +23,7 @@
   "item_label",
   "drg_no",
   "status",
+  "tpi_agency_person",
   "section_break_mqqc",
   "per_progress",
   "qap_progress",
@@ -182,12 +183,18 @@
    "fieldtype": "Link",
    "label": "Sales Order No",
    "options": "Sales Order"
+  },
+  {
+   "fetch_from": "sales_order_no.custom_tpi_agency",
+   "fieldname": "tpi_agency_person",
+   "fieldtype": "Data",
+   "label": "TPI Agency Person"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-04-08 16:50:09.853270",
+ "modified": "2026-04-20 17:02:01.682158",
  "modified_by": "Administrator",
  "module": "ERP Custom",
  "name": "Quality Assurance Plan",

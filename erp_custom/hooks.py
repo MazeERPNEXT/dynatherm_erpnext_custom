@@ -437,3 +437,8 @@ override_doctype_dashboards = {
 #         "before_save": "erp_custom.overrides.stock_entry_utils.copy_custom_dimensions_from_work_order"
 #     }
 # }
+
+
+doctype_list_js = {
+    "BOM Creator": "public/js/bom_creator_list.js"
+}

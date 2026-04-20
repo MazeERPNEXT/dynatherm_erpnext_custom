@@ -87,6 +87,25 @@ frappe.ui.form.on('Quality Assurance Plan', {
     refresh(frm) {
         update_qap_progress(frm);
 
+          // ===============================
+        // ✅ ALWAYS SHOW TEMPLATE BUTTON
+        // ===============================
+        let template_btn = frm.add_custom_button(
+            '<i class="fa fa-download"></i> Download Template',
+            function () {
+                frappe.call({
+                    method: "erp_custom.erp_custom.doctype.quality_assurance_plan.quality_assurance_plan.download_qap_template",
+                    callback: function (r) {
+                        if (r.message) {
+                            window.open(r.message);
+                        }
+                    }
+                });
+            }
+        );
+
+        template_btn.addClass('btn-primary');
+
         if (!frm.is_new()) {
 
             let btn = frm.add_custom_button(

@@ -77,7 +77,7 @@ def get_data(data=None):
             },
             {
                 "label": _("Material"),
-                "items": ["Material Request", "BOM", "Stock Entry"],
+                "items": ["Material Request", "BOM Creator", "BOM", "Stock Entry"],
             },
             {
                 "label": _("Sales"),

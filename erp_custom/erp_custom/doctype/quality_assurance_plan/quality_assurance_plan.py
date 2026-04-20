@@ -130,7 +130,8 @@ class QualityAssurancePlan(Document):
             ["Drawing No", self.drg_no or ""],
             ["Item Code", self.item_code or ""],
             ["Item Name", self.item_name or ""],
-            ["Quantity", str(self.qty or "")]
+            ["Quantity", str(self.qty or "")],
+            ["TPI Agency Person", str(self.tpi_agency_person or "")]
         ]
 
         details_table = Table(details_data, colWidths=[2.5 * inch, 3.5 * inch])
@@ -262,3 +263,95 @@ class QualityAssurancePlan(Document):
         file_doc.insert(ignore_permissions=True)
 
         return file_doc.file_url
+    
+    
+    
+@frappe.whitelist()
+def download_qap_template():
+    import frappe
+    from openpyxl import Workbook
+    import io
+
+    wb = Workbook()
+    ws = wb.active
+    ws.title = "QAP Template"
+
+    # =========================================================
+    # ✅ HEADERS (Parent + Child)
+    # =========================================================
+
+    headers = [
+
+        # ---------------- PARENT ----------------
+        "Client",
+        "Vendor",
+        "QAP ID",
+        "QAP Date",
+        "Project",
+        "Sales Order No",
+        "Purchase Order No",
+        "Purchase Order Date",
+        "Tag No",
+        "Item Code",
+        "Item Name",
+        "Qty",
+        "DRG No",
+        "TPI Agency Person",
+        "Prepared By",
+        "Verified By",
+        "Status",
+
+        # ---------------- CHILD ----------------
+        "ID (QAP Item)",
+        "Characteristics (QAP Item)",
+        "Type Of Check (QAP Item)",
+        "Quantum Of Inspection (QAP Item)",
+        "Applicable Documents (QAP Item)",
+        "Record / Documents (QAP Item)",
+        "Inspection By (QAP Item)",
+        "Company (QAP Item)",
+        "TPI (QAP Item)",
+        "Client (QAP Item)",
+        "Schedule (QAP Item)",
+        "Attachment Type (QAP Item)",
+        "Attachment (QAP Item)",
+        "Remarks (QAP Item)"
+    ]
+
+    ws.append(headers)
+
+    # =========================================================
+    # ✅ COLUMN WIDTH (NEAT LOOK)
+    # =========================================================
+
+    for col in ws.columns:
+        max_length = 0
+        col_letter = col[0].column_letter
+
+        for cell in col:
+            try:
+                if cell.value:
+                    max_length = max(max_length, len(str(cell.value)))
+            except:
+                pass
+
+        ws.column_dimensions[col_letter].width = max_length + 3
+
+    # =========================================================
+    # ✅ SAVE FILE
+    # =========================================================
+
+    file_stream = io.BytesIO()
+    wb.save(file_stream)
+    file_stream.seek(0)
+
+    file_doc = frappe.get_doc({
+        "doctype": "File",
+        "file_name": "QAP_Template.xlsx",
+        "is_private": 0,
+        "content": file_stream.read()
+    })
+
+    file_doc.insert(ignore_permissions=True)
+
+    return file_doc.file_url

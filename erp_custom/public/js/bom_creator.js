@@ -1,7 +1,6 @@
 
 frappe.ui.form.on('BOM Creator', {
     refresh(frm) {
-
         if (frm.is_new() || frm.doc.docstatus !== 0) return;
 
     let btn = frm.add_custom_button('Upload BOM', () => {
@@ -33,6 +32,10 @@ frappe.ui.form.on('BOM Creator', {
                         });
 
                         frm.refresh_field("items");
+                        
+                        setTimeout(() => {
+                            calculate_total_bom_weight(frm);
+                        }, 100);
 
                         frappe.show_alert({
                             message: "BOM Excel Imported Successfully",
@@ -94,7 +97,19 @@ frappe.ui.form.on('BOM Creator Item', {
         frm.refresh_field("items");
 
         trigger_calc(frm, cdt, cdn);
-    }
+    },
+
+    custom_total_weight(frm) {
+        calculate_total_bom_weight(frm);
+    },
+
+    bom_creator_item_add(frm) {
+        calculate_total_bom_weight(frm);
+    },
+
+    bom_creator_item_remove(frm) {
+        calculate_total_bom_weight(frm);
+    },
 });
 
 
@@ -113,10 +128,32 @@ function trigger_calc(frm, cdt, cdn) {
         callback: function(r) {
             if (r.message) {
                 Object.assign(row, r.message);
+
                 frm.refresh_field("items");
+
+                // ✅ DELAYED CALL
+                setTimeout(() => {
+                    calculate_total_bom_weight(frm);
+                }, 50);
             }
         }
     });
+}
+
+function calculate_total_bom_weight(frm) {
+
+    setTimeout(() => {
+
+        let total = 0;
+
+        (frm.doc.items || []).forEach(row => {
+            total += flt(row.custom_total_weight);
+        });
+
+        frm.set_value("custom_total_bom_weight", flt(total, 4));
+        frm.refresh_field("custom_total_bom_weight");
+
+    }, 100); // ✅ delay fixes sync issue
 }
 
 // frappe.ui.form.on('BOM Creator Item', {

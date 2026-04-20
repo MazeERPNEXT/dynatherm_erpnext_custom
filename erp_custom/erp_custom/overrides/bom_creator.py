@@ -336,3 +336,73 @@ class CustomBOMCreator(BOMCreator):
 
         production_item_wise_rm[(row.item_code, row.name)].bom_no = bom.name
 
+
+
+
+
+# import frappe
+from openpyxl import Workbook
+import io
+
+@frappe.whitelist()
+def download_bom_template():
+
+    wb = Workbook()
+    ws = wb.active
+    ws.title = "BOM Template"
+
+    # =====================================================
+    # ✅ HEADERS (MATCH YOUR SYSTEM)
+    # =====================================================
+
+    headers = [
+        "Part Number",
+        "Item Code",
+        "Item Group",
+        "Shape",
+        "Qty",
+        "Finished Goods Item",
+
+        # Custom Fields
+        "Length (mm)",
+        "Width (mm)",
+        "Thickness (mm)",
+        "Density (kg/m³)",
+        "Outer Diameter (mm)",
+        "Inner Diameter (mm)",
+    ]
+
+    ws.append(headers)
+
+    # =====================================================
+    # ✅ AUTO WIDTH
+    # =====================================================
+
+    for col in ws.columns:
+        max_length = 0
+        col_letter = col[0].column_letter
+
+        for cell in col:
+            if cell.value:
+                max_length = max(max_length, len(str(cell.value)))
+
+        ws.column_dimensions[col_letter].width = max_length + 3
+
+    # =====================================================
+    # ✅ SAVE FILE
+    # =====================================================
+
+    file_stream = io.BytesIO()
+    wb.save(file_stream)
+    file_stream.seek(0)
+
+    file_doc = frappe.get_doc({
+        "doctype": "File",
+        "file_name": "BOM_Creator_Template.xlsx",
+        "is_private": 0,
+        "content": file_stream.read()
+    })
+
+    file_doc.insert(ignore_permissions=True)
+
+    return file_doc.file_url
