@@ -122,11 +122,11 @@ class QualityAssurancePlan(Document):
 
         details_data = [
             ["QAP ID", self.name],
-            ["Date", str(self.date or "")],
+            ["QAP Date", str(self.date or "")],
             ["Project", str(self.project or "")],
             ["Tag No", self.tag_no or ""],
-            ["Purchase Order No", self.purchase_order_no or ""],
-            ["PO Date", str(self.purchase_order_date or "")],
+            ["Customer's Purchase Order No", self.purchase_order_no or ""],
+            ["Customer's Purchase Order Date", str(self.purchase_order_date or "")],
             ["Drawing No", self.drg_no or ""],
             ["Item Code", self.item_code or ""],
             ["Item Name", self.item_name or ""],
