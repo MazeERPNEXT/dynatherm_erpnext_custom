@@ -106,6 +106,9 @@ frappe.ui.form.on('Quality Assurance Plan', {
 
         template_btn.addClass('btn-primary');
 
+        // Css to highlight drg_no field
+        frm.fields_dict.drg_no.$wrapper.find('input')
+            .css('border', '2px solid red');
         if (!frm.is_new()) {
 
             let btn = frm.add_custom_button(
