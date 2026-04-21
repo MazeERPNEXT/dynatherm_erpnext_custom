@@ -91,12 +91,6 @@ def get_data(data=None):
                 "label": _("Manufacture"),
                 "items": ["Work Order", "Cutting Plan"],
             },
-
-            # ✅ YOUR CUSTOM (add here safely)
-            # {
-            #     "label": _("Manufacturing"),
-            #     "items": ["Cutting Plan"],
-            # },
             {
                 "label": _("Quality"),
                 "items": ["Quality Assurance Plan"],

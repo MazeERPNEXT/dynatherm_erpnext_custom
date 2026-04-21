@@ -1,5 +1,18 @@
 
 frappe.ui.form.on('BOM Creator', {
+    // onload(frm) {
+    //     let project = frappe.utils.get_url_arg('project');
+    //     if (project && !frm.doc.project) {
+    //         frm.set_value('project', project);
+    //     }
+    // },
+    onload(frm) {
+
+        // ✅ Get route options (best method)
+        if (frappe.route_options && frappe.route_options.project) {
+            frm.set_value("project", frappe.route_options.project);
+        }
+    },
     refresh(frm) {
         if (frm.is_new() || frm.doc.docstatus !== 0) return;
 
