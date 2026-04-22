@@ -94,10 +94,11 @@ class QualityAssurancePlan(Document):
             frappe.throw("No valid PDF files found.")
 
         # ---------------------------------------------------
-        # STEP 2: Cover Page
+        # STEP 2: Cover Page (FINAL PROFESSIONAL)
         # ---------------------------------------------------
 
         cover_buffer = io.BytesIO()
+
         cover_doc = SimpleDocTemplate(
             cover_buffer,
             pagesize=A4,
@@ -109,6 +110,33 @@ class QualityAssurancePlan(Document):
 
         cover_elements = []
 
+        # ---------------- STYLES ----------------
+        styles = getSampleStyleSheet()
+
+        title_style = ParagraphStyle(
+            name="TitleStyle",
+            parent=styles["Heading1"],
+            fontName="Helvetica-Bold",
+            fontSize=22,
+            alignment=TA_CENTER,
+            spaceAfter=20
+        )
+
+        label_style = ParagraphStyle(
+            name="LabelStyle",
+            fontName="Helvetica-Bold",
+            fontSize=10,
+            leading=12
+        )
+
+        value_style = ParagraphStyle(
+            name="ValueStyle",
+            fontName="Helvetica",
+            fontSize=10,
+            leading=12
+        )
+
+        # ---------------- LETTERHEAD ----------------
         try:
             letterhead_path = frappe.get_site_path("public", "files", "Dapl_letter_head.png")
             letter_img = Image(letterhead_path, width=6.5 * inch, height=1.2 * inch)
@@ -117,31 +145,58 @@ class QualityAssurancePlan(Document):
         except Exception:
             pass
 
+        # ---------------- TITLE ----------------
         cover_elements.append(Paragraph("QUALITY ASSURANCE PLAN", title_style))
         cover_elements.append(Spacer(1, 0.3 * inch))
 
+        # ---------------- DETAILS TABLE ----------------
         details_data = [
-            ["QAP ID", self.name],
-            ["QAP Date", str(self.date or "")],
-            ["Project", str(self.project or "")],
-            ["Tag No", self.tag_no or ""],
-            ["Customer's Purchase Order No", self.purchase_order_no or ""],
-            ["Customer's Purchase Order Date", str(self.purchase_order_date or "")],
-            ["Drawing No", self.drg_no or ""],
-            ["Item Code", self.item_code or ""],
-            ["Item Name", self.item_name or ""],
-            ["Quantity", str(self.qty or "")],
-            ["TPI Agency Person", str(self.tpi_agency_person or "")]
+            [Paragraph("QAP ID", label_style), Paragraph(self.name or "", value_style)],
+            [Paragraph("QAP Date", label_style), Paragraph(str(self.date or ""), value_style)],
+            [Paragraph("Project", label_style), Paragraph(str(self.project or ""), value_style)],
+            [Paragraph("Tag No", label_style), Paragraph(self.tag_no or "", value_style)],
+            [Paragraph("Customer's Purchase Order No", label_style), Paragraph(self.purchase_order_no or "", value_style)],
+            [Paragraph("Customer's Purchase Order Date", label_style), Paragraph(str(self.purchase_order_date or ""), value_style)],
+            [Paragraph("Drawing No", label_style), Paragraph(self.drg_no or "", value_style)],
+            [Paragraph("Item Code", label_style), Paragraph(self.item_code or "", value_style)],
+            [Paragraph("Item Name", label_style), Paragraph(self.item_name or "", value_style)],
+            [Paragraph("Quantity", label_style), Paragraph(str(self.qty or ""), value_style)],
+            [Paragraph("TPI Agency Person", label_style), Paragraph(str(self.tpi_agency_person or ""), value_style)]
         ]
 
-        details_table = Table(details_data, colWidths=[2.5 * inch, 3.5 * inch])
+        details_table = Table(
+            details_data,
+            colWidths=[2.4 * inch, 3.6 * inch]
+        )
+
         details_table.setStyle(TableStyle([
-            ('GRID', (0, 0), (-1, -1), 0.5, colors.grey),
-            ('BACKGROUND', (0, 0), (0, -1), colors.whitesmoke),
+            ('GRID', (0, 0), (-1, -1), 0.4, colors.grey),
+            ('BACKGROUND', (0, 0), (0, -1), colors.HexColor("#F2F2F2")),
+            ('TOPPADDING', (0, 0), (-1, -1), 6),
+            ('BOTTOMPADDING', (0, 0), (-1, -1), 6),
+            ('LEFTPADDING', (0, 0), (-1, -1), 6),
+            ('RIGHTPADDING', (0, 0), (-1, -1), 6),
+
+            ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
         ]))
 
         cover_elements.append(details_table)
-        cover_doc.build(cover_elements)
+
+        # ---------------- FOOTER ----------------
+        def add_footer(canvas, doc):
+            canvas.saveState()
+
+            footer_text = "For Dynatherm Alloys Pvt. Ltd"
+
+            canvas.setFont("Helvetica-Bold", 10)
+
+            # Right aligned footer
+            canvas.drawRightString(A4[0] - 40, 120, footer_text)
+
+            canvas.restoreState()
+
+        # ---------------- BUILD ----------------
+        cover_doc.build(cover_elements, onFirstPage=add_footer)
         cover_buffer.seek(0)
 
         # ---------------------------------------------------
