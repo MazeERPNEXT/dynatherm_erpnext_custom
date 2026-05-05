@@ -7,6 +7,7 @@ class CustomPurchaseOrder(PurchaseOrder):
     def validate_fg_item_for_subcontracting(self):
         return
 
+
 @frappe.whitelist()
 def validate_item_workflow(item_code=None, supplier=None):
 

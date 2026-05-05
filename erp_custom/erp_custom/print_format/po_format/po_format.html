@@ -257,6 +257,92 @@
 {% endif %}
 
 <tr>
+<td colspan="7" class="right">
+
+<table style="width:100%;">
+
+    <tr align="center" class="footer">
+        <td>Prepared By</td>
+        <td>Checked By</td>
+        <td>Verified By</td>
+        <td>Approved By</td>
+    </tr>
+
+    <tr align="center">
+        <td>Purchase Executive</td>
+        <td>Purchase Manager</td>
+        <td>Technical Manager</td>
+        <td>Finance Manager</td>
+    </tr>
+
+    {# ---------- COMMON FUNCTION ---------- #}
+    {% macro get_dt(state) %}
+        {% set rec = frappe.get_all(
+            "Workflow Action",
+            fields=["creation"],
+            filters={
+                "reference_name": doc.name,
+                "workflow_state": state
+            },
+            order_by="creation asc",
+            limit_page_length=1
+        ) %}
+        
+        {% if rec %}
+            {% set dt = frappe.utils.get_datetime(rec[0].creation) %}
+            {{ dt.strftime("%d-%m-%Y") }}||{{ dt.strftime("%H:%M:%S") }}
+        {% else %}
+            ||
+        {% endif %}
+    {% endmacro %}
+
+    {# ---------- FINAL APPROVAL ---------- #}
+    {% macro get_final_approval() %}
+        {% set rec = frappe.get_all(
+            "Workflow Action",
+            fields=["creation"],
+            filters={
+                "reference_name": doc.name,
+                "workflow_state": "Approved"
+            },
+            order_by="creation desc",
+            limit_page_length=1
+        ) %}
+        
+        {% if rec %}
+            {% set dt = frappe.utils.get_datetime(rec[0].creation) %}
+        {% else %}
+            {% set dt = frappe.utils.get_datetime(doc.modified) %}
+        {% endif %}
+
+        {{ dt.strftime("%d-%m-%Y") }}||{{ dt.strftime("%H:%M:%S") }}
+    {% endmacro %}
+
+    {# ---------- FETCH ---------- #}
+    {% set tech = get_dt("Technical Review").split("||") %}
+    {% set fin  = get_dt("Finance Review").split("||") %}
+    {% set app  = get_final_approval().split("||") %}
+
+    <tr align="left">
+        <td>Date : {{ frappe.utils.get_datetime(doc.creation).strftime("%d-%m-%Y") }}</td>
+        <td>Date : {{ tech[0] }}</td>
+        <td>Date : {{ fin[0] }}</td>
+        <td>Date : {{ app[0] }}</td>
+    </tr>
+
+    <tr align="left">
+        <td>Time : {{ frappe.utils.get_datetime(doc.creation).strftime("%H:%M:%S") }}</td>
+        <td>Time : {{ tech[1] }}</td>
+        <td>Time : {{ fin[1] }}</td>
+        <td>Time : {{ app[1] }}</td>
+    </tr>
+
+</table>
+
+</td>
+</tr>
+
+<!-- <tr>
     
 <td colspan="7" class="right">
 <table style="width:100%;"> 
@@ -318,7 +404,7 @@
 
 </table>
 </td>
-</tr>
+</tr> -->
 
 </table>
 </div>
@@ -398,6 +484,89 @@
 </div>
 
 <div class="footer">
+
+<table style="width:100%;">
+
+    <tr class="footer">
+        <td>Prepared By</td>
+        <td>Checked By</td>
+        <td>Verified By</td>
+        <td>Approved By</td>
+    </tr>
+
+    <tr>
+        <td>Purchase Executive</td>
+        <td>Purchase Manager</td>
+        <td>Technical Manager</td>
+        <td>Finance Manager</td>
+    </tr>
+
+    {# ---------- SAME FUNCTIONS ---------- #}
+    {% macro get_dt(state) %}
+        {% set rec = frappe.get_all(
+            "Workflow Action",
+            fields=["creation"],
+            filters={
+                "reference_name": doc.name,
+                "workflow_state": state
+            },
+            order_by="creation asc",
+            limit_page_length=1
+        ) %}
+        
+        {% if rec %}
+            {% set dt = frappe.utils.get_datetime(rec[0].creation) %}
+            {{ dt.strftime("%d-%m-%Y") }}||{{ dt.strftime("%H:%M:%S") }}
+        {% else %}
+            ||
+        {% endif %}
+    {% endmacro %}
+
+    {% macro get_final_approval() %}
+        {% set rec = frappe.get_all(
+            "Workflow Action",
+            fields=["creation"],
+            filters={
+                "reference_name": doc.name,
+                "workflow_state": "Approved"
+            },
+            order_by="creation desc",
+            limit_page_length=1
+        ) %}
+        
+        {% if rec %}
+            {% set dt = frappe.utils.get_datetime(rec[0].creation) %}
+        {% else %}
+            {% set dt = frappe.utils.get_datetime(doc.modified) %}
+        {% endif %}
+
+        {{ dt.strftime("%d-%m-%Y") }}||{{ dt.strftime("%H:%M:%S") }}
+    {% endmacro %}
+
+    {# ---------- FETCH ---------- #}
+    {% set tech = get_dt("Technical Review").split("||") %}
+    {% set fin  = get_dt("Finance Review").split("||") %}
+    {% set app  = get_final_approval().split("||") %}
+
+    <tr>
+        <td>Date : {{ frappe.utils.get_datetime(doc.creation).strftime("%d-%m-%Y") }}</td>
+        <td>Date : {{ tech[0] }}</td>
+        <td>Date : {{ fin[0] }}</td>
+        <td>Date : {{ app[0] }}</td>
+    </tr>
+
+    <tr>
+        <td>Time : {{ frappe.utils.get_datetime(doc.creation).strftime("%H:%M:%S") }}</td>
+        <td>Time : {{ tech[1] }}</td>
+        <td>Time : {{ fin[1] }}</td>
+        <td>Time : {{ app[1] }}</td>
+    </tr>
+
+</table>
+
+</div>
+y
+<!-- <div class="footer">
 <table style="width:100%;"> 
                 <tr class="footer">
                     <td>Prepared By</td>
@@ -448,7 +617,7 @@
                     <td>Time: {{Approved_time}}</td>
                 </tr>
             </table>
-</div>
+</div> -->
 <p>This is a Computer-Generated Document and does not require any Signature/Seal</p>
 </div>
 {% endif %}
