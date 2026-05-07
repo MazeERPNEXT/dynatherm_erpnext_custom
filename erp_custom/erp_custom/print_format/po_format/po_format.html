@@ -268,12 +268,80 @@
         <td>Approved By</td>
     </tr>
 
-    <tr align="center">
+    <!-- <tr align="center">
         <td>Purchase Executive</td>
         <td>Purchase Manager</td>
         <td>Technical Manager</td>
         <td>Finance Manager</td>
-    </tr>
+    </tr> -->
+    {% macro get_user(state) %}
+    {% set rec = frappe.get_all(
+        "Workflow Action",
+        fields=["owner"],
+        filters={
+            "reference_name": doc.name,
+            "workflow_state": state
+        },
+        order_by="creation asc",
+        limit_page_length=1
+    ) %}
+
+    {% if rec %}
+        {{ frappe.db.get_value("User", rec[0].owner, "full_name") or rec[0].owner }}
+    {% else %}
+        
+    {% endif %}
+{% endmacro %}
+
+{% set purchase_user = frappe.db.get_value("User", doc.owner, "full_name") or doc.owner %}
+
+{% set tech_user = get_user("Technical Review") | trim %}
+
+{% set fin_user  = get_user("Finance Review") | trim %}
+
+<tr align="center">
+
+    <td>
+        <div><b>Purchase Executive</b></div>
+
+        {% if purchase_user %}
+            <div style="margin-top:4px;">
+                ({{ purchase_user }})
+            </div>
+        {% endif %}
+    </td>
+
+    <td>
+        <div><b>Purchase Manager</b></div>
+
+        {% if purchase_user %}
+            <div style="margin-top:4px;">
+                ({{ purchase_user }})
+            </div>
+        {% endif %}
+    </td>
+
+    <td>
+        <div><b>Technical Manager</b></div>
+
+        {% if tech_user %}
+            <div style="margin-top:4px;">
+                ({{ tech_user }})
+            </div>
+        {% endif %}
+    </td>
+
+    <td>
+        <div><b>Finance Manager</b></div>
+
+        {% if fin_user %}
+            <div style="margin-top:4px;">
+                ({{ fin_user }})
+            </div>
+        {% endif %}
+    </td>
+
+</tr>
 
     {# ---------- COMMON FUNCTION ---------- #}
     {% macro get_dt(state) %}
@@ -494,6 +562,154 @@
         <td>Approved By</td>
     </tr>
 
+    {# ---------- USER FETCH ---------- #}
+
+    {% macro get_user(state) %}
+        {% set rec = frappe.get_all(
+            "Workflow Action",
+            fields=["owner"],
+            filters={
+                "reference_name": doc.name,
+                "workflow_state": state
+            },
+            order_by="creation asc",
+            limit_page_length=1
+        ) %}
+
+        {% if rec %}
+            {{ frappe.db.get_value("User", rec[0].owner, "full_name") or rec[0].owner }}
+        {% endif %}
+    {% endmacro %}
+
+    {% set purchase_user = frappe.db.get_value("User", doc.owner, "full_name") or doc.owner %}
+
+    {% set tech_user = get_user("Technical Review") | trim %}
+
+    {% set fin_user  = get_user("Finance Review") | trim %}
+
+    <tr>
+
+        <td align="center">
+            <div><b>Purchase Executive</b></div>
+
+            {% if purchase_user %}
+                <div style="margin-top:4px;">
+                    ({{ purchase_user }})
+                </div>
+            {% endif %}
+        </td>
+
+        <td align="center">
+            <div><b>Purchase Manager</b></div>
+
+            {% if purchase_user %}
+                <div style="margin-top:4px;">
+                    ({{ purchase_user }})
+                </div>
+            {% endif %}
+        </td>
+
+        <td align="center">
+            <div><b>Technical Manager</b></div>
+
+            {% if tech_user %}
+                <div style="margin-top:4px;">
+                    ({{ tech_user }})
+                </div>
+            {% endif %}
+        </td>
+
+        <td align="center">
+            <div><b>Finance Manager</b></div>
+
+            {% if fin_user %}
+                <div style="margin-top:4px;">
+                    ({{ fin_user }})
+                </div>
+            {% endif %}
+        </td>
+
+    </tr>
+
+    {# ---------- DATE TIME FUNCTIONS ---------- #}
+
+    {% macro get_dt(state) %}
+        {% set rec = frappe.get_all(
+            "Workflow Action",
+            fields=["creation"],
+            filters={
+                "reference_name": doc.name,
+                "workflow_state": state
+            },
+            order_by="creation asc",
+            limit_page_length=1
+        ) %}
+        
+        {% if rec %}
+            {% set dt = frappe.utils.get_datetime(rec[0].creation) %}
+            {{ dt.strftime("%d-%m-%Y") }}||{{ dt.strftime("%H:%M:%S") }}
+        {% else %}
+            ||
+        {% endif %}
+    {% endmacro %}
+
+    {% macro get_final_approval() %}
+        {% set rec = frappe.get_all(
+            "Workflow Action",
+            fields=["creation"],
+            filters={
+                "reference_name": doc.name,
+                "workflow_state": "Approved"
+            },
+            order_by="creation desc",
+            limit_page_length=1
+        ) %}
+        
+        {% if rec %}
+            {% set dt = frappe.utils.get_datetime(rec[0].creation) %}
+        {% else %}
+            {% set dt = frappe.utils.get_datetime(doc.modified) %}
+        {% endif %}
+
+        {{ dt.strftime("%d-%m-%Y") }}||{{ dt.strftime("%H:%M:%S") }}
+    {% endmacro %}
+
+    {# ---------- FETCH ---------- #}
+
+    {% set tech = get_dt("Technical Review").split("||") %}
+    {% set fin  = get_dt("Finance Review").split("||") %}
+    {% set app  = get_final_approval().split("||") %}
+
+    <tr>
+        <td>Date : {{ frappe.utils.get_datetime(doc.creation).strftime("%d-%m-%Y") }}</td>
+        <td>Date : {{ tech[0] }}</td>
+        <td>Date : {{ fin[0] }}</td>
+        <td>Date : {{ app[0] }}</td>
+    </tr>
+
+    <tr>
+        <td>Time : {{ frappe.utils.get_datetime(doc.creation).strftime("%H:%M:%S") }}</td>
+        <td>Time : {{ tech[1] }}</td>
+        <td>Time : {{ fin[1] }}</td>
+        <td>Time : {{ app[1] }}</td>
+    </tr>
+
+</table>
+
+</div>
+
+<!-- may 06 -->
+<!-- <div class="footer">
+
+<table style="width:100%;">
+
+    <tr class="footer">
+        <td>Prepared By</td>
+        <td>Checked By</td>
+        <td>Verified By</td>
+        <td>Approved By</td>
+    </tr>
+
     <tr>
         <td>Purchase Executive</td>
         <td>Purchase Manager</td>
@@ -564,8 +780,9 @@
 
 </table>
 
-</div>
+</div> -->
 
+<!-- may 05 -->
 <!-- <div class="footer">
 <table style="width:100%;"> 
                 <tr class="footer">
