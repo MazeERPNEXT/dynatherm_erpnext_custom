@@ -324,31 +324,93 @@ def get_part_details(bom_no, part_number):
     if not bom_no or not part_number:
         return {}
 
-    item = frappe.get_value(
+    # ===============================
+    # FETCH ALL ITEMS FIRST
+    # ===============================
+    items = frappe.get_all(
         "BOM Item",
-        {
-            "parent": bom_no,
-            "custom_part_number": part_number
+        filters={
+            "parent": bom_no
         },
-        ["item_code", "qty", "uom", "custom_item_group", "custom_shape", "custom_length", "custom_width", "custom_thickness", "custom_density", "custom_outer_diameter", "custom_inner_diameter", "custom_kilogramskgs", "custom_total_weight"],
-        as_dict=True
+        fields=[
+            "item_code",
+            "qty",
+            "uom",
+            "custom_item_group",
+            "custom_shape",
+            "custom_length",
+            "custom_width",
+            "custom_thickness",
+            "custom_density",
+            "custom_outer_diameter",
+            "custom_inner_diameter",
+            "custom_kilogramskgs",
+            "custom_total_weight",
+            "custom_part_number"
+        ]
     )
 
-    if not item:
+    matched = None
+
+    # ===============================
+    # SAFE STRING MATCH
+    # ===============================
+    for d in items:
+
+        if str(d.custom_part_number).strip() == str(part_number).strip():
+            matched = d
+            break
+
+    if not matched:
         return {}
 
     return {
-        "item_code":item.item_code,
-        "qty":item.qty,
-        "uom":item.uom,
-        "item_group":item.custom_item_group,
-        "shape":item.custom_shape,
-        "length":item.custom_length,
-        "width":item.custom_width,
-        "thickness":item.custom_thickness,
-        "density":item.custom_density,
-        "outer_diameter":item.custom_outer_diameter,
-        "inner_diameter":item.custom_inner_diameter,
-        "kgs_per_unit": item.custom_kilogramskgs,
-        "total_weight": item.custom_total_weight
+        "item_code": matched.item_code,
+        "qty": matched.qty,
+        "uom": matched.uom,
+        "item_group": matched.custom_item_group,
+        "shape": matched.custom_shape,
+        "length": matched.custom_length,
+        "width": matched.custom_width,
+        "thickness": matched.custom_thickness,
+        "density": matched.custom_density,
+        "outer_diameter": matched.custom_outer_diameter,
+        "inner_diameter": matched.custom_inner_diameter,
+        "kgs_per_unit": matched.custom_kilogramskgs,
+        "total_weight": matched.custom_total_weight
     }
+    
+# @frappe.whitelist()
+# def get_part_details(bom_no, part_number):
+
+#     if not bom_no or not part_number:
+#         return {}
+
+#     item = frappe.get_value(
+#         "BOM Item",
+#         {
+#             "parent": bom_no,
+#             "custom_part_number": part_number
+#         },
+#         ["item_code", "qty", "uom", "custom_item_group", "custom_shape", "custom_length", "custom_width", "custom_thickness", "custom_density", "custom_outer_diameter", "custom_inner_diameter", "custom_kilogramskgs", "custom_total_weight"],
+#         as_dict=True
+#     )
+
+#     if not item:
+#         return {}
+
+#     return {
+#         "item_code":item.item_code,
+#         "qty":item.qty,
+#         "uom":item.uom,
+#         "item_group":item.custom_item_group,
+#         "shape":item.custom_shape,
+#         "length":item.custom_length,
+#         "width":item.custom_width,
+#         "thickness":item.custom_thickness,
+#         "density":item.custom_density,
+#         "outer_diameter":item.custom_outer_diameter,
+#         "inner_diameter":item.custom_inner_diameter,
+#         "kgs_per_unit": item.custom_kilogramskgs,
+#         "total_weight": item.custom_total_weight
+#     }

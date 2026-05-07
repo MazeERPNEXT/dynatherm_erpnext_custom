@@ -347,21 +347,51 @@ frappe.ui.form.on("Cutting Plan Item", {
             // ===============================
             // ✅ MATCH → SET VALUES
             // ===============================
-            frappe.model.set_value(cdt, cdn, {
-                item_code: r.message.item_code,
-                qty: r.message.qty,
-                uom: r.message.uom,
-                item_group: r.message.item_group,
-                shape: r.message.shape,
-                length: r.message.length,
-                width: r.message.width,
-                thickness: r.message.thickness,
-                density: r.message.density,
-                outer_diameter: r.message.outer_diameter,
-                inner_diameter: r.message.inner_diameter,
-                kgs_per_unit: r.message.kgs_per_unit,
-                total_weight: r.message.total_weight,
-            });
+            // frappe.model.set_value(cdt, cdn, {
+            //     item_code: r.message.item_code,
+            //     qty: r.message.qty,
+            //     uom: r.message.uom,
+            //     item_group: r.message.item_group,
+            //     shape: r.message.shape,
+            //     length: r.message.length,
+            //     width: r.message.width,
+            //     thickness: r.message.thickness,
+            //     density: r.message.density,
+            //     outer_diameter: r.message.outer_diameter,
+            //     inner_diameter: r.message.inner_diameter,
+            //     kgs_per_unit: r.message.kgs_per_unit,
+            //     total_weight: r.message.total_weight,
+            // });
+            // ===============================
+            // ✅ MATCH → SET VALUES
+            // ===============================
+
+            // FIRST set parent fields
+            frappe.model.set_value(cdt, cdn, "item_group", r.message.item_group);
+            frappe.model.set_value(cdt, cdn, "shape", r.message.shape);
+
+            // SMALL DELAY REQUIRED
+            setTimeout(() => {
+
+                frappe.model.set_value(cdt, cdn, "item_code", r.message.item_code);
+                frappe.model.set_value(cdt, cdn, "qty", r.message.qty);
+                frappe.model.set_value(cdt, cdn, "uom", r.message.uom);
+
+                frappe.model.set_value(cdt, cdn, "length", r.message.length);
+                frappe.model.set_value(cdt, cdn, "width", r.message.width);
+
+                frappe.model.set_value(cdt, cdn, "thickness", r.message.thickness);
+                frappe.model.set_value(cdt, cdn, "density", r.message.density);
+
+                frappe.model.set_value(cdt, cdn, "outer_diameter", r.message.outer_diameter);
+                frappe.model.set_value(cdt, cdn, "inner_diameter", r.message.inner_diameter);
+
+                frappe.model.set_value(cdt, cdn, "kgs_per_unit", r.message.kgs_per_unit);
+                frappe.model.set_value(cdt, cdn, "total_weight", r.message.total_weight);
+
+                frm.refresh_field("cutting_plan_item");
+
+            }, 200);
         }
     });
 }
